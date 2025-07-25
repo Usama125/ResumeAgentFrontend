@@ -17,6 +17,7 @@ import { PublicUser } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
 import { calculateTotalExperience } from "@/utils/experienceCalculator"
+import ResizableSplitPane from "@/components/ResizableSplitPane"
 
 interface DesktopPublicProfileViewProps {
   user: PublicUser
@@ -75,12 +76,8 @@ export default function DesktopPublicProfileView({
     handleSendMessage(question)
   }
 
-  return (
-    <div className="flex h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">
-      {/* Left Side - Portfolio */}
-      <div className={`${
-        isChatVisible ? 'w-1/2' : 'w-full'
-      } ${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto transition-all duration-500 ease-in-out relative`}>
+  const PortfolioSection = () => (
+    <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative`}>
         
         {/* Toggle Button - Inside Portfolio Section */}
         <div className="absolute top-4 right-4 z-50">
@@ -387,12 +384,11 @@ export default function DesktopPublicProfileView({
             )}
           </div>
         </div>
-      </div>
+    </div>
+  )
 
-      {/* Right Side - Chat Interface */}
-      <div className={`${
-        isChatVisible ? 'w-1/2' : 'w-0'
-      } ${isDark ? 'bg-[#1a1a1a]' : 'bg-white'} h-full flex flex-col transition-all duration-500 ease-in-out overflow-hidden relative`}>
+  const ChatSection = () => (
+    <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-white'} h-full flex flex-col overflow-hidden relative`}>
         {/* Chat Header */}
         <div className={`relative p-3 border-b ${isDark ? 'border-[#565869]' : 'border-gray-200'} ${isDark ? 'bg-[#2f2f2f]' : 'bg-white'} backdrop-blur-sm`}>
           <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 to-transparent"></div>
@@ -557,7 +553,20 @@ export default function DesktopPublicProfileView({
             </div>
           </div>
         )}
-      </div>
+    </div>
+  )
+
+  return (
+    <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">
+      <ResizableSplitPane
+        isVisible={isChatVisible}
+        defaultLeftWidth={50}
+        minLeftWidth={30}
+        maxLeftWidth={70}
+      >
+        <PortfolioSection />
+        <ChatSection />
+      </ResizableSplitPane>
     </div>
   )
 }
