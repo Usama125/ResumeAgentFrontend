@@ -1,5 +1,6 @@
 import { secureAPI } from '@/lib/secure-api-client';
-import { ChatMessage, ChatResponse, ChatSuggestionsResponse } from '@/types';
+import { ChatMessage, ChatResponse, ChatSuggestionsResponse, APIError } from '@/types';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 // Chat service (HMAC secured)
 export class ChatService {
@@ -10,8 +11,19 @@ export class ChatService {
     message: string, 
     token?: string
   ): Promise<ChatResponse> {
-    const chatMessage: ChatMessage = { message };
-    return secureAPI.post<ChatResponse>(`/chat/${userId}`, chatMessage, token);
+    try {
+      const chatMessage: ChatMessage = { message };
+      return await secureAPI.post<ChatResponse>(`/chat/${userId}`, chatMessage, token);
+    } catch (error: any) {
+      // If it's a rate limit error, store the info for the modal
+      if (error.type === 'RATE_LIMIT' && error.rateLimitData) {
+        this.storeRateLimitInfo(
+          error.rateLimitData.remaining,
+          Date.now() + (error.rateLimitData.resetInSeconds * 1000)
+        );
+      }
+      throw error;
+    }
   }
 
   // Get suggestion chips for user

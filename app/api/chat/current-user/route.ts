@@ -38,7 +38,10 @@ export async function POST(request: NextRequest) {
         statusText: userResponse.statusText,
         error: errorText
       });
-      throw new Error(`Failed to get current user: ${userResponse.status}`);
+      return NextResponse.json(
+        { error: `Failed to get current user: ${userResponse.status}` },
+        { status: userResponse.status }
+      );
     }
 
     const userData = await userResponse.json();
@@ -50,18 +53,25 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'application/json',
         'Origin': process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
+        'Authorization': authHeader,
       },
       body: JSON.stringify({ message }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      const errorData = await response.json().catch(() => ({}));
+      
+      // Pass through rate limit errors (429) with full detail
+      if (response.status === 429) {
+        return NextResponse.json(errorData, { status: 429 });
+      }
+      
       console.error('Backend chat API error:', {
         status: response.status,
         statusText: response.statusText,
-        error: errorText
+        error: errorData
       });
-      throw new Error(`Backend API error: ${response.status}`);
+      return NextResponse.json(errorData, { status: response.status });
     }
 
     const data = await response.json();

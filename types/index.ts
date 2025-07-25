@@ -254,6 +254,13 @@ export interface JobMatchingResponse {
 // ERROR TYPES
 // =============================================================================
 
+export interface RateLimitData {
+  remaining: number;
+  resetInSeconds: number;
+  isAuthenticated: boolean;
+  rateLimitType: 'job_matching' | 'chat' | 'unknown';
+}
+
 export interface APIError {
   type: 'RATE_LIMIT' | 'AUTH_ERROR' | 'VALIDATION_ERROR' | 'GENERIC_ERROR';
   message: string;
@@ -261,6 +268,7 @@ export interface APIError {
   retryAfter?: number;
   action?: 'REDIRECT_TO_LOGIN' | 'RETRY' | 'CONTACT_SUPPORT';
   errors?: any[];
+  rateLimitData?: RateLimitData;
 }
 
 export interface ValidationError {

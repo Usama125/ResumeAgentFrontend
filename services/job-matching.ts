@@ -1,5 +1,6 @@
 import { secureAPI } from '@/lib/secure-api-client';
-import { JobMatchingRequest, JobMatchingResponse } from '@/types';
+import { JobMatchingRequest, JobMatchingResponse, APIError } from '@/types';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 // Job matching service (HMAC secured)
 export class JobMatchingService {
@@ -9,7 +10,18 @@ export class JobMatchingService {
     matchingRequest: JobMatchingRequest, 
     token?: string
   ): Promise<JobMatchingResponse> {
-    return secureAPI.post<JobMatchingResponse>('/job-matching/search', matchingRequest, token);
+    try {
+      return await secureAPI.post<JobMatchingResponse>('/job-matching/search', matchingRequest, token);
+    } catch (error: any) {
+      // If it's a rate limit error, store the info for the modal
+      if (error.type === 'RATE_LIMIT' && error.rateLimitData) {
+        this.storeRateLimitInfo(
+          error.rateLimitData.remaining,
+          Date.now() + (error.rateLimitData.resetInSeconds * 1000)
+        );
+      }
+      throw error;
+    }
   }
 
   // Get job matches for current user (based on their profile)

@@ -17,17 +17,33 @@ export async function POST(
       );
     }
 
+    // Forward authorization header if present
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Origin': process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
+    };
+
+    // Pass through authorization header from the original request
+    const authorization = request.headers.get('authorization');
+    if (authorization) {
+      headers['Authorization'] = authorization;
+    }
+
     // Call the backend chat API
     const response = await fetch(`${API_BASE_URL}/chat/${userId}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Origin': process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
-      },
+      headers,
       body: JSON.stringify({ message }),
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      // Pass through rate limit errors (429) with full detail
+      if (response.status === 429) {
+        return NextResponse.json(errorData, { status: 429 });
+      }
+      
       throw new Error(`Backend API error: ${response.status}`);
     }
 
@@ -57,16 +73,32 @@ export async function GET(
       );
     }
 
+    // Forward authorization header if present
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Origin': process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
+    };
+
+    // Pass through authorization header from the original request
+    const authorization = request.headers.get('authorization');
+    if (authorization) {
+      headers['Authorization'] = authorization;
+    }
+
     // Call the backend chat suggestions API
     const response = await fetch(`${API_BASE_URL}/chat/suggestions/${userId}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Origin': process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
-      },
+      headers,
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      // Pass through rate limit errors (429) with full detail
+      if (response.status === 429) {
+        return NextResponse.json(errorData, { status: 429 });
+      }
+      
       throw new Error(`Backend API error: ${response.status}`);
     }
 

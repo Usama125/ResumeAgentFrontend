@@ -1,4 +1,5 @@
 import { APIError } from '@/types';
+import { DeviceFingerprintCollector } from '@/utils/deviceFingerprint';
 
 // Secure API Client for AI Resume Builder
 // Handles HMAC signature generation and secure requests
@@ -110,11 +111,24 @@ class SecureAPIClient {
 
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After');
+      
+      // Check if backend sends detailed rate limit data
+      let rateLimitData;
+      if (data.detail && typeof data.detail === 'object') {
+        rateLimitData = {
+          remaining: data.detail.remaining || 0,
+          resetInSeconds: data.detail.reset_in_seconds || (retryAfter ? parseInt(retryAfter) : 3600),
+          isAuthenticated: data.detail.is_authenticated || false,
+          rateLimitType: data.detail.rate_limit_type || 'unknown'
+        };
+      }
+      
       return {
         type: 'RATE_LIMIT',
-        message: data.detail || data.error || 'Rate limit exceeded',
+        message: (data.detail && typeof data.detail === 'object' ? data.detail.message : data.detail) || data.error || 'Rate limit exceeded',
         retryAfter: retryAfter ? parseInt(retryAfter) : undefined,
-        action: 'RETRY'
+        action: 'RETRY',
+        rateLimitData
       };
     }
     
@@ -152,6 +166,7 @@ class SecureAPIClient {
     // Don't set Content-Type for FormData (let browser set it with boundary)
     const headers: Record<string, string> = {
       'Origin': process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
+      ...DeviceFingerprintCollector.getFingerprintHeaders(), // Add device fingerprinting
       ...options.headers as Record<string, string>,
     };
 
@@ -196,6 +211,7 @@ class SecureAPIClient {
     // Don't set Content-Type for FormData (let browser set it with boundary)
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${authToken}`,
+      ...DeviceFingerprintCollector.getFingerprintHeaders(), // Add device fingerprinting
       'Origin': process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
       ...options.headers as Record<string, string>,
     };
@@ -271,6 +287,7 @@ class SecureAPIClient {
       'X-API-Key': 'AIR_2024_FRONTEND_KEY_$ecur3_K3y_H3r3',
       'X-Timestamp': timestamp,
       'X-Signature': signature,
+      ...DeviceFingerprintCollector.getFingerprintHeaders(), // Add device fingerprinting
       ...options.headers as Record<string, string>,
     };
 

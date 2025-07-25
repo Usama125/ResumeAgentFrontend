@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import React from "react"
 import { Search, Users, Briefcase, MapPin, Star, X, Plus, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -9,9 +9,11 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { useTheme } from "@/context/ThemeContext"
 import Header from "@/components/Header"
-import { PublicUser } from "@/types"
+import { PublicUser, APIError } from "@/types"
 import { SearchService } from "@/services/search"
 import { UserService } from "@/services/user"
+import { useRateLimit } from "@/hooks/useRateLimit"
+import { RateLimitModal } from "@/components/RateLimitModal"
 
 // Calculate skill matching percentage
 const calculateSkillMatch = (userSkills: { name: string; level: string }[], searchQuery: string): number => {
@@ -59,6 +61,7 @@ export default function HomePage() {
   const router = useRouter()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const { isDark } = useTheme()
+  const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
 
   // Fetch initial users on page load (11 users + check if more exist)
   useEffect(() => {
@@ -85,6 +88,10 @@ export default function HomePage() {
         setAllUsers(allUsersResponse)
       } catch (error) {
         console.error('Error fetching users:', error)
+        // Check if it's a rate limit error
+        if (error && typeof error === 'object' && 'type' in error && error.type === 'RATE_LIMIT') {
+          showRateLimitModal(error as APIError)
+        }
         setDisplayedUsers([])
       } finally {
         setLoading(false)
@@ -114,6 +121,10 @@ export default function HomePage() {
         }
       } catch (error) {
         console.error('Error fetching users:', error)
+        // Check if it's a rate limit error
+        if (error && typeof error === 'object' && 'type' in error && error.type === 'RATE_LIMIT') {
+          showRateLimitModal(error as APIError)
+        }
       } finally {
         setSearchLoading(false)
       }
@@ -200,7 +211,12 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error searching users:', error)
-      // Fallback to local search on error
+      // Check if it's a rate limit error
+      if (error && typeof error === 'object' && 'type' in error && error.type === 'RATE_LIMIT') {
+        showRateLimitModal(error as APIError)
+        return; // Don't fallback to local search on rate limit
+      }
+      // Fallback to local search on other errors
       if (!isLoadMore) {
         const filtered = allUsers.filter(
           (user) =>
@@ -287,6 +303,10 @@ export default function HomePage() {
         }
       } catch (error) {
         console.error('Error loading more users:', error)
+        // Check if it's a rate limit error
+        if (error && typeof error === 'object' && 'type' in error && error.type === 'RATE_LIMIT') {
+          showRateLimitModal(error as APIError)
+        }
       } finally {
         setLoadMoreLoading(false)
       }
@@ -302,6 +322,14 @@ export default function HomePage() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#212121] text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Header variant="home" />
+      <RateLimitModal
+        isOpen={rateLimitState.isOpen}
+        onClose={hideRateLimitModal}
+        message={rateLimitState.message}
+        resetInSeconds={rateLimitState.resetInSeconds}
+        isAuthenticated={rateLimitState.isAuthenticated}
+        rateLimitType={rateLimitState.rateLimitType}
+      />
 
       {/* Main Content */}
       <main className="relative">

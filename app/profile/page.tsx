@@ -13,6 +13,8 @@ import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
 import DesktopProfileView from "@/components/profile/DesktopProfileView"
 import MobileProfileView from "@/components/profile/MobileProfileView"
+import useRateLimit from '@/hooks/useRateLimit'
+import RateLimitModal from "@/components/RateLimitModal"
 
 
 // Generate suggested questions based on user data
@@ -43,6 +45,7 @@ export default function CurrentUserProfilePage() {
   const router = useRouter()
   const { user: authUser, isAuthenticated, loading: authLoading, refreshUser } = useAuth()
   const { isDark } = useTheme()
+  const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit();
 
   // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
@@ -269,6 +272,23 @@ export default function CurrentUserProfilePage() {
       })
 
       if (!response.ok) {
+        // Try to parse rate limit error
+        if (response.status === 429) {
+          const errorData = await response.json().catch(() => ({}));
+          const rateLimitError: import('@/types').APIError = {
+            type: 'RATE_LIMIT',
+            message: errorData.detail?.message || errorData.message || 'Rate limit exceeded',
+            rateLimitData: {
+              remaining: errorData.detail?.remaining || 0,
+              resetInSeconds: errorData.detail?.reset_in_seconds || 3600,
+              isAuthenticated: errorData.detail?.is_authenticated || false,
+              rateLimitType: errorData.detail?.rate_limit_type || 'chat'
+            }
+          };
+          showRateLimitModal(rateLimitError);
+          setIsLoading(false);
+          return;
+        }
         throw new Error('Failed to get chat response')
       }
 
@@ -293,8 +313,8 @@ export default function CurrentUserProfilePage() {
         showBackButton={true}
         onEditProfile={() => setIsEditModalOpen(true)}
         profileData={{
-          name: user?.name,
-          profile_picture: user?.profile_picture,
+          name: user?.name || '',
+          profile_picture: user?.profile_picture || '',
           is_looking_for_job: user?.is_looking_for_job
         }}
       />
@@ -336,6 +356,14 @@ export default function CurrentUserProfilePage() {
           onClose={() => setIsEditModalOpen(false)} 
         />
       )}
+      <RateLimitModal
+        isOpen={rateLimitState.isOpen}
+        onClose={hideRateLimitModal}
+        message={rateLimitState.message}
+        resetInSeconds={rateLimitState.resetInSeconds}
+        isAuthenticated={rateLimitState.isAuthenticated}
+        rateLimitType={rateLimitState.rateLimitType}
+      />
     </div>
   )
 }

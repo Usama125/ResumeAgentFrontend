@@ -99,6 +99,24 @@ export class ErrorHandler {
 
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After');
+      
+      // Handle new rate limit structure
+      if (data.detail && typeof data.detail === 'object') {
+        return {
+          type: 'RATE_LIMIT',
+          message: data.detail.message || 'Rate limit exceeded',
+          retryAfter: data.detail.reset_in_seconds || (retryAfter ? parseInt(retryAfter) : undefined),
+          action: 'RETRY',
+          rateLimitData: {
+            remaining: data.detail.remaining || 0,
+            resetInSeconds: data.detail.reset_in_seconds || 0,
+            isAuthenticated: data.detail.is_authenticated || false,
+            rateLimitType: data.detail.rate_limit_type || 'unknown'
+          }
+        };
+      }
+      
+      // Fallback to old structure
       return {
         type: 'RATE_LIMIT',
         message: data.detail || data.error || 'Rate limit exceeded',

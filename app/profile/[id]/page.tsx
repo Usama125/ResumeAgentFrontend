@@ -5,8 +5,11 @@ import { useRouter, useParams } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { UserService } from "@/services/user"
-import { PublicUser } from "@/types"
+import { AuthService } from "@/services/auth"
+import { PublicUser, APIError } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
+import { useRateLimit } from "@/hooks/useRateLimit"
+import { RateLimitModal } from "@/components/RateLimitModal"
 import { getThemeClasses } from "@/utils/theme"
 import ThemeToggle from "@/components/ThemeToggle"
 import DesktopPublicProfileView from "@/components/profile/DesktopPublicProfileView"
@@ -41,6 +44,7 @@ export default function PublicUserProfilePage() {
   const userId = params.id as string
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
+  const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
 
   // Check if device is mobile and fetch user data
   useEffect(() => {
@@ -112,16 +116,43 @@ export default function PublicUserProfilePage() {
     setMessage("")
 
     try {
-      // Call the public chat API
+      // Get auth token for authenticated users
+      const token = AuthService.getToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add authorization header if user is authenticated
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Call the chat API with proper authentication
       const response = await fetch(`/api/chat/${user.id}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ message: textToSend }),
       })
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Handle rate limit errors
+        if (response.status === 429) {
+          const rateLimitError: APIError = {
+            type: 'RATE_LIMIT',
+            message: errorData.detail?.message || errorData.message || 'Rate limit exceeded',
+            rateLimitData: {
+              remaining: errorData.detail?.remaining || 0,
+              resetInSeconds: errorData.detail?.reset_in_seconds || 3600,
+              isAuthenticated: errorData.detail?.is_authenticated || false,
+              rateLimitType: errorData.detail?.rate_limit_type || 'chat'
+            }
+          };
+          showRateLimitModal(rateLimitError);
+          return; // Don't add error message to chat
+        }
+        
         throw new Error('Failed to get chat response')
       }
 
@@ -144,6 +175,14 @@ export default function PublicUserProfilePage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#212121] text-white' : 'bg-gray-50 text-gray-900'} overflow-x-hidden`}>
+      <RateLimitModal
+        isOpen={rateLimitState.isOpen}
+        onClose={hideRateLimitModal}
+        message={rateLimitState.message}
+        resetInSeconds={rateLimitState.resetInSeconds}
+        isAuthenticated={rateLimitState.isAuthenticated}
+        rateLimitType={rateLimitState.rateLimitType}
+      />
       {/* Header with Profile Info */}
       <header className="sticky top-0 z-40 w-full relative">
         {/* Background gradients */}
