@@ -8,6 +8,8 @@ import { useAuth } from "@/context/AuthContext"
 import AuthService from "@/services/auth"
 import EditProfileModal from "@/components/EditProfileModal"
 import EditProfileModalMobile from "@/components/EditProfileModalMobile"
+import EditPhotoModal from "@/components/EditPhotoModal"
+import EditPhotoModalMobile from "@/components/EditPhotoModalMobile"
 import Header from "@/components/Header"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
@@ -39,11 +41,12 @@ export default function CurrentUserProfilePage() {
   const [user, setUser] = useState<UserType | null>(null)
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isEditPhotoModalOpen, setIsEditPhotoModalOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [authTimeout, setAuthTimeout] = useState(false)
   const router = useRouter()
-  const { user: authUser, isAuthenticated, loading: authLoading, refreshUser } = useAuth()
+  const { user: authUser, isAuthenticated, loading: authLoading, refreshUser, updateUser } = useAuth()
   const { isDark } = useTheme()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit();
 
@@ -305,6 +308,18 @@ export default function CurrentUserProfilePage() {
     }
   }
 
+  const handlePhotoUpdate = (newPhotoUrl: string | null) => {
+    if (user) {
+      // Update local state
+      setUser({
+        ...user,
+        profile_picture: newPhotoUrl
+      })
+      
+      // Update global auth context
+      updateUser({ profile_picture: newPhotoUrl })
+    }
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#212121] text-white' : 'bg-gray-50 text-gray-900'} overflow-x-hidden`}>
@@ -330,6 +345,8 @@ export default function CurrentUserProfilePage() {
           setMessage={setMessage}
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
+          isCurrentUser={true}
+          onEditPhoto={() => setIsEditPhotoModalOpen(true)}
         />
       ) : (
         <DesktopProfileView
@@ -341,6 +358,8 @@ export default function CurrentUserProfilePage() {
           setMessage={setMessage}
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
+          isCurrentUser={true}
+          onEditPhoto={() => setIsEditPhotoModalOpen(true)}
         />
       )}
 
@@ -356,6 +375,24 @@ export default function CurrentUserProfilePage() {
           onClose={() => setIsEditModalOpen(false)} 
         />
       )}
+
+      {/* Edit Photo Modal - Responsive */}
+      {isMobile ? (
+        <EditPhotoModalMobile
+          isOpen={isEditPhotoModalOpen}
+          onClose={() => setIsEditPhotoModalOpen(false)}
+          currentPhotoUrl={user?.profile_picture}
+          onPhotoUpdate={handlePhotoUpdate}
+        />
+      ) : (
+        <EditPhotoModal
+          isOpen={isEditPhotoModalOpen}
+          onClose={() => setIsEditPhotoModalOpen(false)}
+          currentPhotoUrl={user?.profile_picture}
+          onPhotoUpdate={handlePhotoUpdate}
+        />
+      )}
+
       <RateLimitModal
         isOpen={rateLimitState.isOpen}
         onClose={hideRateLimitModal}

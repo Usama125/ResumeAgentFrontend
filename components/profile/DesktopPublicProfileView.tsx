@@ -30,14 +30,7 @@ interface DesktopPublicProfileViewProps {
   handleSendMessage: (messageText?: string) => Promise<void>
 }
 
-// Helper function to get full image URL
-const getImageUrl = (profilePicture: string | null): string => {
-  if (!profilePicture) return "/logo_updated.png";
-  if (profilePicture.startsWith('http')) return profilePicture;
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-  const serverUrl = baseUrl.replace('/api/v1', '');
-  return `${serverUrl}${profilePicture}`;
-};
+import { getImageUrl } from '@/utils/imageUtils';
 
 export default function DesktopPublicProfileView({
   user,
@@ -147,7 +140,7 @@ export default function DesktopPublicProfileView({
                   className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "/logo_updated.png";
+                    target.src = "/placeholder-user.jpg";
                   }}
                 />
                 {user.is_looking_for_job && (
@@ -409,7 +402,7 @@ export default function DesktopPublicProfileView({
               <div className="mb-8">
                 <div className="relative mb-6">
                   <div className="w-16 h-16 rounded-2xl overflow-hidden ring-2 ring-[#10a37f]/30 shadow-lg shadow-[#10a37f]/20">
-                    <img src="/logo_updated.png" alt="AI Resume Builder" className="w-full h-full object-cover" />
+                    <img src="/placeholder-user.jpg" alt="AI Resume Builder" className="w-full h-full object-cover" />
                   </div>
                   <div className="absolute -inset-2 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-2xl opacity-20 blur"></div>
                 </div>

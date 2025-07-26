@@ -318,8 +318,15 @@ export default function OnboardingDesktop(props: OnboardingDesktopProps) {
                           </h3>
                           <div className="flex items-center space-x-6">
                             {formData.profile_picture ? (
-                              <div className="w-20 h-20 rounded-2xl bg-[#10a37f]/20 flex items-center justify-center">
-                                <CheckCircle className="w-8 h-8 text-[#10a37f]" />
+                              <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#10a37f]/30">
+                                <img
+                                  src={URL.createObjectURL(formData.profile_picture)}
+                                  alt="Profile preview"
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute top-1 right-1 bg-[#10a37f] rounded-full p-1">
+                                  <CheckCircle className="w-3 h-3 text-white" />
+                                </div>
                               </div>
                             ) : (
                               <div className={`w-20 h-20 rounded-2xl ${theme.bg.tertiary} flex items-center justify-center`}>

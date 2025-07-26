@@ -47,6 +47,25 @@ export class UserService {
     return authAPI.put<User>('/users/me', { work_preferences: workPreferences }, token);
   }
 
+  // Upload profile picture
+  static async uploadProfilePicture(file: File, token?: string): Promise<{ success: boolean; profile_picture_url: string }> {
+    return apiClient.uploadFile<{ success: boolean; profile_picture_url: string }>(
+      '/users/me/profile-picture',
+      file,
+      {},
+      token,
+      false // Not a secure endpoint
+    );
+  }
+
+  // Delete profile picture
+  static async deleteProfilePicture(token?: string): Promise<{ success: boolean; message: string }> {
+    return authAPI.delete<{ success: boolean; message: string }>(
+      '/users/me/profile-picture',
+      token
+    );
+  }
+
   // Toggle job seeking status
   static async toggleJobSeeking(isLookingForJob: boolean, token?: string): Promise<User> {
     return authAPI.put<User>('/users/me', { is_looking_for_job: isLookingForJob }, token);

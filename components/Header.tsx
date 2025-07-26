@@ -20,14 +20,7 @@ interface HeaderProps {
   }
 }
 
-// Helper function to get full image URL
-const getImageUrl = (profilePicture: string | null): string => {
-  if (!profilePicture) return "/logo_updated.png";
-  if (profilePicture.startsWith('http')) return profilePicture;
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-  const serverUrl = baseUrl.replace('/api/v1', '');
-  return `${serverUrl}${profilePicture}`;
-};
+import { getImageUrl } from '@/utils/imageUtils';
 
 export default function Header({ variant = 'home', showBackButton = false, onEditProfile, profileData }: HeaderProps) {
   const router = useRouter()
@@ -102,7 +95,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                 <>
                   <div className="relative group cursor-pointer">
                     <div className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-[#10a37f]/30 shadow-lg shadow-[#10a37f]/20 group-hover:ring-[#10a37f]/50 group-hover:shadow-[#10a37f]/40 transition-all duration-300 group-hover:scale-105">
-                      <img src="/logo_updated.png" alt="AI Resume Builder" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      <img src="/placeholder-user.jpg" alt="AI Resume Builder" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                     </div>
                     <div className="absolute -inset-1 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl opacity-20 blur group-hover:opacity-40 transition-opacity duration-300"></div>
                   </div>
@@ -124,7 +117,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                     className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "/logo_updated.png";
+                      target.src = "/placeholder-user.jpg";
                     }}
                   />
                   <h1 className={`text-sm sm:text-lg font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>

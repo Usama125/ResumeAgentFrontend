@@ -13,6 +13,7 @@ import ThemeToggle from "@/components/ThemeToggle"
 import DesktopPublicProfileView from "@/components/profile/DesktopPublicProfileView"
 import MobilePublicProfileView from "@/components/profile/MobilePublicProfileView"
 import { AuthService } from "@/services/auth"
+import Image from "next/image"
 
 // Generate suggested questions based on user data
 const generateSuggestedQuestions = (user: PublicUser): string[] => {
@@ -218,13 +219,13 @@ export default function UsernameProfilePage() {
 
                 {/* Profile info */}
                 <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                  <img
-                    src={user.profile_picture || "/logo_updated.png"}
+                  <Image
+                    src={user.profile_picture || "/placeholder-user.jpg"}
                     alt={user.name}
                     className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "/logo_updated.png";
+                      target.src = "/placeholder-user.jpg";
                     }}
                   />
                   <div className="min-w-0 flex-1">

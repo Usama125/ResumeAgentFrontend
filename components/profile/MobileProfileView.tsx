@@ -9,6 +9,7 @@ import {
   Code,
   MessageCircle,
   User,
+  Edit,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/types"
@@ -25,16 +26,11 @@ interface MobileProfileViewProps {
   setMessage: React.Dispatch<React.SetStateAction<string>>
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
+  isCurrentUser?: boolean
+  onEditPhoto?: () => void
 }
 
-// Helper function to get full image URL
-const getImageUrl = (profilePicture: string | null): string => {
-  if (!profilePicture) return "/logo_updated.png";
-  if (profilePicture.startsWith('http')) return profilePicture;
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-  const serverUrl = baseUrl.replace('/api/v1', '');
-  return `${serverUrl}${profilePicture}`;
-};
+import { getImageUrl } from '@/utils/imageUtils';
 
 export default function MobileProfileView({
   user,
@@ -44,7 +40,9 @@ export default function MobileProfileView({
   message,
   setMessage,
   isLoading,
-  handleSendMessage
+  handleSendMessage,
+  isCurrentUser = false,
+  onEditPhoto
 }: MobileProfileViewProps) {
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -122,13 +120,17 @@ export default function MobileProfileView({
                   className="relative w-24 h-24 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "/logo_updated.png";
+                    target.src = "/placeholder-user.jpg";
                   }}
                 />
-                {user.is_looking_for_job && (
-                  <div className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs px-3 py-1 rounded-full border-2 border-[#0a0a0a] font-semibold">
-                    Available
-                  </div>
+                {isCurrentUser && onEditPhoto && (
+                  <button
+                    onClick={onEditPhoto}
+                    className="absolute bottom-0 right-0 bg-[#10a37f] text-white p-1.5 rounded-full hover:bg-[#0d8f6f] transition-colors shadow-lg border-2 border-white"
+                    title="Edit profile picture"
+                  >
+                    <Edit className="w-3 h-3" />
+                  </button>
                 )}
               </div>
 

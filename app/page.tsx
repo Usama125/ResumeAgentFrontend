@@ -37,14 +37,7 @@ interface EnhancedPublicUser extends PublicUser {
   matchPercentage?: number;
 }
 
-// Helper function to get full image URL
-const getImageUrl = (profilePicture: string | null): string => {
-  if (!profilePicture) return "/logo_updated.png";
-  if (profilePicture.startsWith('http')) return profilePicture;
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-  const serverUrl = baseUrl.replace('/api/v1', '');
-  return `${serverUrl}${profilePicture}`;
-};
+import { getImageUrl } from '@/utils/imageUtils';
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -504,7 +497,7 @@ export default function HomePage() {
                               className="w-12 h-12 rounded-full object-cover"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.src = "/logo_updated.png";
+                                target.src = "/placeholder-user.jpg";
                               }}
                             />
                             {user.is_looking_for_job && (

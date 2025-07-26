@@ -323,8 +323,15 @@ export default function OnboardingMobile(props: OnboardingMobileProps) {
                     </h3>
                     <div className="flex items-center space-x-4">
                       {formData.profile_picture ? (
-                        <div className="w-16 h-16 rounded-full bg-[#10a37f]/20 flex items-center justify-center">
-                          <CheckCircle className="w-6 h-6 text-[#10a37f]" />
+                        <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#10a37f]/30">
+                          <img
+                            src={URL.createObjectURL(formData.profile_picture)}
+                            alt="Profile preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-0 right-0 bg-[#10a37f] rounded-full p-1">
+                            <CheckCircle className="w-2.5 h-2.5 text-white" />
+                          </div>
                         </div>
                       ) : (
                         <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">

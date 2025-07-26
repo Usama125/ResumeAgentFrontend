@@ -8,14 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { getThemeClasses } from '@/utils/theme'
 
-// Helper function to get full image URL
-const getImageUrl = (profilePicture: string | null): string => {
-  if (!profilePicture) return "/logo_updated.png";
-  if (profilePicture.startsWith('http')) return profilePicture;
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-  const serverUrl = baseUrl.replace('/api/v1', '');
-  return `${serverUrl}${profilePicture}`;
-};
+import { getImageUrl } from '@/utils/imageUtils';
 
 interface UserDropdownProps {
   onEditProfile?: () => void;
@@ -116,7 +109,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
               className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "/logo_updated.png";
+                target.src = "/placeholder-user.jpg";
               }}
             />
           </div>
@@ -156,7 +149,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "/logo_updated.png";
+                    target.src = "/placeholder-user.jpg";
                   }}
                 />
               </div>
