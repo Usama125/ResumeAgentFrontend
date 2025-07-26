@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Mail, Lock, User, AlertCircle } from "lucide-react"
+import { Mail, Lock, User, AlertCircle, AtSign } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { useErrorHandler } from "@/utils/errorHandler"
@@ -25,8 +25,14 @@ export default function AuthPage() {
     email: "",
     password: "",
     name: "",
+    username: "",
   })
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+  const [usernameCheck, setUsernameCheck] = useState<{
+    checking: boolean;
+    available: boolean | null;
+    message: string;
+  }>({ checking: false, available: null, message: "" })
   
   const router = useRouter()
   const { login, register, loading, error, isAuthenticated, user, clearError } = useAuth()
@@ -49,7 +55,44 @@ export default function AuthPage() {
   useEffect(() => {
     clearError()
     setValidationErrors({})
+    setUsernameCheck({ checking: false, available: null, message: "" })
   }, [isSignUp]) // Remove clearError dependency to prevent over-clearing
+
+  // Debounced username validation
+  useEffect(() => {
+    if (!isSignUp || !formData.username || formData.username.length < 3) {
+      setUsernameCheck({ checking: false, available: null, message: "" })
+      return
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setUsernameCheck({ checking: true, available: null, message: "Checking..." })
+      
+      try {
+        const response = await fetch('/api/auth/validate-username', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: formData.username })
+        })
+        
+        const data = await response.json()
+        
+        setUsernameCheck({
+          checking: false,
+          available: data.available && data.valid,
+          message: data.message
+        })
+      } catch (error) {
+        setUsernameCheck({
+          checking: false,
+          available: false,
+          message: "Error checking username availability"
+        })
+      }
+    }, 500) // 500ms debounce
+
+    return () => clearTimeout(timeoutId)
+  }, [formData.username, isSignUp])
 
   // Form validation
   const validateForm = (): boolean => {
@@ -71,6 +114,14 @@ export default function AuthPage() {
       errors.name = "Full name is required"
     }
 
+    if (isSignUp && !formData.username) {
+      errors.username = "Username is required"
+    } else if (isSignUp && formData.username.length < 3) {
+      errors.username = "Username must be at least 3 characters"
+    } else if (isSignUp && !usernameCheck.available && formData.username.length >= 3) {
+      errors.username = usernameCheck.message || "Username is not available"
+    }
+
     setValidationErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -88,6 +139,7 @@ export default function AuthPage() {
           email: formData.email,
           password: formData.password,
           name: formData.name,
+          username: formData.username,
         }
         await register(registerData)
         // Always redirect new users to onboarding
@@ -214,6 +266,79 @@ export default function AuthPage() {
                       {validationErrors.name && (
                         <p className="text-red-400 text-sm mt-1">{validationErrors.name}</p>
                       )}
+                    </div>
+                  )}
+
+                  {isSignUp && (
+                    <div>
+                      <Label htmlFor="username" className={`${theme.text.primary} font-medium mb-2 block`}>
+                        Username
+                      </Label>
+                      <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+                          <div className="relative">
+                            <AtSign className="w-5 h-5 text-[#10a37f] drop-shadow-lg relative z-10" />
+                            <div className="absolute inset-0 bg-[#10a37f] rounded-full blur-sm opacity-30 scale-150"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-md opacity-20 scale-200"></div>
+                          </div>
+                        </div>
+                        <Input
+                          id="username"
+                          type="text"
+                          value={formData.username}
+                          onChange={(e) => {
+                            const value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '')
+                            setFormData((prev) => ({ ...prev, username: value }))
+                          }}
+                          className={`pl-12 pr-4 py-3 ${theme.bg.input} backdrop-blur-sm ${theme.text.primary} ${theme.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${theme.border.hover} focus:${theme.bg.input} ${
+                            validationErrors.username
+                              ? "border-red-500/60 focus:border-red-500"
+                              : usernameCheck.available === true
+                              ? "border-green-500/60 focus:border-green-500"
+                              : `${theme.border.secondary} focus:border-[#10a37f]`
+                          }`}
+                          placeholder="Choose a unique username"
+                          maxLength={30}
+                        />
+                        {/* Username status indicator */}
+                        {formData.username.length >= 3 && (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                            {usernameCheck.checking ? (
+                              <div className="w-4 h-4 border-2 border-[#10a37f] border-t-transparent rounded-full animate-spin"></div>
+                            ) : usernameCheck.available === true ? (
+                              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            ) : usernameCheck.available === false ? (
+                              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                      {/* Username feedback */}
+                      {formData.username.length >= 3 && (
+                        <div className="mt-1">
+                          {usernameCheck.checking ? (
+                            <p className="text-gray-400 text-sm">Checking availability...</p>
+                          ) : usernameCheck.available === true ? (
+                            <p className="text-green-400 text-sm">✓ {usernameCheck.message}</p>
+                          ) : usernameCheck.available === false ? (
+                            <p className="text-red-400 text-sm">✗ {usernameCheck.message}</p>
+                          ) : null}
+                        </div>
+                      )}
+                      {validationErrors.username && (
+                        <p className="text-red-400 text-sm mt-1">{validationErrors.username}</p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        3-30 characters, lowercase letters, numbers, hyphens, and underscores only
+                      </p>
                     </div>
                   )}
 

@@ -493,7 +493,7 @@ export default function HomePage() {
                     <Card
                       key={user.id}
                       className={`backdrop-blur-sm transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-[#10a37f]/10 hover:scale-105 ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 hover:border-[#10a37f] hover:bg-[#2f2f2f]' : 'bg-white/80 border-gray-300/60 hover:border-[#10a37f] hover:bg-white'}`}
-                      onClick={() => router.push(`/profile/${user.id}`)}
+                      onClick={() => router.push(`/profile/${user.username}`)}
                     >
                       <CardContent className="p-4">
                         <div className="flex flex-col items-center text-center space-y-3">

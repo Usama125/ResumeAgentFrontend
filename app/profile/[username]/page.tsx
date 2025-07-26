@@ -4,8 +4,6 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { UserService } from "@/services/user"
-import { AuthService } from "@/services/auth"
 import { PublicUser, APIError } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
 import { useRateLimit } from "@/hooks/useRateLimit"
@@ -14,7 +12,7 @@ import { getThemeClasses } from "@/utils/theme"
 import ThemeToggle from "@/components/ThemeToggle"
 import DesktopPublicProfileView from "@/components/profile/DesktopPublicProfileView"
 import MobilePublicProfileView from "@/components/profile/MobilePublicProfileView"
-
+import { AuthService } from "@/services/auth"
 
 // Generate suggested questions based on user data
 const generateSuggestedQuestions = (user: PublicUser): string[] => {
@@ -30,7 +28,7 @@ const generateSuggestedQuestions = (user: PublicUser): string[] => {
   ];
 };
 
-export default function PublicUserProfilePage() {
+export default function UsernameProfilePage() {
   const [message, setMessage] = useState("")
   const [chatHistory, setChatHistory] = useState<Array<{ type: "user" | "ai"; content: string }>>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -41,7 +39,7 @@ export default function PublicUserProfilePage() {
   const [isMobile, setIsMobile] = useState(false)
   const router = useRouter()
   const params = useParams()
-  const userId = params.id as string
+  const username = params.username as string
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
@@ -57,11 +55,24 @@ export default function PublicUserProfilePage() {
     window.addEventListener('resize', checkMobile)
     
     const fetchUser = async () => {
-      if (!userId) return;
+      if (!username) return;
       
       try {
         setProfileLoading(true)
-        const userData = await UserService.getUserById(userId)
+        
+        // Fetch user by username
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+        const response = await fetch(`${API_BASE_URL}/users/username/${username}`)
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            router.push('/') // Redirect to home if user not found
+            return
+          }
+          throw new Error('Failed to fetch user')
+        }
+        
+        const userData = await response.json()
         setUser(userData)
         setSuggestedQuestions(generateSuggestedQuestions(userData))
       } catch (error) {
@@ -75,7 +86,7 @@ export default function PublicUserProfilePage() {
     fetchUser()
     
     return () => window.removeEventListener('resize', checkMobile)
-  }, [userId, router])
+  }, [username, router])
 
   // Don't render anything if still loading or user not found
   if (profileLoading || !user) {
@@ -127,8 +138,8 @@ export default function PublicUserProfilePage() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      // Call the chat API with proper authentication
-      const response = await fetch(`/api/chat/${user.id}`, {
+      // Call the chat API with username instead of user ID
+      const response = await fetch(`/api/chat/username/${username}`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ message: textToSend }),
@@ -216,9 +227,16 @@ export default function PublicUserProfilePage() {
                       target.src = "/logo_updated.png";
                     }}
                   />
-                  <h1 className={`text-sm sm:text-lg font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    {user.name}
-                  </h1>
+                  <div className="min-w-0 flex-1">
+                    <h1 className={`text-sm sm:text-lg font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      {user.name}
+                    </h1>
+                    {user.username && (
+                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} truncate`}>
+                        @{user.username}
+                      </p>
+                    )}
+                  </div>
                   {user.is_looking_for_job && (
                     <Badge className="bg-green-500 hover:bg-green-500 text-white text-xs px-1.5 py-0.5 hidden sm:inline-flex">
                       Open to work

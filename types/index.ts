@@ -40,6 +40,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  username?: string;
   designation: string | null;
   location: string | null;
   profile_picture: string | null;
@@ -63,6 +64,7 @@ export interface User {
 export interface PublicUser {
   id: string;
   name: string;
+  username?: string;
   designation: string | null;
   location: string | null;
   profile_picture: string | null;
@@ -87,6 +89,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   name: string;
+  username: string;
 }
 
 export interface AuthResponse {
@@ -113,6 +116,16 @@ export interface ForgotPasswordRequest {
 export interface ResetPasswordRequest {
   token: string;
   new_password: string;
+}
+
+export interface UsernameValidationRequest {
+  username: string;
+}
+
+export interface UsernameValidationResponse {
+  available: boolean;
+  valid: boolean;
+  message: string;
 }
 
 // =============================================================================
