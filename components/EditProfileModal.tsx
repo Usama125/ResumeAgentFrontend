@@ -235,6 +235,15 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     }))
   }
 
+  const updateSkill = (index: number, field: 'name' | 'level' | 'years', value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.map((skill, i) => 
+        i === index ? { ...skill, [field]: value } : skill
+      )
+    }))
+  }
+
   // Experience management - NEW ONES AT TOP
   const addExperience = () => {
     const newExperience = {
@@ -434,41 +443,125 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
       case 2: // Skills
         return (
           <div className="space-y-6">
-            <div className="text-center mb-6">
-              <h3 className={`text-lg font-semibold ${themeClasses.text.primary} mb-2`}>Technical Skills</h3>
-              <p className={`${themeClasses.text.tertiary} text-sm`}>Add your technical skills and expertise</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className={`text-lg font-semibold ${themeClasses.text.primary}`}>Technical Skills</h3>
+                <p className={`${themeClasses.text.tertiary} text-sm`}>Add your technical skills with expertise level and years of experience</p>
+              </div>
             </div>
 
             <div className="space-y-4">
-              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Skills</Label>
-              <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4 ${themeClasses.bg.tertiary}/20 rounded-lg border ${themeClasses.border.secondary}`}>
-                {formData.skills.map((skill, index) => (
-                  <Badge
-                    key={index}
-                    className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white flex items-center justify-between gap-2 text-sm px-3 py-2 cursor-pointer group h-10"
-                  >
-                    <span className="truncate">{skill.name}</span>
-                    <X
-                      className="w-4 h-4 opacity-70 hover:opacity-100 group-hover:bg-red-500/20 rounded-full transition-all flex-shrink-0"
-                      onClick={() => removeSkill(index)}
-                    />
-                  </Badge>
-                ))}
-              </div>
-              <Input
-                placeholder="Type a skill and press Enter"
-                className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input}`}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    const value = (e.target as HTMLInputElement).value.trim()
-                    if (value) {
-                      addSkill(value)
-                      ;(e.target as HTMLInputElement).value = ''
+              {/* Add New Skill */}
+              <div className={`p-4 ${themeClasses.bg.tertiary}/20 rounded-lg border ${themeClasses.border.secondary}`}>
+                <Label className={`${themeClasses.text.primary} text-sm font-medium mb-3 block`}>Add New Skill</Label>
+                <Input
+                  placeholder="Type a skill and press Enter"
+                  className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input}`}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const value = (e.target as HTMLInputElement).value.trim()
+                      if (value) {
+                        addSkill(value)
+                        ;(e.target as HTMLInputElement).value = ''
+                      }
                     }
-                  }
-                }}
-              />
+                  }}
+                />
+              </div>
+
+              {/* Skills List */}
+              <div className="space-y-3">
+                <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Your Skills</Label>
+                {formData.skills.length === 0 ? (
+                  <div className={`text-center py-8 border-2 border-dashed ${themeClasses.border.primary} rounded-lg`}>
+                    <Code className={`w-12 h-12 ${themeClasses.text.tertiary} mx-auto mb-4`} />
+                    <p className={`${themeClasses.text.tertiary} mb-4`}>No skills added yet</p>
+                    <p className={`${themeClasses.text.tertiary} text-sm`}>Start typing above to add your first skill</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {formData.skills.map((skill, index) => (
+                      <Card key={index} className={`${themeClasses.bg.tertiary}/30 ${themeClasses.border.secondary} ${themeClasses.border.hover} transition-colors`}>
+                        <CardContent className="p-4 space-y-4">
+                          <div className="flex justify-between items-start">
+                            <h4 className={`${themeClasses.text.primary} text-base font-medium`}>Skill {index + 1}</h4>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeSkill(index)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-lg"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Skill Name */}
+                            <div className="space-y-2">
+                              <Label className={`${themeClasses.text.primary} text-sm`}>Skill Name</Label>
+                              <Input
+                                placeholder="e.g. JavaScript, Python, React"
+                                value={skill.name}
+                                onChange={(e) => updateSkill(index, 'name', e.target.value)}
+                                className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder}`}
+                              />
+                            </div>
+
+                            {/* Skill Level */}
+                            <div className="space-y-2">
+                              <Label className={`${themeClasses.text.primary} text-sm`}>Expertise Level</Label>
+                              <select
+                                value={skill.level}
+                                onChange={(e) => updateSkill(index, 'level', e.target.value)}
+                                className={`w-full px-3 py-2 rounded-lg border ${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors focus:outline-none focus:ring-1 focus:ring-[#10a37f]`}
+                              >
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                              </select>
+                            </div>
+
+                            {/* Years of Experience */}
+                            <div className="space-y-2">
+                              <Label className={`${themeClasses.text.primary} text-sm`}>Years of Experience</Label>
+                              <Input
+                                type="number"
+                                min="0"
+                                max="50"
+                                placeholder="e.g. 3"
+                                value={skill.years}
+                                onChange={(e) => updateSkill(index, 'years', parseInt(e.target.value) || 0)}
+                                className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder}`}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Skill Level Indicator */}
+                          <div className="flex items-center gap-3">
+                            <span className={`text-xs ${themeClasses.text.tertiary}`}>Level:</span>
+                            <Badge 
+                              className={`${
+                                skill.level === 'Expert' ? 'bg-green-500 hover:bg-green-600' :
+                                skill.level === 'Advanced' ? 'bg-blue-500 hover:bg-blue-600' :
+                                skill.level === 'Intermediate' ? 'bg-gray-500 hover:bg-gray-600' :
+                                'bg-gray-400 hover:bg-gray-500'
+                              } text-white text-xs px-2 py-1`}
+                            >
+                              {skill.level}
+                            </Badge>
+                            <span className={`text-xs ${themeClasses.text.tertiary}`}>
+                              {skill.years} {skill.years === 1 ? 'year' : 'years'} of experience
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )
@@ -776,8 +869,21 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                           }))
                         }}
                       >
-                        <p className={`${themeClasses.text.primary} font-medium text-sm`}>{mode.label}</p>
-                        <p className={`${themeClasses.text.tertiary} text-xs mt-1`}>{mode.description}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className={`${themeClasses.text.primary} font-medium text-sm`}>{mode.label}</p>
+                            <p className={`${themeClasses.text.tertiary} text-xs mt-1`}>{mode.description}</p>
+                          </div>
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ml-3 shrink-0 ${
+                            formData.preferred_work_mode.includes(mode.id)
+                              ? "border-[#10a37f] bg-white"
+                              : `${isDark ? 'border-gray-400' : 'border-gray-300'} bg-transparent`
+                          }`}>
+                            {formData.preferred_work_mode.includes(mode.id) && (
+                              <div className="w-3 h-3 rounded-full bg-[#10a37f] mx-auto"></div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -804,7 +910,20 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                           }))
                         }}
                       >
-                        <p className={`${themeClasses.text.primary} font-medium text-sm`}>{type.label}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className={`${themeClasses.text.primary} font-medium text-sm`}>{type.label}</p>
+                          </div>
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ml-3 shrink-0 ${
+                            formData.preferred_employment_type.includes(type.id)
+                              ? "border-[#10a37f] bg-white"
+                              : `${isDark ? 'border-gray-400' : 'border-gray-300'} bg-transparent`
+                          }`}>
+                            {formData.preferred_employment_type.includes(type.id) && (
+                              <div className="w-3 h-3 rounded-full bg-[#10a37f] mx-auto"></div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

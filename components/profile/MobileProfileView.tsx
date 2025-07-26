@@ -217,10 +217,12 @@ export default function MobileProfileView({
                         </span>
                         <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2 ${
                           skill.level === "Expert" 
-                            ? "bg-green-500/20 text-green-400" 
+                            ? "bg-green-500 text-white" 
                             : skill.level === "Advanced"
-                            ? "bg-blue-500/20 text-blue-400"
-                            : "bg-gray-500/20 text-gray-400"
+                            ? "bg-blue-500 text-white"
+                            : skill.level === "Intermediate"
+                            ? "bg-gray-500 text-white"
+                            : "bg-gray-400 text-white"
                         }`}>
                           {skill.level}
                         </span>
@@ -229,10 +231,12 @@ export default function MobileProfileView({
                         <div 
                           className={`h-1.5 rounded-full transition-all duration-500 ${
                             skill.level === "Expert" 
-                              ? "bg-gradient-to-r from-green-500 to-green-400 w-11/12" 
+                              ? "bg-green-500 w-11/12" 
                               : skill.level === "Advanced"
-                              ? "bg-gradient-to-r from-blue-500 to-blue-400 w-4/5"
-                              : "bg-gradient-to-r from-gray-500 to-gray-400 w-3/5"
+                              ? "bg-blue-500 w-4/5"
+                              : skill.level === "Intermediate"
+                              ? "bg-gray-500 w-3/5"
+                              : "bg-gray-400 w-1/4"
                           }`}
                         ></div>
                       </div>
@@ -243,7 +247,7 @@ export default function MobileProfileView({
               
               {/* Skills Legend */}
               <div className={`mt-4 pt-4 border-t ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <div className="flex items-center justify-center gap-6 text-xs">
+                <div className="flex items-center justify-center gap-4 text-xs">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Expert</span>
@@ -255,6 +259,10 @@ export default function MobileProfileView({
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
                     <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Intermediate</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Beginner</span>
                   </div>
                 </div>
               </div>

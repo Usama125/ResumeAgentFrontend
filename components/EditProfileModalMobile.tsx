@@ -77,6 +77,7 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
     designation: "",
     location: "",
     summary: "",
+    additional_info: "",
     experience: "",
     skills: [],
     experience_details: [],
@@ -84,8 +85,9 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
     certifications: [],
     expected_salary: "",
     current_salary: "",
-    preferred_work_mode: "",
-    employment_type: "",
+    preferred_work_mode: [],
+    preferred_employment_type: [],
+    preferred_location: "",
     notice_period: "",
     availability: "",
     is_looking_for_job: false,
@@ -103,6 +105,7 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
         designation: user.designation || "",
         location: user.location || "",
         summary: user.summary || "",
+        additional_info: user.additional_info || "",
         experience: user.experience || calculateTotalExperience(user.experience_details || []),
         skills: user.skills || [],
         experience_details: user.experience_details || [],
@@ -110,8 +113,9 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
         certifications: user.certifications || [],
         expected_salary: user.expected_salary || "",
         current_salary: user.current_salary || "",
-        preferred_work_mode: user.work_preferences?.preferred_work_mode?.[0] || "",
-        employment_type: user.work_preferences?.preferred_employment_type?.[0] || "",
+        preferred_work_mode: user.work_preferences?.preferred_work_mode || [],
+        preferred_employment_type: user.work_preferences?.preferred_employment_type || [],
+        preferred_location: user.work_preferences?.preferred_location || "",
         notice_period: user.work_preferences?.notice_period || "",
         availability: user.work_preferences?.availability || "",
         is_looking_for_job: user.is_looking_for_job || false,
@@ -171,18 +175,19 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
     
     // Check work preferences
     const workPrefsChanged = (
-      formData.preferred_work_mode !== originalData.preferred_work_mode ||
-      formData.employment_type !== originalData.employment_type ||
+      JSON.stringify(formData.preferred_work_mode) !== JSON.stringify(originalData.preferred_work_mode) ||
+      JSON.stringify(formData.preferred_employment_type) !== JSON.stringify(originalData.preferred_employment_type) ||
+      formData.preferred_location !== originalData.preferred_location ||
       formData.notice_period !== originalData.notice_period ||
       formData.availability !== originalData.availability
     )
     
     if (workPrefsChanged) {
       changes.work_preferences = {
-        preferred_work_mode: formData.preferred_work_mode ? [formData.preferred_work_mode] : [],
-        preferred_employment_type: formData.employment_type ? [formData.employment_type] : [],
+        preferred_work_mode: formData.preferred_work_mode,
+        preferred_employment_type: formData.preferred_employment_type,
         current_employment_mode: [],
-        preferred_location: formData.location || "",
+        preferred_location: formData.preferred_location,
         notice_period: formData.notice_period,
         availability: formData.availability
       }
@@ -231,6 +236,15 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
     }))
   }
 
+  const updateSkill = (index: number, field: 'name' | 'level' | 'years', value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.map((skill, i) => 
+        i === index ? { ...skill, [field]: value } : skill
+      )
+    }))
+  }
+
   // Experience management - NEW ONES AT TOP
   const addExperience = () => {
     const newExperience = {
@@ -266,7 +280,9 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
     const newProject = {
       name: "",
       description: "",
-      technologies: []
+      technologies: [],
+      url: "",
+      github_url: ""
     }
     setFormData(prev => ({
       ...prev,
@@ -379,6 +395,16 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
             </div>
 
             <div className="space-y-3">
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Additional Information</Label>
+              <Textarea
+                value={formData.additional_info}
+                onChange={(e) => setFormData(prev => ({ ...prev, additional_info: e.target.value }))}
+                className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} min-h-[100px] resize-none focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input} ${themeClasses.placeholder} text-base`}
+                placeholder="Any additional information about yourself, achievements, or special circumstances..."
+              />
+            </div>
+
+            <div className="space-y-3">
               <Label className={`${themeClasses.text.primary} text-sm font-medium`}>
                 Total Experience
                 <span className={`text-xs ${themeClasses.text.tertiary} block mt-1`}>
@@ -398,45 +424,146 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
                 </p>
               )}
             </div>
+
+            {/* Job Status Toggle */}
+            <div className="space-y-3">
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Job Status</Label>
+              <div className={`flex items-center justify-between p-4 rounded-lg ${themeClasses.bg.tertiary}/30 border ${themeClasses.border.secondary}`}>
+                <div>
+                  <p className={`${themeClasses.text.primary} font-medium text-sm`}>Currently looking for job opportunities?</p>
+                  <p className={`${themeClasses.text.tertiary} text-xs mt-1`}>Show that you're actively looking for opportunities</p>
+                </div>
+                <Switch
+                  checked={formData.is_looking_for_job}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_looking_for_job: checked }))}
+                />
+              </div>
+            </div>
           </div>
         )
 
       case 2: // Skills
         return (
           <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className={`text-lg font-semibold ${themeClasses.text.primary}`}>Technical Skills</h3>
+                <p className={`${themeClasses.text.tertiary} text-sm`}>Add your technical skills with expertise level and years of experience</p>
+              </div>
+            </div>
+
             <div className="space-y-4">
-              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Skills</Label>
-              <div className={`flex flex-wrap gap-2 p-4 ${themeClasses.bg.tertiary}/20 rounded-lg border ${themeClasses.border.secondary} min-h-[80px]`}>
-                {formData.skills.map((skill, index) => (
-                  <Badge
-                    key={index}
-                    className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white flex items-center gap-2 text-sm px-3 py-2 cursor-pointer group h-auto"
-                  >
-                    <span>{skill.name}</span>
-                    <X
-                      className="w-4 h-4 opacity-70 hover:opacity-100 group-hover:bg-red-500/20 rounded-full transition-all flex-shrink-0"
-                      onClick={() => removeSkill(index)}
-                    />
-                  </Badge>
-                ))}
-                {formData.skills.length === 0 && (
-                  <span className={`${themeClasses.text.tertiary} text-sm`}>No skills added yet</span>
+              {/* Add New Skill */}
+              <div className={`p-4 ${themeClasses.bg.tertiary}/20 rounded-lg border ${themeClasses.border.secondary}`}>
+                <Label className={`${themeClasses.text.primary} text-sm font-medium mb-3 block`}>Add New Skill</Label>
+                <Input
+                  placeholder="Type a skill and press Enter"
+                  className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input} h-12 text-base`}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const value = (e.target as HTMLInputElement).value.trim()
+                      if (value) {
+                        addSkill(value)
+                        ;(e.target as HTMLInputElement).value = ''
+                      }
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Skills List */}
+              <div className="space-y-3">
+                <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Your Skills</Label>
+                {formData.skills.length === 0 ? (
+                  <div className={`text-center py-8 border-2 border-dashed ${themeClasses.border.primary} rounded-lg`}>
+                    <Code className={`w-12 h-12 ${themeClasses.text.tertiary} mx-auto mb-4`} />
+                    <p className={`${themeClasses.text.tertiary} mb-4`}>No skills added yet</p>
+                    <p className={`${themeClasses.text.tertiary} text-sm`}>Start typing above to add your first skill</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {formData.skills.map((skill, index) => (
+                      <Card key={index} className={`${themeClasses.bg.tertiary}/30 ${themeClasses.border.secondary} ${themeClasses.border.hover} transition-colors`}>
+                        <CardContent className="p-4 space-y-4">
+                          <div className="flex justify-between items-start">
+                            <h4 className={`${themeClasses.text.primary} text-base font-medium`}>Skill {index + 1}</h4>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeSkill(index)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-lg"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-4">
+                            {/* Skill Name */}
+                            <div className="space-y-2">
+                              <Label className={`${themeClasses.text.primary} text-sm`}>Skill Name</Label>
+                              <Input
+                                placeholder="e.g. JavaScript, Python, React"
+                                value={skill.name}
+                                onChange={(e) => updateSkill(index, 'name', e.target.value)}
+                                className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder} h-11 text-sm`}
+                              />
+                            </div>
+
+                            {/* Skill Level */}
+                            <div className="space-y-2">
+                              <Label className={`${themeClasses.text.primary} text-sm`}>Expertise Level</Label>
+                              <select
+                                value={skill.level}
+                                onChange={(e) => updateSkill(index, 'level', e.target.value)}
+                                className={`w-full px-3 py-2 rounded-lg border ${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors focus:outline-none focus:ring-1 focus:ring-[#10a37f] h-11 text-sm`}
+                              >
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                              </select>
+                            </div>
+
+                            {/* Years of Experience */}
+                            <div className="space-y-2">
+                              <Label className={`${themeClasses.text.primary} text-sm`}>Years of Experience</Label>
+                              <Input
+                                type="number"
+                                min="0"
+                                max="50"
+                                placeholder="e.g. 3"
+                                value={skill.years}
+                                onChange={(e) => updateSkill(index, 'years', parseInt(e.target.value) || 0)}
+                                className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder} h-11 text-sm`}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Skill Level Indicator */}
+                          <div className="flex items-center gap-3">
+                            <span className={`text-xs ${themeClasses.text.tertiary}`}>Level:</span>
+                            <Badge 
+                              className={`${
+                                skill.level === 'Expert' ? 'bg-green-500 hover:bg-green-600' :
+                                skill.level === 'Advanced' ? 'bg-blue-500 hover:bg-blue-600' :
+                                skill.level === 'Intermediate' ? 'bg-gray-500 hover:bg-gray-600' :
+                                'bg-gray-400 hover:bg-gray-500'
+                              } text-white text-xs px-2 py-1`}
+                            >
+                              {skill.level}
+                            </Badge>
+                            <span className={`text-xs ${themeClasses.text.tertiary}`}>
+                              {skill.years} {skill.years === 1 ? 'year' : 'years'} of experience
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 )}
               </div>
-              <Input
-                placeholder="Type a skill and press Enter"
-                className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input} h-12 text-base`}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    const value = (e.target as HTMLInputElement).value.trim()
-                    if (value) {
-                      addSkill(value)
-                      ;(e.target as HTMLInputElement).value = ''
-                    }
-                  }
-                }}
-              />
             </div>
           </div>
         )
@@ -587,6 +714,28 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
                       </div>
 
                       <div>
+                        <Label className={`${themeClasses.text.primary} text-sm`}>Project URL (Optional)</Label>
+                        <Input
+                          type="url"
+                          placeholder="https://project-demo.com or https://project.vercel.app"
+                          value={project.url || ""}
+                          onChange={(e) => updateProject(index, 'url', e.target.value)}
+                          className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder} h-11 text-sm mt-1`}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className={`${themeClasses.text.primary} text-sm`}>GitHub Repository (Optional)</Label>
+                        <Input
+                          type="url"
+                          placeholder="https://github.com/username/project"
+                          value={project.github_url || ""}
+                          onChange={(e) => updateProject(index, 'github_url', e.target.value)}
+                          className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder} h-11 text-sm mt-1`}
+                        />
+                      </div>
+
+                      <div>
                         <Label className={`${themeClasses.text.primary} text-sm`}>Technologies</Label>
                         <div className={`flex flex-wrap gap-1 p-3 ${themeClasses.bg.secondary} rounded border ${themeClasses.border.primary} mt-1 min-h-[60px]`}>
                           {project.technologies.map((tech, techIndex) => (
@@ -689,35 +838,37 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
         return (
           <div className="space-y-6">
             <div className="space-y-4">
-              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Preferred Work Mode</Label>
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Preferred Work Modes</Label>
               <div className="space-y-3">
                 {workModes.map((mode) => (
                   <div
                     key={mode.id}
                     className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                      formData.preferred_work_mode === mode.id
+                      formData.preferred_work_mode.includes(mode.id)
                         ? "border-[#10a37f] bg-[#10a37f]/10"
                         : `${themeClasses.border.primary} ${themeClasses.bg.tertiary}/30 hover:${themeClasses.bg.tertiary}/50`
                     }`}
                     onClick={() => {
-                      const newValue = formData.preferred_work_mode === mode.id ? "" : mode.id
+                      const newModes = formData.preferred_work_mode.includes(mode.id)
+                        ? formData.preferred_work_mode.filter(m => m !== mode.id)
+                        : [...formData.preferred_work_mode, mode.id]
                       setFormData(prev => ({ 
                         ...prev, 
-                        preferred_work_mode: newValue 
+                        preferred_work_mode: newModes 
                       }))
                     }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <p className="text-white font-medium text-base">{mode.label}</p>
-                        <p className="text-gray-300 text-sm mt-1">{mode.description}</p>
+                        <p className={`${themeClasses.text.primary} font-medium text-base`}>{mode.label}</p>
+                        <p className={`${themeClasses.text.tertiary} text-sm mt-1`}>{mode.description}</p>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ml-3 shrink-0 ${
-                        formData.preferred_work_mode === mode.id
+                        formData.preferred_work_mode.includes(mode.id)
                           ? "border-[#10a37f] bg-white"
-                          : "border-gray-400 bg-transparent"
+                          : `${isDark ? 'border-gray-400' : 'border-gray-300'} bg-transparent`
                       }`}>
-                        {formData.preferred_work_mode === mode.id && (
+                        {formData.preferred_work_mode.includes(mode.id) && (
                           <div className="w-3 h-3 rounded-full bg-[#10a37f] mx-auto"></div>
                         )}
                       </div>
@@ -728,34 +879,36 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
             </div>
 
             <div className="space-y-4">
-              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Employment Type</Label>
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Employment Type Preferences</Label>
               <div className="space-y-3">
                 {employmentTypes.map((type) => (
                   <div
                     key={type.id}
                     className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                      formData.employment_type === type.id
+                      formData.preferred_employment_type.includes(type.id)
                         ? "border-[#10a37f] bg-[#10a37f]/10"
                         : `${themeClasses.border.primary} ${themeClasses.bg.tertiary}/30 hover:${themeClasses.bg.tertiary}/50`
                     }`}
                     onClick={() => {
-                      const newValue = formData.employment_type === type.id ? "" : type.id
+                      const newTypes = formData.preferred_employment_type.includes(type.id)
+                        ? formData.preferred_employment_type.filter(t => t !== type.id)
+                        : [...formData.preferred_employment_type, type.id]
                       setFormData(prev => ({ 
                         ...prev, 
-                        employment_type: newValue 
+                        preferred_employment_type: newTypes 
                       }))
                     }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <p className="text-white font-medium text-base">{type.label}</p>
+                        <p className={`${themeClasses.text.primary} font-medium text-base`}>{type.label}</p>
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ml-3 shrink-0 ${
-                        formData.employment_type === type.id
+                        formData.preferred_employment_type.includes(type.id)
                           ? "border-[#10a37f] bg-white"
-                          : "border-gray-400 bg-transparent"
+                          : `${isDark ? 'border-gray-400' : 'border-gray-300'} bg-transparent`
                       }`}>
-                        {formData.employment_type === type.id && (
+                        {formData.preferred_employment_type.includes(type.id) && (
                           <div className="w-3 h-3 rounded-full bg-[#10a37f] mx-auto"></div>
                         )}
                       </div>
@@ -763,6 +916,26 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="space-y-4">
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Preferred Location</Label>
+              <Input
+                value={formData.preferred_location}
+                onChange={(e) => setFormData(prev => ({ ...prev, preferred_location: e.target.value }))}
+                className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input} h-12 text-base`}
+                placeholder="e.g. San Francisco, CA"
+              />
+            </div>
+
+            <div className="space-y-4">
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Current Salary</Label>
+              <Input
+                value={formData.current_salary}
+                onChange={(e) => setFormData(prev => ({ ...prev, current_salary: e.target.value }))}
+                className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input} h-12 text-base`}
+                placeholder="e.g. $75,000"
+              />
             </div>
 
             <div className="space-y-4">
@@ -783,18 +956,6 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
                   onChange={(e) => setFormData(prev => ({ ...prev, notice_period: e.target.value }))}
                   className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input} h-12 text-base`}
                   placeholder="e.g. 2 weeks, 1 month"
-                />
-              </div>
-
-              {/* Job Search Toggle */}
-              <div className={`flex items-center justify-between p-4 ${themeClasses.bg.tertiary}/30 rounded-lg border ${themeClasses.border.secondary}`}>
-                <div>
-                  <p className={`${themeClasses.text.primary} font-medium text-sm`}>Open to work</p>
-                  <p className={`${themeClasses.text.tertiary} text-xs mt-1`}>Show that you're actively looking for opportunities</p>
-                </div>
-                <Switch
-                  checked={formData.is_looking_for_job}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_looking_for_job: checked }))}
                 />
               </div>
             </div>
