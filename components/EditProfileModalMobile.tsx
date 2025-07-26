@@ -382,7 +382,7 @@ export default function EditProfileModalMobile({ isOpen, onClose }: EditProfileM
               <Label className={`${themeClasses.text.primary} text-sm font-medium`}>
                 Total Experience
                 <span className={`text-xs ${themeClasses.text.tertiary} block mt-1`}>
-                  (e.g., "5 years", "2.5 years" - or leave blank to auto-calculate)
+                  (Calculated automatically based on your work experience)
                 </span>
               </Label>
               <Input

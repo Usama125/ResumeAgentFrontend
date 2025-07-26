@@ -394,7 +394,11 @@ export default function OnboardingMobile(props: OnboardingMobileProps) {
                                 ? "bg-[#10a37f] text-white hover:bg-[#0d8f6f]"
                                 : `${theme.border.primary} ${theme.text.secondary} hover:${theme.bg.tertiary}`
                             }`}
-                            onClick={() => handleArrayToggle("current_employment_mode", mode.id)}
+                            onClick={() => {
+                              // Only allow single selection for current work mode
+                              const newMode = formData.current_employment_mode.includes(mode.id) ? [] : [mode.id]
+                              setFormData(prev => ({ ...prev, current_employment_mode: newMode }))
+                            }}
                           >
                             {mode.label}
                           </Badge>

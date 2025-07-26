@@ -399,7 +399,11 @@ export default function OnboardingDesktop(props: OnboardingDesktopProps) {
                                   ? "bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] text-white hover:from-[#0d8f6f] hover:to-[#0a7a5f] shadow-lg"
                                   : `${theme.border.primary} ${theme.text.secondary} hover:${theme.bg.tertiary} hover:border-[#10a37f]/50`
                               }`}
-                              onClick={() => handleArrayToggle("current_employment_mode", mode.id)}
+                              onClick={() => {
+                                // Only allow single selection for current work mode
+                                const newMode = formData.current_employment_mode.includes(mode.id) ? [] : [mode.id]
+                                setFormData(prev => ({ ...prev, current_employment_mode: newMode }))
+                              }}
                             >
                               {mode.label}
                             </Badge>

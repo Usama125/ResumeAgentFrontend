@@ -364,7 +364,6 @@ export default function OnboardingPage() {
             profile_picture: formData.profile_picture || undefined,
             additional_info: formData.additional_info,
             is_looking_for_job: formData.is_looking_for_job,
-            current_employment_mode: [], // Will be sent in step 3
           })
           break
 
@@ -498,7 +497,18 @@ export default function OnboardingPage() {
       
       if (response.success) {
         console.log('Skipped to profile successfully')
+        
+        // Get fresh user data to ensure we have the latest information
         await refreshUser()
+        const { UserService } = await import('@/services/user');
+        const freshUserData = await UserService.getCurrentUser();
+        
+        // Update user context with fresh data
+        updateUser({ 
+          ...freshUserData,
+          onboarding_completed: true
+        });
+        
         router.replace("/profile")
       }
     } catch (err: any) {
@@ -510,8 +520,13 @@ export default function OnboardingPage() {
   }
 
   const handleContinueToProfile = async () => {
-    // Same as skip functionality - complete onboarding and go to profile
-    await handleSkip()
+    // If we're on the last step, complete it properly with user data
+    if (currentStep === steps.length) {
+      await handleSubmit()
+    } else {
+      // For other steps, use skip functionality
+      await handleSkip()
+    }
   }
 
   const handleSubmit = async () => {
@@ -550,26 +565,30 @@ export default function OnboardingPage() {
           console.log('Refreshing user data from backend...');
           await refreshUser();
           
-          // 2. Update user context with completion status to ensure immediate UI updates
+          // 2. Get the fresh user data to ensure we have the latest information
+          console.log('Getting fresh user data...');
+          const { UserService } = await import('@/services/user');
+          const freshUserData = await UserService.getCurrentUser();
+          console.log('Fresh user data obtained:', freshUserData);
+          
+          // 3. Update user context with the fresh data and completion status
           updateUser({ 
+            ...freshUserData,
             onboarding_completed: true,
             onboarding_progress: {
-              ...user?.onboarding_progress,
-              completed: true,
-              step_4_salary_availability: 'completed'
+              step_1_pdf_upload: 'completed',
+              step_2_profile_info: 'completed',
+              step_3_work_preferences: 'completed',
+              step_4_salary_availability: 'completed',
+              current_step: 4,
+              completed: true
             }
           });
-          console.log('User context updated with onboarding completion');
-          
-          // 3. Prefetch profile data to ensure it's ready when we navigate
-          console.log('Prefetching profile data...');
-          const { UserService } = await import('@/services/user');
-          await UserService.getCurrentUser(); // This loads and caches the user data
-          console.log('Profile data prefetched successfully');
+          console.log('User context updated with fresh data and completion status');
           
           // 4. Small delay to show success message, then navigate
           setTimeout(() => {
-            console.log('Navigating to profile page with prefetched data...');
+            console.log('Navigating to profile page with fresh data...');
             // Clear all loading states before navigation
             setIsCompleting(false);
             setLoading(false);

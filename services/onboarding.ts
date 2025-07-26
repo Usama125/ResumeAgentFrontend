@@ -15,7 +15,6 @@ interface Step2Request {
   profile_picture?: File;
   additional_info: string;
   is_looking_for_job: boolean;
-  current_employment_mode: string[];
 }
 
 interface Step3Request {
@@ -82,11 +81,6 @@ export class OnboardingService {
     formData.append('summary', currentUser.summary || '');
     formData.append('additional_info', otherData.additional_info);
     formData.append('is_looking_for_job', otherData.is_looking_for_job.toString());
-    
-    // Handle current employment mode array
-    otherData.current_employment_mode.forEach(mode => {
-      formData.append('current_employment_mode', mode);
-    });
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/onboarding/step-2/profile-info`, {
       method: 'POST',

@@ -74,6 +74,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     designation: "",
     location: "",
     summary: "",
+    additional_info: "",
     experience: "",
     skills: [],
     experience_details: [],
@@ -81,8 +82,9 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     certifications: [],
     expected_salary: "",
     current_salary: "",
-    preferred_work_mode: "",
-    employment_type: "",
+    preferred_work_mode: [],
+    preferred_employment_type: [],
+    preferred_location: "",
     notice_period: "",
     availability: "",
     is_looking_for_job: false,
@@ -100,6 +102,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
         designation: user.designation || "",
         location: user.location || "",
         summary: user.summary || "",
+        additional_info: user.additional_info || "",
         experience: user.experience || calculateTotalExperience(user.experience_details || []),
         skills: user.skills || [],
         experience_details: user.experience_details || [],
@@ -107,8 +110,9 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
         certifications: user.certifications || [],
         expected_salary: user.expected_salary || "",
         current_salary: user.current_salary || "",
-        preferred_work_mode: user.work_preferences?.preferred_work_mode?.[0] || "",
-        employment_type: user.work_preferences?.preferred_employment_type?.[0] || "",
+        preferred_work_mode: user.work_preferences?.preferred_work_mode || [],
+        preferred_employment_type: user.work_preferences?.preferred_employment_type || [],
+        preferred_location: user.work_preferences?.preferred_location || "",
         notice_period: user.work_preferences?.notice_period || "",
         availability: user.work_preferences?.availability || "",
         is_looking_for_job: user.is_looking_for_job || false,
@@ -148,8 +152,10 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     if (formData.designation !== originalData.designation) changes.designation = formData.designation
     if (formData.location !== originalData.location) changes.location = formData.location
     if (formData.summary !== originalData.summary) changes.summary = formData.summary
+    if (formData.additional_info !== originalData.additional_info) changes.additional_info = formData.additional_info
     if (formData.experience !== originalData.experience) changes.experience = formData.experience
     if (formData.expected_salary !== originalData.expected_salary) changes.expected_salary = formData.expected_salary
+    if (formData.current_salary !== originalData.current_salary) changes.current_salary = formData.current_salary
     if (formData.is_looking_for_job !== originalData.is_looking_for_job) changes.is_looking_for_job = formData.is_looking_for_job
     
     // Check complex fields (arrays/objects)
@@ -168,18 +174,19 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     
     // Check work preferences
     const workPrefsChanged = (
-      formData.preferred_work_mode !== originalData.preferred_work_mode ||
-      formData.employment_type !== originalData.employment_type ||
+      JSON.stringify(formData.preferred_work_mode) !== JSON.stringify(originalData.preferred_work_mode) ||
+      JSON.stringify(formData.preferred_employment_type) !== JSON.stringify(originalData.preferred_employment_type) ||
+      formData.preferred_location !== originalData.preferred_location ||
       formData.notice_period !== originalData.notice_period ||
       formData.availability !== originalData.availability
     )
     
     if (workPrefsChanged) {
       changes.work_preferences = {
-        preferred_work_mode: formData.preferred_work_mode ? [formData.preferred_work_mode] : [],
-        preferred_employment_type: formData.employment_type ? [formData.employment_type] : [],
+        preferred_work_mode: formData.preferred_work_mode,
+        preferred_employment_type: formData.preferred_employment_type,
         current_employment_mode: [],
-        preferred_location: formData.location || "",
+        preferred_location: formData.preferred_location,
         notice_period: formData.notice_period,
         availability: formData.availability
       }
@@ -263,7 +270,9 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     const newProject = {
       name: "",
       description: "",
-      technologies: []
+      technologies: [],
+      url: "",
+      github_url: ""
     }
     setFormData(prev => ({
       ...prev,
@@ -375,10 +384,20 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
             </div>
 
             <div className="space-y-2">
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Additional Information</Label>
+              <Textarea
+                value={formData.additional_info}
+                onChange={(e) => setFormData(prev => ({ ...prev, additional_info: e.target.value }))}
+                className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} min-h-[120px] resize-none focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input} ${themeClasses.placeholder}`}
+                placeholder="Any additional information about yourself, achievements, or special circumstances..."
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label className={`${themeClasses.text.primary} text-sm font-medium`}>
                 Total Experience
                 <span className={`text-xs ${themeClasses.text.tertiary} ml-2`}>
-                  (e.g., "5 years", "2.5 years" - or leave blank to auto-calculate)
+                  (Calculated automatically based on your work experience)
                 </span>
               </Label>
               <Input
@@ -393,6 +412,21 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                   Auto-calculated: {calculateTotalExperience(formData.experience_details)}
                 </p>
               )}
+            </div>
+
+            {/* Job Status Toggle */}
+            <div className="space-y-2">
+              <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Job Status</Label>
+              <div className={`flex items-center justify-between p-4 rounded-lg ${themeClasses.bg.tertiary}/30 border ${themeClasses.border.secondary}`}>
+                <div>
+                  <p className={`${themeClasses.text.primary} font-medium text-sm`}>Currently looking for job opportunities?</p>
+                  <p className={`${themeClasses.text.tertiary} text-xs mt-1`}>Show that you're actively looking for opportunities</p>
+                </div>
+                <Switch
+                  checked={formData.is_looking_for_job}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_looking_for_job: checked }))}
+                />
+              </div>
             </div>
           </div>
         )
@@ -591,6 +625,28 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       />
                     </div>
 
+                    <div className="space-y-2">
+                      <Label className={`${themeClasses.text.primary} text-sm`}>Project URL (Optional)</Label>
+                      <Input
+                        type="url"
+                        placeholder="https://project-demo.com or https://project.vercel.app"
+                        value={project.url || ""}
+                        onChange={(e) => updateProject(index, 'url', e.target.value)}
+                        className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder}`}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className={`${themeClasses.text.primary} text-sm`}>GitHub Repository (Optional)</Label>
+                      <Input
+                        type="url"
+                        placeholder="https://github.com/username/project"
+                        value={project.github_url || ""}
+                        onChange={(e) => updateProject(index, 'github_url', e.target.value)}
+                        className={`${themeClasses.bg.secondary} ${themeClasses.border.primary} ${themeClasses.text.primary} focus:border-[#10a37f] transition-colors ${themeClasses.placeholder}`}
+                      />
+                    </div>
+
                     <div className="space-y-3">
                       <Label className={`${themeClasses.text.primary} text-sm`}>Technologies</Label>
                       <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 ${themeClasses.bg.secondary} rounded border ${themeClasses.border.primary}`}>
@@ -700,21 +756,23 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
               {/* Work Preferences Column */}
               <div className="space-y-6">
                 <div className="space-y-3">
-                  <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Preferred Work Mode</Label>
-                  <div className="space-y-2">
+                  <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Preferred Work Modes</Label>
+                  <div className="grid grid-cols-1 gap-3">
                     {workModes.map((mode) => (
                       <div
                         key={mode.id}
                         className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                          formData.preferred_work_mode === mode.id
+                          formData.preferred_work_mode.includes(mode.id)
                             ? "border-[#10a37f] bg-[#10a37f]/10"
                             : `${themeClasses.border.primary} ${themeClasses.bg.tertiary}/30 ${themeClasses.border.hover} hover:${themeClasses.bg.tertiary}/50`
                         }`}
                         onClick={() => {
-                          const newValue = formData.preferred_work_mode === mode.id ? "" : mode.id
+                          const newModes = formData.preferred_work_mode.includes(mode.id)
+                            ? formData.preferred_work_mode.filter(m => m !== mode.id)
+                            : [...formData.preferred_work_mode, mode.id]
                           setFormData(prev => ({ 
                             ...prev, 
-                            preferred_work_mode: newValue 
+                            preferred_work_mode: newModes 
                           }))
                         }}
                       >
@@ -726,21 +784,23 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 </div>
 
                 <div className="space-y-3">
-                  <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Employment Type</Label>
-                  <div className="space-y-2">
+                  <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Employment Type Preferences</Label>
+                  <div className="grid grid-cols-1 gap-3">
                     {employmentTypes.map((type) => (
                       <div
                         key={type.id}
                         className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                          formData.employment_type === type.id
+                          formData.preferred_employment_type.includes(type.id)
                             ? "border-[#10a37f] bg-[#10a37f]/10"
                             : `${themeClasses.border.primary} ${themeClasses.bg.tertiary}/30 ${themeClasses.border.hover} hover:${themeClasses.bg.tertiary}/50`
                         }`}
                         onClick={() => {
-                          const newValue = formData.employment_type === type.id ? "" : type.id
+                          const newTypes = formData.preferred_employment_type.includes(type.id)
+                            ? formData.preferred_employment_type.filter(t => t !== type.id)
+                            : [...formData.preferred_employment_type, type.id]
                           setFormData(prev => ({ 
                             ...prev, 
-                            employment_type: newValue 
+                            preferred_employment_type: newTypes 
                           }))
                         }}
                       >
@@ -749,10 +809,30 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                     ))}
                   </div>
                 </div>
+
+                <div className="space-y-3">
+                  <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Preferred Location</Label>
+                  <Input
+                    value={formData.preferred_location}
+                    onChange={(e) => setFormData(prev => ({ ...prev, preferred_location: e.target.value }))}
+                    className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input}`}
+                    placeholder="e.g. San Francisco, CA"
+                  />
+                </div>
               </div>
 
-              {/* Salary & Job Search Column */}
+              {/* Salary & Availability Column */}
               <div className="space-y-6">
+                <div className="space-y-3">
+                  <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Current Salary</Label>
+                  <Input
+                    value={formData.current_salary}
+                    onChange={(e) => setFormData(prev => ({ ...prev, current_salary: e.target.value }))}
+                    className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input}`}
+                    placeholder="e.g. $75,000"
+                  />
+                </div>
+
                 <div className="space-y-3">
                   <Label className={`${themeClasses.text.primary} text-sm font-medium`}>Expected Salary</Label>
                   <Input
@@ -796,18 +876,6 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Job Search Toggle */}
-                <div className={`flex items-center justify-between p-4 ${themeClasses.bg.tertiary}/30 rounded-lg border ${themeClasses.border.secondary}`}>
-                  <div>
-                    <p className={`${themeClasses.text.primary} font-medium text-sm`}>Open to work</p>
-                    <p className={`${themeClasses.text.tertiary} text-xs mt-1`}>Show that you're actively looking for opportunities</p>
-                  </div>
-                  <Switch
-                    checked={formData.is_looking_for_job}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_looking_for_job: checked }))}
-                  />
                 </div>
               </div>
             </div>

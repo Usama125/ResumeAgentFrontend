@@ -24,6 +24,7 @@ export interface Project {
   description: string;
   technologies: string[];
   url?: string;
+  github_url?: string;
   duration?: string;
 }
 
@@ -49,6 +50,7 @@ export interface User {
   current_salary: string | null;
   experience: string | null;
   summary: string | null;
+  additional_info: string | null;
   skills: Skill[];
   experience_details: ExperienceDetail[];
   projects: Project[];
@@ -323,9 +325,9 @@ export interface OnboardingFormData {
   profile_picture: File | null;
   additional_info: string;
   is_looking_for_job: boolean;
-  current_employment_mode: string[];
   
   // Step 3: Work Preferences (backend field names)
+  current_employment_mode: string[];
   preferred_work_mode: string[];
   preferred_employment_type: string[];
   preferred_location: string;
@@ -344,6 +346,7 @@ export interface EditProfileFormData {
   designation: string;
   location: string;
   summary: string;
+  additional_info: string;
   experience: string;
   skills: Skill[];
   experience_details: ExperienceDetail[];
@@ -351,8 +354,9 @@ export interface EditProfileFormData {
   certifications: string[];
   expected_salary: string;
   current_salary: string;
-  preferred_work_mode: string;
-  employment_type: string;
+  preferred_work_mode: string[];
+  preferred_employment_type: string[];
+  preferred_location: string;
   notice_period: string;
   availability: string;
   is_looking_for_job: boolean;
@@ -363,6 +367,7 @@ export interface ProfileUpdateData {
   designation?: string;
   location?: string;
   summary?: string;
+  additional_info?: string;
   experience?: string;
   skills?: Skill[];
   experience_details?: ExperienceDetail[];
@@ -371,6 +376,7 @@ export interface ProfileUpdateData {
   work_preferences?: WorkPreferences;
   is_looking_for_job?: boolean;
   expected_salary?: string;
+  current_salary?: string;
   profile_picture?: File;
 }
 
