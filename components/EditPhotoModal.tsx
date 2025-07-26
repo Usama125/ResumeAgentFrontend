@@ -46,7 +46,7 @@ export default function EditPhotoModal({
   const [uploading, setUploading] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
 
-  const themeClasses = getThemeClasses(theme)
+  const themeClasses = getThemeClasses(isDark)
 
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith('image/')) {
