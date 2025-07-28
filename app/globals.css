@@ -380,6 +380,19 @@
   background: rgba(16, 163, 127, 0.5);
 }
 
+/* Hide scrollbar utility class */
+.scrollbar-hide {
+  /* IE and Edge */
+  -ms-overflow-style: none;
+  /* Firefox */
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  /* Chrome, Safari and Opera */
+  display: none;
+}
+
 /* Theme-aware loading screen styles - ensures correct theme immediately */
 .loading-screen {
   @apply min-h-screen transition-colors duration-300 flex items-center justify-center;

@@ -104,30 +104,45 @@ export default function ResizableSplitPane({
 
       {/* Resizer */}
       <div 
-        className={`relative w-1 flex-shrink-0 cursor-col-resize group ${
-          isDark ? 'bg-[#565869]/30' : 'bg-gray-300'
-        } hover:bg-[#10a37f]/50 transition-all duration-200 ${
-          isDragging ? 'bg-[#10a37f]' : ''
+        className={`relative flex-shrink-0 cursor-col-resize group transition-all duration-200 ${
+          isDragging ? 'w-1' : 'w-px'
+        } ${
+          isDark 
+            ? isDragging 
+              ? 'bg-[#10a37f]/80' 
+              : 'bg-gray-700/30 hover:bg-[#10a37f]/40'
+            : isDragging 
+              ? 'bg-[#10a37f]/80' 
+              : 'bg-gray-300/50 hover:bg-[#10a37f]/40'
         }`}
         onMouseDown={handleMouseDown}
       >
-        {/* Clear Drag Handle Button */}
-        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10
-          w-8 h-10 flex items-center justify-center rounded-lg
+        {/* Wider hover area for easier grabbing */}
+        <div className="absolute inset-y-0 -left-2 -right-2 cursor-col-resize" />
+        
+        {/* Drag Handle - always visible but subtle */}
+        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20
+          w-5 h-12 flex items-center justify-center rounded-full transition-all duration-200
           ${isDark 
-            ? 'bg-gradient-to-br from-[#40414f] to-[#2a2a2a] border border-[#565869] text-gray-300 hover:from-[#565869] hover:to-[#40414f] hover:text-white' 
-            : 'bg-gradient-to-br from-white to-gray-50 border border-gray-300 text-gray-600 hover:from-gray-50 hover:to-gray-100 hover:text-gray-800'
+            ? isDragging
+              ? 'bg-[#10a37f] text-white shadow-lg scale-110'
+              : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/80 hover:text-gray-300 group-hover:bg-gray-700/90'
+            : isDragging
+              ? 'bg-[#10a37f] text-white shadow-lg scale-110'
+              : 'bg-white/60 text-gray-500 hover:bg-gray-50/80 hover:text-gray-600 group-hover:bg-white/90'
           }
-          shadow-lg hover:shadow-xl transition-all duration-200
-          ${isDragging ? 'bg-gradient-to-br from-[#10a37f] to-[#0d8f6f] text-white border-[#10a37f] scale-105' : ''}
+          backdrop-blur-sm border ${
+            isDark 
+              ? isDragging 
+                ? 'border-[#10a37f]/50' 
+                : 'border-gray-600/30 group-hover:border-gray-500/50'
+              : isDragging 
+                ? 'border-[#10a37f]/50' 
+                : 'border-gray-200/50 group-hover:border-gray-300/70'
+          }
         `}>
-          <Grip className="w-4 h-4" />
+          <Grip className="w-2.5 h-2.5" />
         </div>
-
-        {/* Active Resize Indicator */}
-        {isDragging && (
-          <div className="absolute inset-0 bg-[#10a37f]/20 animate-pulse" />
-        )}
       </div>
 
       {/* Right Pane */}

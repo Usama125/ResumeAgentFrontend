@@ -219,7 +219,7 @@ export default function UsernameProfilePage() {
 
                 {/* Profile info */}
                 <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                  <Image
+                  <img
                     src={user.profile_picture || "/placeholder-user.jpg"}
                     alt={user.name}
                     className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
