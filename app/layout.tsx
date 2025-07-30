@@ -3,6 +3,7 @@ import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: 'AI Resume Builder',
@@ -47,6 +48,7 @@ export default function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               {children}
+              <Toaster />
             </AuthProvider>
           </ThemeProvider>
         </GoogleOAuthProvider>

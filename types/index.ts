@@ -318,8 +318,8 @@ export interface FormState {
 // =============================================================================
 
 export interface OnboardingFormData {
-  // Step 1: PDF Upload
-  linkedinPdf: File | null;
+  // Step 1: Resume Upload (supports PDF, Word)
+  resumeFile: File | null;
   
   // Step 2: Profile Info (backend field names)
   profile_picture: File | null;

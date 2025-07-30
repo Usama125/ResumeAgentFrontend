@@ -66,7 +66,7 @@ interface OnboardingDesktopProps {
   showSuccess: boolean
   showCancelDialog: boolean
   setShowCancelDialog: (show: boolean) => void
-  handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>, type: "pdf" | "image") => void
+  handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>, type: "resume" | "image") => void
   setIsDragOver: (dragOver: boolean) => void
   handleDragOver: (e: React.DragEvent) => void
   handleDragLeave: (e: React.DragEvent) => void
@@ -242,8 +242,8 @@ export default function OnboardingDesktop(props: OnboardingDesktopProps) {
                           </p>
                           <input
                             type="file"
-                            accept=".pdf"
-                            onChange={(e) => handleFileUpload(e, "pdf")}
+                            accept=".pdf,.docx,.doc"
+                            onChange={(e) => handleFileUpload(e, "resume")}
                             className="hidden"
                             id="pdf-upload"
                           />
@@ -257,20 +257,20 @@ export default function OnboardingDesktop(props: OnboardingDesktopProps) {
                               className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-8 py-3 rounded-2xl transition-all duration-300 font-medium"
                               size="lg"
                             >
-                              {isDragOver ? "Or Click Here" : "Choose PDF File"}
+                              {isDragOver ? "Or Click Here" : "Choose Resume File"}
                             </Button>
                           </div>
-                          {formData.linkedinPdf && (
+                          {(formData.resumeFile || formData.linkedinPdf) && (
                             <div className="mt-4 p-3 bg-green-500/10 rounded-xl border border-green-500/20">
                               <p className="text-green-400 text-sm flex items-center justify-center">
                                 <CheckCircle className="w-4 h-4 mr-2" />
-                                {formData.linkedinPdf.name} uploaded successfully
+                                {formData.resumeFile?.name || formData.linkedinPdf?.name} uploaded successfully
                               </p>
                             </div>
                           )}
-                          {(validationErrors.pdf || validationErrors.file) && (
+                          {(validationErrors.resume || validationErrors.pdf || validationErrors.file) && (
                             <p className="text-red-400 text-sm mt-3">
-                              {validationErrors.pdf || validationErrors.file}
+                              {validationErrors.resume || validationErrors.pdf || validationErrors.file}
                             </p>
                           )}
                         </div>

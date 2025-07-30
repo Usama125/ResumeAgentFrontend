@@ -66,7 +66,7 @@ interface OnboardingMobileProps {
   showSuccess: boolean
   showCancelDialog: boolean
   setShowCancelDialog: (show: boolean) => void
-  handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>, type: "pdf" | "image") => void
+  handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>, type: "resume" | "image") => void
   setIsDragOver: (dragOver: boolean) => void
   handleDragOver: (e: React.DragEvent) => void
   handleDragLeave: (e: React.DragEvent) => void
@@ -253,8 +253,8 @@ export default function OnboardingMobile(props: OnboardingMobileProps) {
                         </p>
                         <input
                           type="file"
-                          accept=".pdf"
-                          onChange={(e) => handleFileUpload(e, "pdf")}
+                          accept=".pdf,.docx,.doc"
+                          onChange={(e) => handleFileUpload(e, "resume")}
                           className="hidden"
                           id="pdf-upload"
                         />
@@ -267,18 +267,18 @@ export default function OnboardingMobile(props: OnboardingMobileProps) {
                             }}
                             className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-4 py-2 rounded-xl transition-all duration-300"
                           >
-                            {isDragOver ? "Or Tap Here" : "Choose PDF File"}
+                            {isDragOver ? "Or Tap Here" : "Choose Resume File"}
                           </Button>
                         </div>
-                        {formData.linkedinPdf && (
+                        {(formData.resumeFile || formData.linkedinPdf) && (
                           <p className="text-green-400 mt-2 text-sm">
                             <span className="inline-block w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            {formData.linkedinPdf.name} uploaded successfully
+                            {formData.resumeFile?.name || formData.linkedinPdf?.name} uploaded successfully
                           </p>
                         )}
-                        {(validationErrors.pdf || validationErrors.file) && (
+                        {(validationErrors.resume || validationErrors.pdf || validationErrors.file) && (
                           <p className="text-red-400 text-sm mt-2">
-                            {validationErrors.pdf || validationErrors.file}
+                            {validationErrors.resume || validationErrors.pdf || validationErrors.file}
                           </p>
                         )}
                       </div>

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   Upload,
   FileText,
@@ -30,6 +30,9 @@ import { useAuth } from "@/context/AuthContext"
 import OnboardingService from "@/services/onboarding"
 import { useErrorHandler } from "@/utils/errorHandler"
 import { useTheme } from "@/context/ThemeContext"
+import { useToast } from "@/hooks/use-toast"
+import ProgressModal from "@/components/ProgressModal"
+import MissingSectionsModal from "@/components/MissingSectionsModal"
 import ThemeToggle from "@/components/ThemeToggle"
 import { getThemeClasses } from "@/utils/theme"
 import OnboardingDesktop from "@/components/OnboardingDesktop"
@@ -46,7 +49,7 @@ import {
 } from "@/types"
 
 const steps = [
-  { id: 1, title: "Upload LinkedIn PDF", icon: FileText },
+  { id: 1, title: "Upload Resume", icon: FileText },
   { id: 2, title: "Profile & Preferences", icon: User },
   { id: 3, title: "Work Preferences", icon: Briefcase },
   { id: 4, title: "Salary & Availability", icon: DollarSign },
@@ -59,8 +62,8 @@ const employmentTypes = EMPLOYMENT_TYPES
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<OnboardingFormData>({
-    // Step 1: PDF Upload
-    linkedinPdf: null,
+    // Step 1: Resume Upload
+    resumeFile: null,
 
     // Step 2: Profile Info (using backend field names)
     profile_picture: null,
@@ -83,7 +86,7 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
   const [stepLoading, setStepLoading] = useState<Record<number, boolean>>({})
   const [error, setError] = useState<any>(null)
-  const [pdfData, setPdfData] = useState<PDFUploadResponse | null>(null)
+  const [resumeData, setResumeData] = useState<PDFUploadResponse | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [onboardingProgress, setOnboardingProgress] = useState<OnboardingProgress | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
@@ -94,6 +97,18 @@ export default function OnboardingPage() {
   const [authTimeout, setAuthTimeout] = useState(false)
   const [showSkipButton, setShowSkipButton] = useState(false)
   const [isMobile, setIsMobile] = useState<boolean | null>(null) // null initially to prevent hydration mismatch
+  
+  // Progress and WebSocket states
+  const [showProgressModal, setShowProgressModal] = useState(false)
+  const [showMissingSectionsModal, setShowMissingSectionsModal] = useState(false)
+  const [progressStep, setProgressStep] = useState('')
+  const [progressPercentage, setProgressPercentage] = useState(0)
+  const [progressMessage, setProgressMessage] = useState('')
+  const [progressDetails, setProgressDetails] = useState('')
+  const [extractionComplete, setExtractionComplete] = useState(false)
+  const [confidenceScore, setConfidenceScore] = useState(0)
+  const [missingSections, setMissingSections] = useState<string[]>([])
+  const websocketRef = useRef<WebSocket | null>(null)
   const [isClient, setIsClient] = useState(false)
 
   const router = useRouter()
@@ -101,6 +116,7 @@ export default function OnboardingPage() {
   const { formatError } = useErrorHandler()
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
+  const { toast } = useToast()
 
   // Check if we're on the client side
   useEffect(() => {
@@ -219,23 +235,92 @@ export default function OnboardingPage() {
     }
   }, [isAuthenticated, user?.id, loading, isCompleting]); // Only depend on user.id, not the whole user object
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: "pdf" | "image") => {
+  // WebSocket connection for real-time progress updates
+  useEffect(() => {
+    if (!user?.id || !isClient) return
+
+    const connectWebSocket = () => {
+      const wsUrl = `ws://localhost:8000/api/v1/ws/${user.id}`
+      console.log('🔌 Connecting to WebSocket:', wsUrl)
+      
+      const ws = new WebSocket(wsUrl)
+      websocketRef.current = ws
+
+      ws.onopen = () => {
+        console.log('✅ WebSocket connected')
+      }
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data)
+          console.log('📨 WebSocket message:', data)
+
+          if (data.type === 'progress') {
+            setProgressStep(data.step)
+            setProgressPercentage(data.progress)
+            setProgressMessage(data.message)
+            setProgressDetails(data.details)
+          } else if (data.type === 'completion') {
+            setExtractionComplete(true)
+            setConfidenceScore(data.confidence_score)
+            setMissingSections(data.missing_sections || [])
+            
+            // Add delay before showing missing sections modal to ensure proper timing
+            setTimeout(() => {
+              // Show missing sections modal if confidence < 80% (regardless of missing sections)
+              if (data.confidence_score < 80) {
+                setShowMissingSectionsModal(true)
+              }
+            }, 500)
+          }
+        } catch (error) {
+          console.error('❌ Error parsing WebSocket message:', error)
+        }
+      }
+
+      ws.onclose = () => {
+        console.log('🔌 WebSocket disconnected')
+      }
+
+      ws.onerror = (error) => {
+        console.error('❌ WebSocket error:', error)
+      }
+    }
+
+    connectWebSocket()
+
+    return () => {
+      if (websocketRef.current) {
+        websocketRef.current.close()
+        websocketRef.current = null
+      }
+    }
+  }, [user?.id, isClient])
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: "resume" | "image") => {
     const file = event.target.files?.[0]
     if (!file) return
 
     console.log('File upload triggered:', { type, fileName: file.name, fileType: file.type, fileSize: file.size });
 
-    if (type === "pdf" && file.type === "application/pdf") {
-      // Validate PDF size (10MB limit)
+    // Support PDF and Word documents
+    const supportedResumeTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+      "application/msword" // .doc
+    ];
+
+    if (type === "resume" && supportedResumeTypes.includes(file.type)) {
+      // Validate resume file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
-        setError({ message: "PDF file must be smaller than 10MB" })
+        setError({ message: "Resume file must be smaller than 10MB" })
         return
       }
 
-      setFormData((prev) => ({ ...prev, linkedinPdf: file }))
+      setFormData((prev) => ({ ...prev, resumeFile: file }))
       setError(null) // Clear any previous errors
       setValidationErrors({}) // Clear validation errors
-      console.log('PDF file set successfully');
+      console.log('Resume file set successfully:', file.name);
     } else if (type === "image" && file.type.startsWith("image/")) {
       // Validate image size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
@@ -250,8 +335,8 @@ export default function OnboardingPage() {
     } else {
       console.error('Invalid file type:', { type, fileType: file.type });
       setError({ 
-        message: type === "pdf" 
-          ? "Please upload a valid PDF file" 
+        message: type === "resume" 
+          ? "Please upload a valid resume file (PDF, Word .docx, or .doc)" 
           : "Please upload a valid image file (JPG, PNG, GIF)" 
       })
     }
@@ -274,14 +359,20 @@ export default function OnboardingPage() {
     const files = e.dataTransfer.files
     if (files.length > 0) {
       const file = files[0]
-      if (file.type === "application/pdf") {
+      const supportedResumeTypes = [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+        "application/msword" // .doc
+      ];
+      
+      if (supportedResumeTypes.includes(file.type)) {
         // Create a synthetic event to reuse the existing handleFileUpload logic
         const syntheticEvent = {
           target: { files: [file] }
         } as unknown as React.ChangeEvent<HTMLInputElement>
-        handleFileUpload(syntheticEvent, "pdf")
+        handleFileUpload(syntheticEvent, "resume")
       } else {
-        setError({ message: "Please upload a valid PDF file" })
+        setError({ message: "Please upload a valid resume file (PDF, Word .docx, or .doc)" })
       }
     }
   }
@@ -302,8 +393,8 @@ export default function OnboardingPage() {
 
     switch (currentStep) {
       case 1:
-        if (!formData.linkedinPdf) {
-          errors.pdf = "Please upload your LinkedIn PDF"
+        if (!formData.resumeFile) {
+          errors.resume = "Please upload your resume"
         }
         break
       case 2:
@@ -347,16 +438,24 @@ export default function OnboardingPage() {
 
       switch (currentStep) {
         case 1:
-          if (!formData.linkedinPdf) {
-            setError({ message: "Please upload your LinkedIn PDF first" })
+          if (!formData.resumeFile) {
+            setError({ message: "Please upload your resume first" })
             return
           }
-          console.log("Uploading PDF:", {
-            fileName: formData.linkedinPdf.name,
-            fileSize: formData.linkedinPdf.size,
-            fileType: formData.linkedinPdf.type
+          console.log("Uploading resume:", {
+            fileName: formData.resumeFile.name,
+            fileSize: formData.resumeFile.size,
+            fileType: formData.resumeFile.type
           })
-          response = await OnboardingService.completeStep1(formData.linkedinPdf)
+          
+          // Show progress modal
+          setShowProgressModal(true)
+          setProgressStep('initialization')
+          setProgressPercentage(5)
+          setProgressMessage('Starting AI extraction...')
+          setProgressDetails('Preparing 8 specialized agents')
+          
+          response = await OnboardingService.completeStep1(formData.resumeFile)
           break
 
         case 2:
@@ -383,10 +482,38 @@ export default function OnboardingPage() {
 
       // Update progress and advance to next step
       if (response && response.success) {
-        // After PDF upload, enable skip functionality but continue normal flow
+        // Handle PDF upload response with QA information
         if (currentStep === 1 && response.success) {
           console.log('PDF uploaded successfully, enabling skip functionality');
           setShowSkipButton(true); // Enable skip button for subsequent steps
+          
+          // Handle QA results and show appropriate toast
+          const qaInfo = response.qa_info;
+          if (qaInfo) {
+            switch (qaInfo.user_message) {
+              case 'success':
+                toast({
+                  title: "Resume Processed Successfully!",
+                  description: "Your profile has been created with comprehensive information extracted from your resume.",
+                  variant: "default",
+                });
+                break;
+              case 'success_with_retry':
+                toast({
+                  title: "Resume Processed Successfully!",
+                  description: "We were able to extract comprehensive information from your resume after additional processing.",
+                  variant: "default",
+                });
+                break;
+              case 'success_with_review_needed':
+                toast({
+                  title: "Resume Processed!",
+                  description: "Your profile has been created successfully. You may want to review and enhance some sections for completeness.",
+                  variant: "default",
+                });
+                break;
+            }
+          }
         }
         
         // If onboarding is completed (final step), redirect to profile
@@ -422,8 +549,22 @@ export default function OnboardingPage() {
           setOnboardingProgress(updatedProgress);
         }
         
-        // Move to next step
-        setCurrentStep(response.next_step || currentStep + 1);
+        // Handle post-processing for step 1 (PDF upload)
+        if (currentStep === 1) {
+          // Close progress modal after a short delay to show completion
+          setTimeout(() => {
+            setShowProgressModal(false)
+            // Check if we need to show missing sections modal
+            // Note: Missing sections modal will be shown by WebSocket completion handler
+            // Only move to next step if confidence is good and no missing sections
+            if (!showMissingSectionsModal) {
+              setCurrentStep(response.next_step || currentStep + 1)
+            }
+          }, 2000) // Increased delay to allow WebSocket completion message
+        } else {
+          // Move to next step for other steps
+          setCurrentStep(response.next_step || currentStep + 1);
+        }
       } else {
         setCurrentStep(currentStep + 1)
       }
@@ -446,6 +587,11 @@ export default function OnboardingPage() {
         setError({ message: "Please check the form for errors" })
       } else {
         setError(err)
+      }
+      
+      // Close progress modal on error
+      if (currentStep === 1) {
+        setShowProgressModal(false)
       }
     } finally {
       setStepLoading(prev => ({ ...prev, [currentStep]: false }))
@@ -698,7 +844,7 @@ export default function OnboardingPage() {
     loading,
     stepLoading,
     error,
-    pdfData,
+    resumeData,
     validationErrors,
     onboardingProgress,
     isDragOver,
@@ -724,6 +870,25 @@ export default function OnboardingPage() {
     handleContinueToProfile
   }
 
+  // Modal handlers
+  const handleProgressModalClose = () => {
+    // Don't allow closing during processing
+  }
+
+  const handleMissingSectionsClose = () => {
+    setShowMissingSectionsModal(false)
+    setShowProgressModal(false)
+  }
+
+  const handleMissingSectionsContinue = () => {
+    setShowMissingSectionsModal(false)
+    setShowProgressModal(false)
+    // Continue to next step
+    if (extractionComplete) {
+      setCurrentStep(2)
+    }
+  }
+
   return (
     <ClientOnly>
       {/* Show loading during hydration to prevent mismatch */}
@@ -735,8 +900,29 @@ export default function OnboardingPage() {
           </div>
         </div>
       ) : (
-        // Render appropriate component based on screen size
-        isMobile ? <OnboardingMobile {...commonProps} /> : <OnboardingDesktop {...commonProps} />
+        <>
+          {/* Render appropriate component based on screen size */}
+          {isMobile ? <OnboardingMobile {...commonProps} /> : <OnboardingDesktop {...commonProps} />}
+          
+          {/* Progress Modal */}
+          <ProgressModal
+            isOpen={showProgressModal}
+            onClose={handleProgressModalClose}
+            currentStep={progressStep}
+            progress={progressPercentage}
+            message={progressMessage}  
+            details={progressDetails}
+          />
+          
+          {/* Missing Sections Modal */}
+          <MissingSectionsModal
+            isOpen={showMissingSectionsModal}
+            onClose={handleMissingSectionsClose}
+            onContinue={handleMissingSectionsContinue}
+            confidenceScore={confidenceScore}
+            missingSections={missingSections}
+          />
+        </>
       )}
     </ClientOnly>
   )

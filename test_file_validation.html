@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Validation Test</title>
+</head>
+<body>
+    <h1>File Validation Test</h1>
+    <input type="file" id="fileInput" accept=".pdf,.docx,.doc" />
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const supportedResumeTypes = [
+                "application/pdf",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+                "application/msword" // .doc
+            ];
+
+            const result = document.getElementById('result');
+            
+            console.log('File selected:', {
+                name: file.name,
+                type: file.type,
+                size: file.size
+            });
+            
+            if (supportedResumeTypes.includes(file.type)) {
+                result.innerHTML = `<div style="color: green;">✅ Valid file: ${file.name} (${file.type})</div>`;
+            } else {
+                result.innerHTML = `<div style="color: red;">❌ Invalid file type: ${file.type}. Please upload a valid resume file (PDF, Word .docx, or .doc)</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
