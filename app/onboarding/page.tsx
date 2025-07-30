@@ -240,7 +240,7 @@ export default function OnboardingPage() {
     if (!user?.id || !isClient) return
 
     const connectWebSocket = () => {
-      const wsUrl = `ws://localhost:8000/api/v1/ws/${user.id}`
+      const wsUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/ws/${user.id}`
       console.log('🔌 Connecting to WebSocket:', wsUrl)
       
       const ws = new WebSocket(wsUrl)
