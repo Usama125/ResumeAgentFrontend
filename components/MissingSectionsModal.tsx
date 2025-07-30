@@ -3,7 +3,7 @@
 import React from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, CheckCircle, Edit3, ArrowRight, X } from "lucide-react"
+import { AlertTriangle, CheckCircle, ArrowRight, X } from "lucide-react"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
 
@@ -13,6 +13,7 @@ interface MissingSectionsModalProps {
   onContinue: () => void
   confidenceScore: number
   missingSections: string[]
+  onContinueToProfile?: () => void
 }
 
 const SECTION_INFO = {
@@ -63,7 +64,8 @@ export default function MissingSectionsModal({
   onClose,
   onContinue,
   confidenceScore,
-  missingSections
+  missingSections,
+  onContinueToProfile
 }: MissingSectionsModalProps) {
   const { isDark } = useTheme()
   const themeClasses = getThemeClasses(isDark)
@@ -143,16 +145,16 @@ export default function MissingSectionsModal({
               <div className="space-y-4">
                 <div className="text-center">
                   <h3 className={`text-lg font-semibold ${themeClasses.text.primary} mb-2`}>
-                    Sections That May Need Your Attention
+                    {missingSections.length > 0 ? "Sections That Need Your Attention" : "Profile Enhancement Available"}
                   </h3>
                   {missingSections.length > 0 ? (
                     <p className={`text-sm ${themeClasses.text.secondary} max-w-2xl mx-auto`}>
-                      We couldn't fully extract the following sections from your resume. 
-                      You can add or update these sections in your profile to make it more complete.
+                      We couldn't extract any information for the following sections from your resume. 
+                      You can add these sections in your profile to make it more complete.
                     </p>
                   ) : (
                     <p className={`text-sm ${themeClasses.text.secondary} max-w-2xl mx-auto`}>
-                      While we extracted information from your resume, some details may need verification or enhancement for optimal completeness.
+                      Great! We extracted information from your resume. You can enhance your profile further by clicking "Edit Profile" in your profile header to add more details.
                     </p>
                   )}
                 </div>
@@ -170,18 +172,17 @@ export default function MissingSectionsModal({
                             <h4 className={`font-semibold ${themeClasses.text.primary} mb-1`}>{info.title}</h4>
                             <p className={`text-sm ${themeClasses.text.secondary}`}>{info.description}</p>
                           </div>
-                          <Edit3 className={`w-5 h-5 ${themeClasses.text.tertiary} opacity-60`} />
                         </div>
                       )
                     })}
                   </div>
                 ) : (
-                  <div className={`flex items-center space-x-4 p-4 rounded-xl border max-w-2xl mx-auto ${isDark ? 'bg-yellow-900/10 border-yellow-600/20' : 'bg-yellow-50 border-yellow-200'} backdrop-blur-sm`}>
-                    <AlertTriangle className="w-8 h-8 text-yellow-500" />
+                  <div className={`flex items-center space-x-4 p-6 rounded-xl border max-w-2xl mx-auto ${isDark ? 'bg-green-900/10 border-green-600/20' : 'bg-green-50 border-green-200'} backdrop-blur-sm`}>
+                    <CheckCircle className="w-8 h-8 text-green-500" />
                     <div>
-                      <h4 className={`font-semibold ${isDark ? 'text-yellow-400' : 'text-yellow-800'} mb-1`}>Review Recommended</h4>
-                      <p className={`text-sm ${isDark ? 'text-yellow-300' : 'text-yellow-700'}`}>
-                        While we extracted information from your resume, some details may need verification or enhancement for optimal completeness.
+                      <h4 className={`font-semibold ${isDark ? 'text-green-400' : 'text-green-800'} mb-1`}>Profile Complete</h4>
+                      <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                        We successfully extracted information from your resume. You can enhance your profile further by clicking "Edit Profile" in your profile header.
                       </p>
                     </div>
                   </div>
@@ -229,6 +230,17 @@ export default function MissingSectionsModal({
               >
                 Close
               </Button>
+              {onContinueToProfile && (
+                <Button
+                  variant="outline"
+                  onClick={onContinueToProfile}
+                  className={`px-6 py-2 ${themeClasses.text.secondary} hover:${themeClasses.text.primary} transition-colors flex items-center`}
+                >
+                  <span>Continue to Profile</span>
+                  <span className="text-xs opacity-60 ml-1">(Skip onboarding)</span>
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
               <Button
                 onClick={onContinue}
                 className="px-6 py-2 bg-[#10a37f] hover:bg-[#0d8f6b] text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center"

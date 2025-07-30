@@ -21,6 +21,7 @@ interface ProgressModalProps {
   progress: number
   message: string
   details: string
+  isExtractionInProgress?: boolean
 }
 
 const EXTRACTION_STEPS: ProgressStep[] = [
@@ -98,7 +99,8 @@ export default function ProgressModal({
   currentStep, 
   progress, 
   message, 
-  details 
+  details,
+  isExtractionInProgress = true
 }: ProgressModalProps) {
   const [steps, setSteps] = useState<ProgressStep[]>(EXTRACTION_STEPS)
   const { isDark } = useTheme()
@@ -169,12 +171,14 @@ export default function ProgressModal({
                   <span className="text-2xl">🤖</span>
                   <span>AI Resume Extraction in Progress</span>
                 </DialogTitle>
-                <button
-                  onClick={onClose}
-                  className={`${themeClasses.text.tertiary} hover:${themeClasses.text.primary} transition-colors p-2 rounded-lg hover:bg-gray-100/10`}
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                {!isExtractionInProgress && (
+                  <button
+                    onClick={onClose}
+                    className={`${themeClasses.text.tertiary} hover:${themeClasses.text.primary} transition-colors p-2 rounded-lg hover:bg-gray-100/10`}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
               </div>
             </DialogHeader>
 

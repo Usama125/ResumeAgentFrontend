@@ -267,10 +267,8 @@ export default function OnboardingPage() {
             
             // Add delay before showing missing sections modal to ensure proper timing
             setTimeout(() => {
-              // Show missing sections modal if confidence < 80% (regardless of missing sections)
-              if (data.confidence_score < 80) {
-                setShowMissingSectionsModal(true)
-              }
+              // Always show missing sections modal to inform user about profile status
+              setShowMissingSectionsModal(true)
             }, 500)
           }
         } catch (error) {
@@ -912,6 +910,7 @@ export default function OnboardingPage() {
             progress={progressPercentage}
             message={progressMessage}  
             details={progressDetails}
+            isExtractionInProgress={showProgressModal && !extractionComplete}
           />
           
           {/* Missing Sections Modal */}
@@ -921,6 +920,7 @@ export default function OnboardingPage() {
             onContinue={handleMissingSectionsContinue}
             confidenceScore={confidenceScore}
             missingSections={missingSections}
+            onContinueToProfile={handleContinueToProfile}
           />
         </>
       )}
