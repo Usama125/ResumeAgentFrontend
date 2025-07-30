@@ -37,6 +37,61 @@ export interface WorkPreferences {
   availability: string;
 }
 
+export interface ContactInfo {
+  email?: string;
+  phone?: string;
+  linkedin?: string;
+  github?: string;
+  portfolio?: string;
+  website?: string;
+  twitter?: string;
+  dribbble?: string;
+  behance?: string;
+  medium?: string;
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+}
+
+export interface Education {
+  institution: string;
+  degree?: string;
+  field_of_study?: string;
+  start_date?: string;
+  end_date?: string;
+  grade?: string;
+  activities?: string;
+  description?: string;
+}
+
+export interface Language {
+  name: string;
+  proficiency?: string;
+}
+
+export interface Award {
+  title: string;
+  issuer?: string;
+  date?: string;
+  description?: string;
+}
+
+export interface Publication {
+  title: string;
+  publisher?: string;
+  date?: string;
+  url?: string;
+  description?: string;
+}
+
+export interface VolunteerExperience {
+  organization: string;
+  role: string;
+  start_date?: string;
+  end_date?: string;
+  description?: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -60,6 +115,15 @@ export interface User {
   onboarding_progress: OnboardingProgress;
   created_at: string;
   updated_at?: string;
+  // Enhanced fields
+  contact_info?: ContactInfo;
+  education: Education[];
+  languages: Language[];
+  awards: Award[];
+  publications: Publication[];
+  volunteer_experience: VolunteerExperience[];
+  interests: string[];
+  profession?: string;
 }
 
 // Public User (what other users see)
@@ -76,6 +140,19 @@ export interface PublicUser {
   skills: Skill[];
   experience_details: ExperienceDetail[];
   projects: Project[];
+  // Enhanced fields for public view
+  contact_info?: ContactInfo;
+  education: Education[];
+  languages: Language[];
+  awards: Award[];
+  publications: Publication[];
+  volunteer_experience: VolunteerExperience[];
+  interests: string[];
+  profession?: string;
+  certifications: string[];
+  // Additional fields that might be needed
+  expected_salary?: string | null;
+  email?: string;
 }
 
 // =============================================================================
