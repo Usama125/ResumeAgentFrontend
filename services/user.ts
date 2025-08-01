@@ -75,6 +75,34 @@ export class UserService {
   static async getFeaturedUsers(limit: number = 12, skip: number = 0): Promise<PublicUser[]> {
     return publicAPI.get<PublicUser[]>(`/users/?limit=${limit}&skip=${skip}`);
   }
+
+  // Update specific profile section
+  static async updateProfileSection(sectionName: string, updateData: any, token?: string): Promise<User> {
+    return authAPI.put<User>(`/users/me/sections/${sectionName}`, updateData, token);
+  }
+
+  // Reorder skills
+  static async reorderSkills(skillIds: string[], token?: string): Promise<User> {
+    return authAPI.put<User>(`/users/me/skills/reorder`, skillIds, token);
+  }
+
+  // Reorder sections
+  static async reorderSections(sectionOrder: string[], token?: string): Promise<User> {
+    return authAPI.put<User>(`/users/me/sections/reorder`, sectionOrder, token);
+  }
 }
+
+// Export individual functions for easier imports
+export const updateProfileSection = UserService.updateProfileSection;
+export const reorderSkills = UserService.reorderSkills;
+export const reorderSections = UserService.reorderSections;
+export const getCurrentUser = UserService.getCurrentUser;
+export const getUserById = UserService.getUserById;
+export const updateProfile = UserService.updateProfile;
+export const updateWorkPreferences = UserService.updateWorkPreferences;
+export const uploadProfilePicture = UserService.uploadProfilePicture;
+export const deleteProfilePicture = UserService.deleteProfilePicture;
+export const toggleJobSeeking = UserService.toggleJobSeeking;
+export const getFeaturedUsers = UserService.getFeaturedUsers;
 
 export default UserService;

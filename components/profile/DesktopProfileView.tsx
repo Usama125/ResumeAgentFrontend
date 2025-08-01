@@ -12,6 +12,12 @@ import {
   Star,
   Edit,
   Sparkles,
+  Plus,
+  BookOpen,
+  Globe,
+  Heart,
+  FileText,
+  Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -34,10 +40,35 @@ interface DesktopProfileViewProps {
   handleSendMessage: (messageText?: string) => Promise<void>
   isCurrentUser?: boolean
   onEditPhoto?: () => void
+  isEditMode?: boolean
+  onEditAbout?: () => void
+  onEditSkills?: () => void
+  onEditModeToggle?: (editMode: boolean) => void
+  onSectionOrderChange?: (sections: any[]) => void
+  onAddSection?: (sectionId: string) => void
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
 import { formatLinkedInUrl, formatGitHubUrl, formatPortfolioUrl, formatTwitterUrl, formatWebsiteUrl, isLocalProfileUrl } from '@/utils/contactUtils';
+import EditModeToggle from '@/components/EditModeToggle';
+import ProfileSection from '@/components/profile/ProfileSection';
+import AddMissingSections from '@/components/AddMissingSections';
+import DraggableSection from '@/components/DraggableSection';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 
 export default function DesktopProfileView({
   user,
@@ -49,69 +80,113 @@ export default function DesktopProfileView({
   isLoading,
   handleSendMessage,
   isCurrentUser = false,
-  onEditPhoto
+  onEditPhoto,
+  isEditMode = false,
+  onEditAbout,
+  onEditSkills,
+  onEditModeToggle,
+  onSectionOrderChange,
+  onAddSection
 }: DesktopProfileViewProps) {
   const [isChatVisible, setIsChatVisible] = useState(true)
   const { isDark } = useTheme()
   const router = useRouter()
 
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (active.id !== over?.id) {
+      // Get current section order from user data or use default
+      const currentOrder = user.section_order || ['about', 'skills', 'experience', 'projects', 'education', 'awards', 'languages', 'publications', 'volunteer', 'interests']
+      
+      const oldIndex = currentOrder.indexOf(active.id as string)
+      const newIndex = currentOrder.indexOf(over?.id as string)
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newOrder = arrayMove(currentOrder, oldIndex, newIndex)
+        onSectionOrderChange?.(newOrder.map(id => ({ id })))
+      }
+    }
+  }
+
   const PortfolioSection = () => (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
         
-        {/* Toggle Button - Inside Portfolio Section */}
+        {/* Toggle Buttons - Inside Portfolio Section */}
         <div className="absolute top-4 right-4 z-50">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-            <button
-              onClick={() => setIsChatVisible(!isChatVisible)}
-              className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
-                isDark 
-                  ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
-                  : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
-              } shadow-lg hover:shadow-xl hover:scale-105`}
-              title={isChatVisible ? "View Profile Full Screen" : "Show Chat"}
-            >
-              {isChatVisible ? (
-                <>
-                  <svg className="w-4 h-4 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12V10m0 0l3 3m-3-3l-3 3" />
-                  </svg>
-                  <span className="text-sm font-medium">Full Screen View</span>
-                  <svg className="w-4 h-4 ml-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4 mr-1 transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  <MessageCircle className="w-4 h-4 text-[#10a37f]" />
-                  <span className="text-sm font-medium">Show Chat</span>
-                </>
-              )}
-            </button>
-          </div>
+          {/* Chat Toggle - Only show when chat is visible */}
+          {isChatVisible && (
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+              <button
+                onClick={() => setIsChatVisible(!isChatVisible)}
+                className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                  isDark 
+                    ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                    : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                } shadow-lg hover:shadow-xl hover:scale-105`}
+                title="View Profile Full Screen"
+              >
+                <svg className="w-4 h-4 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12V10m0 0l3 3m-3-3l-3 3" />
+                </svg>
+                <span className="text-sm font-medium">Full Screen View</span>
+                <svg className="w-4 h-4 ml-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Edit Mode Toggle - Left side, only show for current user */}
+        {isCurrentUser && onEditModeToggle && (
+          <div className="absolute top-4 left-4 z-50">
+            <EditModeToggle
+              isEditMode={isEditMode}
+              onToggle={onEditModeToggle}
+              className="z-50"
+            />
+          </div>
+        )}
+
+        {/* Show Chat Button - Only show when in full screen mode */}
+        {!isChatVisible && (
+          <div className="absolute top-4 right-4 z-50">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+              <button
+                onClick={() => setIsChatVisible(true)}
+                className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                  isDark 
+                    ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                    : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                } shadow-lg hover:shadow-xl hover:scale-105`}
+                title="Show Chat"
+              >
+                <svg className="w-4 h-4 mr-1 transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                <MessageCircle className="w-4 h-4 text-[#10a37f]" />
+                <span className="text-sm font-medium">Show Chat</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/10"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#10a37f]/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0d8f6f]/5 rounded-full blur-2xl"></div>
         
-        {/* Full Screen Indicator */}
-        {!isChatVisible && (
-          <div className="absolute top-4 left-4 z-40">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg blur opacity-20"></div>
-              <div className={`relative flex items-center gap-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-[#2f2f2f]/80' : 'bg-white/80'} backdrop-blur-sm border ${isDark ? 'border-[#10a37f]/30' : 'border-[#10a37f]/30'}`}>
-                <div className="w-2 h-2 bg-[#10a37f] rounded-full animate-pulse"></div>
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Full Screen View</span>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Content Container */}
         <div className="h-full overflow-y-auto relative z-10 scrollbar-hide">
           <div className={`${isChatVisible ? 'p-8' : 'p-12 max-w-4xl mx-auto'} space-y-6`}>
@@ -316,40 +391,60 @@ export default function DesktopProfileView({
 
             </div>
 
-            {/* About Section */}
-            <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-              <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-4 flex items-center`}>
-                <User className="w-5 h-5 mr-2 text-[#10a37f]" />
-                About Me
-              </h2>
-              <div className="relative">
-                <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed ${user.summary && user.summary.length > 200 ? 'line-clamp-3' : ''}`}>
-                  {user.summary || 'You haven\'t added a summary yet. Consider adding one to tell others about your professional background and goals.'}
-                </p>
-                {user.summary && user.summary.length > 200 && (
-                  <div className="relative inline-block mt-2">
-                    <span className="text-[#10a37f] hover:text-[#0d8f6f] text-sm font-medium transition-colors cursor-pointer group">
-                      See More
-                      <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[99999] transform-gpu top-full left-0 mt-2">
-                        <div className={`${isDark ? 'bg-[#2a2a2a] border-[#10a37f]/30' : 'bg-white border-gray-200'} border rounded-lg p-4 shadow-2xl max-w-md w-96`}>
-                          <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed text-sm`}>
-                            {user.summary}
-                          </p>
-                        </div>
+            {/* Sections Container with DnD */}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={user.section_order || ['about', 'skills', 'experience', 'projects', 'education', 'awards', 'languages', 'publications', 'volunteer', 'interests']}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-6">
+                                    {/* About Section */}
+                  <DraggableSection id="about" isEditMode={isEditMode}>
+                    <ProfileSection
+                      title="About Me"
+                      icon={<User className="w-5 h-5 text-[#10a37f]" />}
+                      isEditMode={isEditMode}
+                      onEdit={onEditAbout}
+                    >
+                      <div className="relative">
+                        <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed ${user.summary && user.summary.length > 200 ? 'line-clamp-3' : ''}`}>
+                          {user.summary || 'You haven\'t added a summary yet. Consider adding one to tell others about your professional background and goals.'}
+                        </p>
+                        {user.summary && user.summary.length > 200 && (
+                          <div className="relative inline-block mt-2">
+                            <span className="text-[#10a37f] hover:text-[#0d8f6f] text-sm font-medium transition-colors cursor-pointer group">
+                              See More
+                              <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[99999] transform-gpu top-full left-0 mt-2">
+                                <div className={`${isDark ? 'bg-[#2a2a2a] border-[#10a37f]/30' : 'bg-white border-gray-200'} border rounded-lg p-4 shadow-2xl max-w-md w-96`}>
+                                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed text-sm`}>
+                                    {user.summary}
+                                  </p>
+                                </div>
+                              </div>
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
+                    </ProfileSection>
+                  </DraggableSection>
 
-            {/* Skills Showcase */}
-            <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
+                  {/* Skills Showcase */}
+                  <DraggableSection id="skills" isEditMode={isEditMode}>
+                    <ProfileSection
+                      title="Skills & Expertise"
+                      icon={<Code className="w-5 h-5 text-[#10a37f]" />}
+                      isEditMode={isEditMode}
+                      onEdit={onEditSkills}
+                      onDelete={() => {
+                        // Handle section delete - could open a confirmation modal
+                        console.log("Delete skills section")
+                      }}
+                    >
               <div className="flex items-center justify-between mb-6">
-                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} flex items-center`}>
-                  <Code className="w-5 h-5 mr-2 text-[#10a37f]" />
-                  Skills & Expertise
-                </h2>
                 <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                   {(user.skills || []).length} skills
                 </div>
@@ -427,7 +522,8 @@ export default function DesktopProfileView({
                   </div>
                 </div>
               </div>
-            </div>
+            </ProfileSection>
+                  </DraggableSection>
 
             {/* Experience Timeline */}
             <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
@@ -584,7 +680,7 @@ export default function DesktopProfileView({
             {/* Education */}
             {(user.education || []).length > 0 && (
               <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                   <svg className="w-5 h-5 mr-2 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
@@ -641,7 +737,7 @@ export default function DesktopProfileView({
             {/* Languages */}
             {(user.languages || []).length > 0 && (
               <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                   <svg className="w-5 h-5 mr-2 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                   </svg>
@@ -679,7 +775,7 @@ export default function DesktopProfileView({
             {/* Awards & Recognition */}
             {(user.awards || []).length > 0 && (
               <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                   <Award className="w-5 h-5 mr-2 text-[#10a37f]" />
                   Awards & Recognition
                 </h2>
@@ -717,7 +813,7 @@ export default function DesktopProfileView({
             {/* Publications */}
             {(user.publications || []).length > 0 && (
               <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                   <svg className="w-5 h-5 mr-2 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 5.477 5.754 5 7.5 5s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 5.477 18.246 5 16.5 5c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
@@ -770,7 +866,7 @@ export default function DesktopProfileView({
             {/* Volunteer Experience */}
             {(user.volunteer_experience || []).length > 0 && (
               <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                   <svg className="w-5 h-5 mr-2 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
@@ -808,7 +904,7 @@ export default function DesktopProfileView({
             {/* Interests */}
             {(user.interests || []).length > 0 && (
               <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                   <svg className="w-5 h-5 mr-2 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
@@ -830,7 +926,7 @@ export default function DesktopProfileView({
             {/* Certifications */}
             {(user.certifications || []).length > 0 && (
               <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+                <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                   <Award className="w-5 h-5 mr-2 text-[#10a37f]" />
                   Certifications
                 </h2>
@@ -844,6 +940,25 @@ export default function DesktopProfileView({
                 </div>
               </div>
             )}
+
+
+
+            {/* Add Missing Sections - Only in edit mode */}
+            {isEditMode && (
+              <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
+                <AddMissingSections 
+                  isEditMode={isEditMode}
+                  user={user}
+                  onAddSection={(sectionId) => {
+                    console.log('Add section:', sectionId)
+                    // TODO: Implement section addition logic
+                  }}
+                />
+              </div>
+            )}
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
         </div>
     </div>

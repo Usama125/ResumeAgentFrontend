@@ -9,6 +9,7 @@ export interface Skill {
   name: string;
   level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
   years: number;
+  id?: string; // Optional ID for drag and drop reordering
 }
 
 export interface ExperienceDetail {
@@ -124,6 +125,7 @@ export interface User {
   volunteer_experience: VolunteerExperience[];
   interests: string[];
   profession?: string;
+  section_order?: string[];
 }
 
 // Public User (what other users see)

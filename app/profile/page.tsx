@@ -15,6 +15,10 @@ import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
 import DesktopProfileView from "@/components/profile/DesktopProfileView"
 import MobileProfileView from "@/components/profile/MobileProfileView"
+import EditModeToggle from "@/components/EditModeToggle"
+import AboutSectionEditModal from "@/components/AboutSectionEditModal"
+import SkillsSectionEditModal from "@/components/SkillsSectionEditModal"
+import SectionOrderManager from "@/components/SectionOrderManager"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
 
@@ -42,6 +46,10 @@ export default function CurrentUserProfilePage() {
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isEditPhotoModalOpen, setIsEditPhotoModalOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isAboutEditModalOpen, setIsAboutEditModalOpen] = useState(false)
+  const [isSkillsEditModalOpen, setIsSkillsEditModalOpen] = useState(false)
+  const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [authTimeout, setAuthTimeout] = useState(false)
@@ -321,6 +329,74 @@ export default function CurrentUserProfilePage() {
     }
   }
 
+  const handleAboutUpdate = (newSummary: string) => {
+    if (user) {
+      // Update local state
+      setUser({
+        ...user,
+        summary: newSummary
+      })
+      
+      // Update global auth context
+      updateUser({ summary: newSummary })
+    }
+  }
+
+  const handleSkillsUpdate = (newSkills: any[]) => {
+    if (user) {
+      // Update local state
+      setUser({
+        ...user,
+        skills: newSkills
+      })
+      
+      // Update global auth context
+      updateUser({ skills: newSkills })
+    }
+  }
+
+  const handleEditModeToggle = (newEditMode: boolean) => {
+    setIsEditMode(newEditMode)
+  }
+
+  const handleSectionOrderChange = async (sections: any[]) => {
+    if (!user) return
+    
+    try {
+      const newSectionOrder = sections.map(section => section.id)
+      setSectionOrder(newSectionOrder)
+      
+      // Save to backend
+      await UserService.reorderSections(newSectionOrder)
+      
+      // Update user context
+      updateUser({ section_order: newSectionOrder })
+    } catch (error) {
+      console.error('Error updating section order:', error)
+    }
+  }
+
+  const handleAddSection = (sectionId: string) => {
+    console.log('Add section:', sectionId)
+    
+    // Add the section to the user's section order if it doesn't exist
+    if (user) {
+      const currentOrder = user.section_order || ['about', 'skills', 'experience', 'projects', 'education', 'awards', 'languages', 'publications', 'volunteer', 'interests']
+      if (!currentOrder.includes(sectionId)) {
+        const newOrder = [...currentOrder, sectionId]
+        setSectionOrder(newOrder)
+        
+        // Save to backend
+        UserService.reorderSections(newOrder).then(() => {
+          updateUser({ section_order: newOrder })
+          console.log(`Section ${sectionId} added to profile`)
+        }).catch(error => {
+          console.error('Error updating section order:', error)
+        })
+      }
+    }
+  }
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#212121] text-white' : 'bg-gray-50 text-gray-900'} overflow-x-hidden`}>
       <Header 
@@ -347,6 +423,12 @@ export default function CurrentUserProfilePage() {
           handleSendMessage={handleSendMessage}
           isCurrentUser={true}
           onEditPhoto={() => setIsEditPhotoModalOpen(true)}
+          isEditMode={isEditMode}
+          onEditAbout={() => setIsAboutEditModalOpen(true)}
+          onEditSkills={() => setIsSkillsEditModalOpen(true)}
+          onEditModeToggle={handleEditModeToggle}
+          onSectionOrderChange={handleSectionOrderChange}
+          onAddSection={handleAddSection}
         />
       ) : (
         <DesktopProfileView
@@ -360,6 +442,12 @@ export default function CurrentUserProfilePage() {
           handleSendMessage={handleSendMessage}
           isCurrentUser={true}
           onEditPhoto={() => setIsEditPhotoModalOpen(true)}
+          isEditMode={isEditMode}
+          onEditAbout={() => setIsAboutEditModalOpen(true)}
+          onEditSkills={() => setIsSkillsEditModalOpen(true)}
+          onEditModeToggle={handleEditModeToggle}
+          onSectionOrderChange={handleSectionOrderChange}
+          onAddSection={handleAddSection}
         />
       )}
 
@@ -392,6 +480,22 @@ export default function CurrentUserProfilePage() {
           onPhotoUpdate={handlePhotoUpdate}
         />
       )}
+
+      {/* About Section Edit Modal */}
+      <AboutSectionEditModal
+        isOpen={isAboutEditModalOpen}
+        onClose={() => setIsAboutEditModalOpen(false)}
+        currentSummary={user?.summary || ''}
+        onUpdate={handleAboutUpdate}
+      />
+
+      {/* Skills Section Edit Modal */}
+      <SkillsSectionEditModal
+        isOpen={isSkillsEditModalOpen}
+        onClose={() => setIsSkillsEditModalOpen(false)}
+        currentSkills={user?.skills || []}
+        onUpdate={handleSkillsUpdate}
+      />
 
       <RateLimitModal
         isOpen={rateLimitState.isOpen}

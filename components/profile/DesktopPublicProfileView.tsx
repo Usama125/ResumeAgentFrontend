@@ -91,19 +91,6 @@ export default function DesktopPublicProfileView({
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#10a37f]/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0d8f6f]/5 rounded-full blur-2xl"></div>
         
-        {/* Full Screen Indicator */}
-        {!isChatVisible && (
-          <div className="absolute top-4 left-4 z-40">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg blur opacity-20"></div>
-              <div className={`relative flex items-center gap-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-[#2f2f2f]/80' : 'bg-white/80'} backdrop-blur-sm border ${isDark ? 'border-[#10a37f]/30' : 'border-[#10a37f]/30'}`}>
-                <div className="w-2 h-2 bg-[#10a37f] rounded-full animate-pulse"></div>
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Full Screen View</span>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Content Container */}
         <div className="h-full overflow-y-auto relative z-10 scrollbar-hide">
           <div className={`${isChatVisible ? 'p-8' : 'p-12 max-w-4xl mx-auto'} space-y-6`}>

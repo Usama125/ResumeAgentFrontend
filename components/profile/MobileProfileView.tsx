@@ -11,6 +11,13 @@ import {
   User,
   Edit,
   Sparkles,
+  Plus,
+  BookOpen,
+  Globe,
+  Heart,
+  FileText,
+  Star,
+  Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/types"
@@ -19,6 +26,9 @@ import { getThemeClasses } from "@/utils/theme"
 import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import { useRouter } from "next/navigation"
 import { SimpleChatPanel } from "./SimpleChatPanel"
+import EditModeToggle from "@/components/EditModeToggle"
+import ProfileSection from "@/components/profile/ProfileSection"
+import AddMissingSections from "@/components/AddMissingSections"
 
 interface MobileProfileViewProps {
   user: UserType
@@ -31,6 +41,12 @@ interface MobileProfileViewProps {
   handleSendMessage: (messageText?: string) => Promise<void>
   isCurrentUser?: boolean
   onEditPhoto?: () => void
+  isEditMode?: boolean
+  onEditAbout?: () => void
+  onEditSkills?: () => void
+  onEditModeToggle?: (editMode: boolean) => void
+  onSectionOrderChange?: (sections: any[]) => void
+  onAddSection?: (sectionId: string) => void
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
@@ -46,7 +62,13 @@ export default function MobileProfileView({
   isLoading,
   handleSendMessage,
   isCurrentUser = false,
-  onEditPhoto
+  onEditPhoto,
+  isEditMode = false,
+  onEditAbout,
+  onEditSkills,
+  onEditModeToggle,
+  onSectionOrderChange,
+  onAddSection
 }: MobileProfileViewProps) {
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
   const { isDark } = useTheme()
@@ -89,6 +111,18 @@ export default function MobileProfileView({
 
         {/* Content Container */}
         <div className="relative z-10">
+          {/* Sticky Edit Mode Toggle for Mobile */}
+          {isCurrentUser && onEditModeToggle && (
+            <div className="sticky top-0 z-20 bg-gradient-to-b from-[#212121]/95 to-transparent backdrop-blur-sm py-4 px-4">
+              <div className="flex justify-center">
+                <EditModeToggle
+                  isEditMode={isEditMode}
+                  onToggle={onEditModeToggle}
+                  className="scale-90"
+                />
+              </div>
+            </div>
+          )}
           <div className="p-4 space-y-6">
             {/* Hero Section */}
             <div className="text-center space-y-6">
@@ -268,7 +302,7 @@ export default function MobileProfileView({
               {/* Stats Row */}
               <div className="flex justify-center space-x-4">
                 <div className="text-center">
-                  <div className={`text-lg font-bold ${getThemeClasses().text}`}>
+                  <div className={`text-lg font-bold ${getThemeClasses(isDark).text.primary}`}>
                     {(() => {
                       if (user.experience && user.experience.trim() !== '') {
                         return user.experience;
@@ -280,11 +314,11 @@ export default function MobileProfileView({
                   <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Experience</div>
                 </div>
                 <div className="text-center">
-                  <div className={`text-lg font-bold ${getThemeClasses().text}`}>{(user.skills || []).length}</div>
+                  <div className={`text-lg font-bold ${getThemeClasses(isDark).text.primary}`}>{(user.skills || []).length}</div>
                   <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Skills</div>
                 </div>
                 <div className="text-center">
-                  <div className={`text-lg font-bold ${getThemeClasses().text}`}>{(user.projects || []).length}</div>
+                  <div className={`text-lg font-bold ${getThemeClasses(isDark).text.primary}`}>{(user.projects || []).length}</div>
                   <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Projects</div>
                 </div>
               </div>
@@ -292,11 +326,16 @@ export default function MobileProfileView({
             </div>
 
             {/* About Section */}
-            <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-              <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-4 flex items-center`}>
-                <User className="w-5 h-5 mr-2 text-[#10a37f]" />
-                About Me
-              </h2>
+            <ProfileSection
+              title="About Me"
+              icon={<User className="w-5 h-5 text-[#10a37f]" />}
+              isEditMode={isEditMode}
+              onEdit={onEditAbout}
+              onDelete={() => {
+                // Handle section delete - could open a confirmation modal
+                console.log("Delete about section")
+              }}
+            >
               <div className="relative">
                 <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed ${user.summary && user.summary.length > 200 ? 'line-clamp-3' : ''}`}>
                   {user.summary || 'You haven\'t added a summary yet. Consider adding one to tell others about your professional background and goals.'}
@@ -316,15 +355,20 @@ export default function MobileProfileView({
                   </div>
                 )}
               </div>
-            </div>
+            </ProfileSection>
 
             {/* Skills Showcase */}
-            <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
+            <ProfileSection
+              title="Skills & Expertise"
+              icon={<Code className="w-5 h-5 text-[#10a37f]" />}
+              isEditMode={isEditMode}
+              onEdit={onEditSkills}
+              onDelete={() => {
+                // Handle section delete - could open a confirmation modal
+                console.log("Delete skills section")
+              }}
+            >
               <div className="flex items-center justify-between mb-6">
-                <h2 className={`text-xl font-bold ${getThemeClasses().text} flex items-center`}>
-                  <Code className="w-5 h-5 mr-2 text-[#10a37f]" />
-                  Skills & Expertise
-                </h2>
                 <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                   {(user.skills || []).length} skills
                 </div>
@@ -334,7 +378,7 @@ export default function MobileProfileView({
                 {(user.skills || [])
                   .slice()
                   .sort((a, b) => {
-                    const getPriority = (level) => {
+                    const getPriority = (level: string) => {
                       switch(level) {
                         case 'Expert': return 1;
                         case 'Advanced': return 2;
@@ -348,7 +392,7 @@ export default function MobileProfileView({
                   <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-lg p-3 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300 group`}>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className={`${getThemeClasses().text} font-medium text-sm group-hover:text-[#10a37f] transition-colors truncate`}>
+                        <span className={`${getThemeClasses(isDark).text.primary} font-medium text-sm group-hover:text-[#10a37f] transition-colors truncate`}>
                           {skill.name}
                         </span>
                         <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2 ${
@@ -402,11 +446,11 @@ export default function MobileProfileView({
                   </div>
                 </div>
               </div>
-            </div>
+            </ProfileSection>
 
             {/* Experience Timeline */}
             <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-              <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+              <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                 <Briefcase className="w-5 h-5 mr-2 text-[#10a37f]" />
                 Professional Experience
               </h2>
@@ -416,7 +460,7 @@ export default function MobileProfileView({
                     <div key={index} className="relative pl-8 border-l-2 border-[#10a37f]/30">
                       <div className={`absolute -left-2 top-0 w-4 h-4 bg-[#10a37f] rounded-full border-2 ${isDark ? 'border-[#0a0a0a]' : 'border-white'}`}></div>
                       <div className="space-y-2">
-                        <h3 className={`text-lg font-semibold ${getThemeClasses().text}`}>{exp.position}</h3>
+                        <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>{exp.position}</h3>
                         <p className="text-[#10a37f] font-medium">{exp.company}</p>
                         <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{exp.duration}</p>
                         <div className="relative">
@@ -449,7 +493,7 @@ export default function MobileProfileView({
 
             {/* Projects Showcase */}
             <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-              <h2 className={`text-xl font-bold ${getThemeClasses().text} mb-6 flex items-center`}>
+              <h2 className={`text-xl font-bold ${getThemeClasses(isDark).text.primary} mb-6 flex items-center`}>
                 <Award className="w-5 h-5 mr-2 text-[#10a37f]" />
                 Featured Projects
               </h2>
@@ -817,6 +861,22 @@ export default function MobileProfileView({
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+
+
+            {/* Add Missing Sections - Only in edit mode */}
+            {isEditMode && (
+              <div className={`${isDark ? 'bg-gradient-to-br from-[#1a1a1a]/80 to-[#2a2a2a]/60' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
+                <AddMissingSections 
+                  isEditMode={isEditMode}
+                  user={user}
+                  onAddSection={(sectionId) => {
+                    console.log('Add section:', sectionId)
+                    // TODO: Implement section addition logic
+                  }}
+                />
               </div>
             )}
           </div>
