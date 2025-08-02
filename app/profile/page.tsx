@@ -19,8 +19,10 @@ import EditModeToggle from "@/components/EditModeToggle"
 import AboutSectionEditModal from "@/components/AboutSectionEditModal"
 import SkillsSectionEditModal from "@/components/SkillsSectionEditModal"
 import ExperienceSectionEditModal from "@/components/ExperienceSectionEditModal"
+import ConfirmationModal from "@/components/ConfirmationModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
+import { useToast } from "@/hooks/use-toast"
 
 
 // Generate suggested questions based on user data
@@ -53,6 +55,15 @@ export default function CurrentUserProfilePage() {
   const [experienceEditMode, setExperienceEditMode] = useState<'add' | 'edit'>('add')
   const [editingExperience, setEditingExperience] = useState<any | null>(null)
   const [editingExperienceIndex, setEditingExperienceIndex] = useState<number | null>(null)
+  const [deleteExperienceConfirm, setDeleteExperienceConfirm] = useState<{
+    isOpen: boolean
+    experienceIndex: number | null
+    experienceTitle: string
+  }>({
+    isOpen: false,
+    experienceIndex: null,
+    experienceTitle: ""
+  })
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -60,7 +71,8 @@ export default function CurrentUserProfilePage() {
   const router = useRouter()
   const { user: authUser, isAuthenticated, loading: authLoading, refreshUser, updateUser } = useAuth()
   const { isDark } = useTheme()
-  const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit();
+  const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
+  const { toast } = useToast()
 
   // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
@@ -396,9 +408,22 @@ export default function CurrentUserProfilePage() {
       // Update global auth context
       updateUser({ experience_details: [] })
       
+      // Show success toast
+      toast({
+        title: "Success",
+        description: "Experience section deleted successfully",
+      })
+      
       console.log('✅ Experience section deleted successfully')
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error deleting experience section:', error)
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete experience section",
+        variant: "destructive"
+      })
     }
   }
 
@@ -418,11 +443,22 @@ export default function CurrentUserProfilePage() {
     }
   }
 
-  const handleDeleteSingleExperience = async (index: number) => {
-    if (!user || !user.experience_details) return
+  const handleDeleteSingleExperience = (index: number) => {
+    if (!user || !user.experience_details || !user.experience_details[index]) return
+    
+    const experience = user.experience_details[index]
+    setDeleteExperienceConfirm({
+      isOpen: true,
+      experienceIndex: index,
+      experienceTitle: `${experience.position} at ${experience.company}`
+    })
+  }
+
+  const confirmDeleteExperience = async () => {
+    if (!user || !user.experience_details || deleteExperienceConfirm.experienceIndex === null) return
     
     try {
-      const updatedExperiences = user.experience_details.filter((_, i) => i !== index)
+      const updatedExperiences = user.experience_details.filter((_, i) => i !== deleteExperienceConfirm.experienceIndex)
       
       // Call API to update experiences
       await updateProfileSection("experience", { experience_details: updatedExperiences })
@@ -436,9 +472,28 @@ export default function CurrentUserProfilePage() {
       // Update global auth context
       updateUser({ experience_details: updatedExperiences })
       
+      // Show success toast
+      toast({
+        title: "Success",
+        description: "Experience deleted successfully",
+      })
+      
       console.log('✅ Experience deleted successfully')
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error deleting experience:', error)
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete experience",
+        variant: "destructive"
+      })
+    } finally {
+      setDeleteExperienceConfirm({
+        isOpen: false,
+        experienceIndex: null,
+        experienceTitle: ""
+      })
     }
   }
 
@@ -633,6 +688,18 @@ export default function CurrentUserProfilePage() {
         resetInSeconds={rateLimitState.resetInSeconds}
         isAuthenticated={rateLimitState.isAuthenticated}
         rateLimitType={rateLimitState.rateLimitType}
+      />
+
+      {/* Delete Experience Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteExperienceConfirm.isOpen}
+        onClose={() => setDeleteExperienceConfirm({ isOpen: false, experienceIndex: null, experienceTitle: "" })}
+        onConfirm={confirmDeleteExperience}
+        title="Delete Experience"
+        message={`Are you sure you want to delete "${deleteExperienceConfirm.experienceTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
       />
     </div>
   )
