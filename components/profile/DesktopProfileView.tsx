@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, memo, useMemo, useCallback } from "react"
+import { useState, useRef, memo, useMemo, useCallback, useEffect } from "react"
 import {
   Send,
   MapPin,
@@ -436,6 +436,14 @@ export default function DesktopProfileView({
   const [isChatVisible, setIsChatVisible] = useState(true)
   const { isDark } = useTheme()
   const router = useRouter()
+
+  // Auto-hide chat when entering edit mode, keep hidden when exiting edit mode
+  useEffect(() => {
+    if (isEditMode) {
+      setIsChatVisible(false)
+    }
+    // When exiting edit mode, keep chat hidden - user must explicitly click "Show Chat"
+  }, [isEditMode])
 
   // Memoized handlers to prevent unnecessary re-renders
   const handleChatToggle = useCallback(() => {

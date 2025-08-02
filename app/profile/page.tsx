@@ -363,8 +363,9 @@ export default function CurrentUserProfilePage() {
     }
   }
 
-  const handleEditModeToggle = (newEditMode: boolean) => {
+  const handleEditModeToggle = (newEditMode: boolean, shouldShowChat?: boolean) => {
     setIsEditMode(newEditMode)
+    // Pass chat visibility control to child components
   }
 
   const handleSectionOrderChange = async (newSectionOrder: string[]) => {
