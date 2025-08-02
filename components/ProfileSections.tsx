@@ -59,6 +59,8 @@ interface ProfileSectionsProps {
   onEditSingleEducation?: (index: number) => void
   onDeleteSingleEducation?: (index: number) => void
   onDeleteEducation?: () => void
+  onEditContact?: () => void
+  onDeleteContact?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -95,10 +97,10 @@ function SortableSectionWrapper({ id, children, isEditMode }: SortableSectionWra
       style={style}
       className={isDragging ? 'opacity-50' : ''}
     >
-      {React.cloneElement(children as React.ReactElement, {
+      {React.isValidElement(children) ? React.cloneElement(children as React.ReactElement<any>, {
         showDragHandle: true,
         dragHandleProps: { ...attributes, ...listeners }
-      })}
+      }) : children}
     </div>
   )
 }
@@ -122,6 +124,8 @@ const ProfileSections = function ProfileSections({
   onEditSingleEducation,
   onDeleteSingleEducation,
   onDeleteEducation,
+  onEditContact,
+  onDeleteContact,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
@@ -143,12 +147,12 @@ const ProfileSections = function ProfileSections({
 
   // Initialize section order and expanded states
   useEffect(() => {
-    const fallbackOrder = ['about', 'experience', 'skills', 'projects', 'education', 'contact', 'languages', 'awards', 'publications', 'volunteer', 'interests']
+    const fallbackOrder = ['about', 'experience', 'skills', 'projects', 'education', 'languages', 'awards', 'publications', 'volunteer', 'interests']
     // Handle empty array case - user.section_order could be [] which is truthy but empty
     const userOrder = (user.section_order && user.section_order.length > 0) 
-      ? user.section_order 
+      ? user.section_order.filter(section => section !== 'contact') // Filter out contact section
       : (DEFAULT_SECTION_ORDER && DEFAULT_SECTION_ORDER.length > 0) 
-        ? DEFAULT_SECTION_ORDER 
+        ? DEFAULT_SECTION_ORDER.filter(section => section !== 'contact') // Filter out contact section
         : fallbackOrder
     setSectionOrder(userOrder)
     
@@ -285,8 +289,7 @@ const ProfileSections = function ProfileSections({
             onDeleteEducation={onDeleteSingleEducation}
           />
         )
-      case 'contact':
-        return <ContactSection {...commonProps} />
+
       case 'languages':
         return <LanguagesSection {...commonProps} />
       case 'awards':
@@ -300,7 +303,7 @@ const ProfileSections = function ProfileSections({
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation])
+  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact])
 
   if (isEditMode) {
     return (

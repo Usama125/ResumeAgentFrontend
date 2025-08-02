@@ -46,8 +46,8 @@ export default function ContactSection({
       isEditMode={isEditMode}
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
-      onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={hasData ? onDelete : undefined}
+      onEdit={isEditMode ? onEdit : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}

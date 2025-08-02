@@ -21,6 +21,7 @@ import SkillsSectionEditModal from "@/components/SkillsSectionEditModal"
 import ExperienceSectionEditModal from "@/components/ExperienceSectionEditModal"
 import ProjectsSectionEditModal from "@/components/ProjectsSectionEditModal"
 import EducationSectionEditModal from "@/components/EducationSectionEditModal"
+import ContactSectionEditModal from "@/components/ContactSectionEditModal"
 import ConfirmationModal from "@/components/ConfirmationModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
@@ -92,6 +93,7 @@ export default function CurrentUserProfilePage() {
     educationIndex: null,
     educationTitle: ""
   })
+  const [isContactEditModalOpen, setIsContactEditModalOpen] = useState(false)
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -252,6 +254,42 @@ export default function CurrentUserProfilePage() {
       toast({
         title: "Error",
         description: error.message || "Failed to delete education section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Contact handlers
+  const handleEditContact = useCallback(() => {
+    setIsContactEditModalOpen(true)
+  }, [])
+
+  const handleContactUpdate = useCallback((newContactInfo: any) => {
+    if (!user) return
+    
+    setUser({ ...user, contact_info: newContactInfo })
+    updateUser({ contact_info: newContactInfo })
+  }, [user, updateUser])
+
+  const handleContactDelete = useCallback(async () => {
+    if (!user) return
+
+    try {
+      await deleteProfileSection("contact")
+      
+      // Update frontend state
+      setUser({ ...user, contact_info: {} })
+      updateUser({ contact_info: {} })
+      
+      toast({
+        title: "Success",
+        description: "Contact information deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting contact information:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete contact information",
         variant: "destructive"
       })
     }
@@ -873,6 +911,8 @@ export default function CurrentUserProfilePage() {
           onEditSingleEducation={handleEditEducation}
           onDeleteSingleEducation={handleDeleteSingleEducation}
           onDeleteEducation={handleEducationDelete}
+          onEditContact={handleEditContact}
+          onDeleteContact={handleContactDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -957,6 +997,14 @@ export default function CurrentUserProfilePage() {
         editingEducation={editingEducation}
         editingIndex={editingEducationIndex}
         mode={educationEditMode}
+      />
+
+      {/* Contact Section Edit Modal */}
+      <ContactSectionEditModal
+        isOpen={isContactEditModalOpen}
+        onClose={() => setIsContactEditModalOpen(false)}
+        currentContactInfo={user?.contact_info}
+        onUpdate={handleContactUpdate}
       />
 
       {/* Education Delete Confirmation Modal */}

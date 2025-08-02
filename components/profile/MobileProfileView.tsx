@@ -57,6 +57,8 @@ interface MobileProfileViewProps {
   onEditSingleEducation?: (index: number) => void
   onDeleteSingleEducation?: (index: number) => void
   onDeleteEducation?: () => void
+  onEditContact?: () => void
+  onDeleteContact?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
@@ -93,6 +95,8 @@ export default function MobileProfileView({
   onEditSingleEducation,
   onDeleteSingleEducation,
   onDeleteEducation,
+  onEditContact,
+  onDeleteContact,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -247,7 +251,7 @@ export default function MobileProfileView({
                   )}
                   {user.contact_info.github && (
                     <a
-                      href={user.contact_info.github}
+                      href={user.contact_info.github.startsWith('http') ? user.contact_info.github : `https://${user.contact_info.github}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`group relative p-2.5 rounded-full transition-all duration-300 transform hover:scale-110 ${
@@ -266,7 +270,7 @@ export default function MobileProfileView({
                   {user.contact_info.portfolio && (
                     isLocalProfileUrl(user.contact_info.portfolio) && !user.username ? null : (
                       <a
-                        href={isLocalProfileUrl(user.contact_info.portfolio) ? `/profile/${user.username}` : user.contact_info.portfolio}
+                        href={isLocalProfileUrl(user.contact_info.portfolio) ? `/profile/${user.username}` : (user.contact_info.portfolio.startsWith('http') ? user.contact_info.portfolio : `https://${user.contact_info.portfolio}`)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`group relative p-2.5 rounded-full transition-all duration-300 transform hover:scale-110 ${
@@ -291,7 +295,7 @@ export default function MobileProfileView({
                   )}
                   {user.contact_info.twitter && (
                     <a
-                      href={user.contact_info.twitter}
+                      href={user.contact_info.twitter.startsWith('http') ? user.contact_info.twitter : `https://${user.contact_info.twitter}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`group relative p-2.5 rounded-full transition-all duration-300 transform hover:scale-110 ${
@@ -309,7 +313,7 @@ export default function MobileProfileView({
                   )}
                   {user.contact_info.website && (
                     <a
-                      href={user.contact_info.website}
+                      href={user.contact_info.website.startsWith('http') ? user.contact_info.website : `https://${user.contact_info.website}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`group relative p-2.5 rounded-full transition-all duration-300 transform hover:scale-110 ${
@@ -324,6 +328,23 @@ export default function MobileProfileView({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
                       </svg>
                     </a>
+                  )}
+                  {/* Edit Contact Button - Only show in edit mode for current user */}
+                  {isCurrentUser && isEditMode && onEditContact && (
+                    <button
+                      onClick={onEditContact}
+                      className={`group relative p-2.5 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                        isDark 
+                          ? 'bg-[#2a2a2a]/80 border border-[#10a37f]/20 hover:bg-[#10a37f]/20 hover:border-[#10a37f]/40' 
+                          : 'bg-white/80 border border-gray-200 hover:bg-[#10a37f]/10 hover:border-[#10a37f]/40'
+                      } shadow-lg hover:shadow-2xl`}
+                      title="Edit Contact Information"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      <svg className="relative w-4 h-4 text-[#10a37f] group-hover:text-[#0d8f6f] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
                   )}
                 </div>
               )}
@@ -356,7 +377,7 @@ export default function MobileProfileView({
 
             {/* Profile Sections */}
             <ProfileSections
-              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}`}
+              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}`}
               user={user}
               isEditMode={isEditMode}
               onEditAbout={onEditAbout}
@@ -375,6 +396,8 @@ export default function MobileProfileView({
               onEditSingleEducation={onEditSingleEducation}
               onDeleteSingleEducation={onDeleteSingleEducation}
               onDeleteEducation={onDeleteEducation}
+              onEditContact={onEditContact}
+              onDeleteContact={onDeleteContact}
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />
