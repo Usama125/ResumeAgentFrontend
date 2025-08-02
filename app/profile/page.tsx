@@ -18,7 +18,6 @@ import MobileProfileView from "@/components/profile/MobileProfileView"
 import EditModeToggle from "@/components/EditModeToggle"
 import AboutSectionEditModal from "@/components/AboutSectionEditModal"
 import SkillsSectionEditModal from "@/components/SkillsSectionEditModal"
-import SectionOrderManager from "@/components/SectionOrderManager"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
 
@@ -150,63 +149,30 @@ export default function CurrentUserProfilePage() {
     }
   }, [authLoading, authTimeout, isAuthenticated, authUser, router])
 
-  // Optimized user data fetching with prefetch detection
+  // Optimized user data fetching - use auth context data directly to avoid duplicate API calls
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    const initializeUserData = () => {
       if (!isAuthenticated || !authUser) {
         return;
       }
       
-      console.log('🔄 PROFILE PAGE - Fetching user data...', {
+      console.log('🔄 PROFILE PAGE - Initializing user data from auth context...', {
         authLoading,
         authTimeout,
-        userExists: !!authUser
+        userExists: !!authUser,
+        onboardingCompleted: authUser.onboarding_completed
       });
       
-      try {
-        setProfileLoading(true)
-        
-        // Try to use authUser data first if it's complete and recent
-        if (authUser && authUser.onboarding_completed) {
-          console.log('✅ PROFILE PAGE - Using auth context user data (onboarding completed)');
-          setUser(authUser)
-          setSuggestedQuestions(generateSuggestedQuestions(authUser))
-          setProfileLoading(false)
-          
-          // Optionally refresh in background for latest data
-          UserService.getCurrentUser().then(freshData => {
-            console.log('🔄 PROFILE PAGE - Background refresh completed');
-            setUser(freshData)
-            setSuggestedQuestions(generateSuggestedQuestions(freshData))
-          }).catch(error => {
-            console.log('⚠️ PROFILE PAGE - Background refresh failed, keeping existing data');
-          })
-          
-          return;
-        }
-        
-        // Fallback to API call if auth context data is incomplete
-        console.log('📡 PROFILE PAGE - Fetching fresh user data from API...');
-        const userData = await UserService.getCurrentUser()
-        setUser(userData)
-        setSuggestedQuestions(generateSuggestedQuestions(userData))
-        
-      } catch (error) {
-        console.error('❌ PROFILE PAGE - Error fetching user data:', error)
-        // If API fails but we have auth data, use it
-        if (authUser) {
-          console.log('🔄 PROFILE PAGE - Using fallback auth context data');
-          setUser(authUser)
-          setSuggestedQuestions(generateSuggestedQuestions(authUser))
-        }
-      } finally {
-        setProfileLoading(false)
-      }
+      // Use auth context data directly since it's already fresh from AuthContext
+      console.log('✅ PROFILE PAGE - Using auth context user data (avoiding duplicate API calls)');
+      setUser(authUser)
+      setSuggestedQuestions(generateSuggestedQuestions(authUser))
+      setProfileLoading(false)
     }
 
-    // Fetch user data when auth is ready (including timeout scenario)
+    // Initialize user data when auth is ready (including timeout scenario)
     if (isAuthenticated && authUser && (!authLoading || authTimeout)) {
-      fetchCurrentUser()
+      initializeUserData()
     }
   }, [isAuthenticated, authUser, authLoading, authTimeout])
 
@@ -359,20 +325,38 @@ export default function CurrentUserProfilePage() {
     setIsEditMode(newEditMode)
   }
 
-  const handleSectionOrderChange = async (sections: any[]) => {
+  const handleSectionOrderChange = async (newSectionOrder: string[]) => {
     if (!user) return
     
+    console.log('🔧 Attempting to update section order:', newSectionOrder)
+    
     try {
-      const newSectionOrder = sections.map(section => section.id)
-      setSectionOrder(newSectionOrder)
-      
-      // Save to backend
+      // Save to backend first, then update local state
       await UserService.reorderSections(newSectionOrder)
       
-      // Update user context
+      // Update both local state and auth context
+      setSectionOrder(newSectionOrder)
       updateUser({ section_order: newSectionOrder })
-    } catch (error) {
-      console.error('Error updating section order:', error)
+      
+      console.log('✅ Section order updated successfully:', newSectionOrder)
+    } catch (error: any) {
+      console.error('❌ Error updating section order:', error)
+      console.error('❌ Full error details:', error)
+      
+      // Log the exact request and response for debugging
+      if (error.detail) {
+        console.error('❌ Backend error detail:', error.detail)
+      }
+      if (error.responseData) {
+        console.error('❌ Backend response:', error.responseData)
+      }
+      
+      // Let's try to inspect the exact array we're sending
+      console.error('❌ Exact array sent:', JSON.stringify(newSectionOrder))
+      console.error('❌ Array length:', newSectionOrder.length)
+      newSectionOrder.forEach((section, index) => {
+        console.error(`❌ Section ${index}: "${section}" (length: ${section.length})`)
+      })
     }
   }
 

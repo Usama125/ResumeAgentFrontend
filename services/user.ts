@@ -83,12 +83,16 @@ export class UserService {
 
   // Reorder skills
   static async reorderSkills(skillIds: string[], token?: string): Promise<User> {
-    return authAPI.put<User>(`/users/me/skills/reorder`, skillIds, token);
+    return authAPI.put<User>(`/users/me/skills/reorder`, { skill_ids: skillIds }, token);
   }
 
   // Reorder sections
   static async reorderSections(sectionOrder: string[], token?: string): Promise<User> {
-    return authAPI.put<User>(`/users/me/sections/reorder`, sectionOrder, token);
+    console.log('🔧 UserService - sending section order request body');
+    console.log('🔧 UserService - sending:', { section_order: sectionOrder });
+    
+    // Send request body with section_order field as expected by backend
+    return authAPI.put<User>(`/users/me/sections/reorder`, { section_order: sectionOrder }, token);
   }
 }
 
