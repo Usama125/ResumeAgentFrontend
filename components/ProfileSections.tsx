@@ -40,6 +40,7 @@ import {
   hasSectionData
 } from "@/components/sections"
 import ProfileCompletionSection from "@/components/sections/ProfileCompletionSection"
+import PreferencesSection from "@/components/sections/PreferencesSection"
 
 interface ProfileSectionsProps {
   user: UserType
@@ -262,6 +263,9 @@ const ProfileSections = function ProfileSections({
       const sectionDef = SECTION_REGISTRY[sectionId]
       if (!sectionDef) return false
       
+      // Don't show private sections on public profile
+      if (sectionDef.isPrivate && !isEditMode) return false
+      
       const hasData = hasSectionData(user, sectionDef.field)
       
       // Always show sections with data, or show empty sections in edit mode
@@ -390,6 +394,12 @@ const ProfileSections = function ProfileSections({
             onEditInterests={onEditInterests}
           />
         )
+      case 'preferences':
+        return (
+          <PreferencesSection
+            {...commonProps}
+          />
+        )
       default:
         return null
     }
@@ -432,6 +442,10 @@ const ProfileSections = function ProfileSections({
                 {renderSection(sectionId)}
               </SortableSectionWrapper>
             ))}
+            <PreferencesSection
+              user={user}
+              isEditMode={isEditMode}
+            />
           </div>
         </SortableContext>
       </DndContext>

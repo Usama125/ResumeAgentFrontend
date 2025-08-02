@@ -12,6 +12,7 @@ export { default as PublicationsSection } from './PublicationsSection'
 export { default as VolunteerSection } from './VolunteerSection'
 export { default as InterestsSection } from './InterestsSection'
 export { default as ProfileCompletionSection } from './ProfileCompletionSection'
+export { default as PreferencesSection } from './PreferencesSection'
 
 // Section registry for dynamic rendering
 import { User as UserType } from "@/types"
@@ -24,7 +25,8 @@ import {
   BookOpen, 
   Globe, 
   FileText, 
-  Heart 
+  Heart,
+  Settings
 } from "lucide-react"
 
 export interface SectionDefinition {
@@ -35,6 +37,7 @@ export interface SectionDefinition {
   component: any
   hasEditModal?: boolean
   defaultOrder: number
+  isPrivate?: boolean
 }
 
 export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
@@ -136,6 +139,16 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     component: 'InterestsSection',
     hasEditModal: false,
     defaultOrder: 11
+  },
+  preferences: {
+    id: 'preferences',
+    title: 'Work Preferences',
+    icon: <Settings className="w-5 h-5 text-[#10a37f]" />,
+    field: 'work_preferences',
+    component: 'PreferencesSection',
+    hasEditModal: false,
+    defaultOrder: 12,
+    isPrivate: true
   }
 }
 
@@ -168,6 +181,16 @@ export const hasSectionData = (user: UserType, field: string): boolean => {
       return !!(user.volunteer_experience && user.volunteer_experience.length > 0)
     case 'interests':
       return !!(user.interests && user.interests.length > 0)
+    case 'work_preferences':
+      return !!(user.work_preferences && (
+        user.work_preferences.preferred_work_mode?.length > 0 ||
+        user.work_preferences.preferred_employment_type?.length > 0 ||
+        user.work_preferences.preferred_location ||
+        user.work_preferences.notice_period ||
+        user.work_preferences.availability ||
+        user.current_salary ||
+        user.expected_salary
+      ))
     default:
       return false
   }
