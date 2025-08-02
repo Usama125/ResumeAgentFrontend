@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { UserService, deleteProfileSection } from "@/services/user"
+import { UserService, deleteProfileSection, updateProfileSection } from "@/services/user"
 import { User as UserType } from "@/types"
 import { useAuth } from "@/context/AuthContext"
 import AuthService from "@/services/auth"
@@ -18,6 +18,7 @@ import MobileProfileView from "@/components/profile/MobileProfileView"
 import EditModeToggle from "@/components/EditModeToggle"
 import AboutSectionEditModal from "@/components/AboutSectionEditModal"
 import SkillsSectionEditModal from "@/components/SkillsSectionEditModal"
+import ExperienceSectionEditModal from "@/components/ExperienceSectionEditModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
 
@@ -48,6 +49,10 @@ export default function CurrentUserProfilePage() {
   const [isEditMode, setIsEditMode] = useState(false)
   const [isAboutEditModalOpen, setIsAboutEditModalOpen] = useState(false)
   const [isSkillsEditModalOpen, setIsSkillsEditModalOpen] = useState(false)
+  const [isExperienceEditModalOpen, setIsExperienceEditModalOpen] = useState(false)
+  const [experienceEditMode, setExperienceEditMode] = useState<'add' | 'edit'>('add')
+  const [editingExperience, setEditingExperience] = useState<any | null>(null)
+  const [editingExperienceIndex, setEditingExperienceIndex] = useState<number | null>(null)
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -321,6 +326,19 @@ export default function CurrentUserProfilePage() {
     }
   }
 
+  const handleExperienceUpdate = (newExperience: any[]) => {
+    if (user) {
+      // Update local state
+      setUser({
+        ...user,
+        experience_details: newExperience
+      })
+      
+      // Update global auth context
+      updateUser({ experience_details: newExperience })
+    }
+  }
+
   const handleAboutDelete = async () => {
     if (!user) return
     
@@ -360,6 +378,67 @@ export default function CurrentUserProfilePage() {
       console.log('✅ Skills section deleted successfully')
     } catch (error) {
       console.error('❌ Error deleting skills section:', error)
+    }
+  }
+
+  const handleExperienceDelete = async () => {
+    if (!user) return
+    
+    try {
+      const updatedUser = await deleteProfileSection('experience')
+      
+      // Update local state
+      setUser({
+        ...user,
+        experience_details: []
+      })
+      
+      // Update global auth context
+      updateUser({ experience_details: [] })
+      
+      console.log('✅ Experience section deleted successfully')
+    } catch (error) {
+      console.error('❌ Error deleting experience section:', error)
+    }
+  }
+
+  const handleAddExperience = () => {
+    setExperienceEditMode('add')
+    setEditingExperience(null)
+    setEditingExperienceIndex(null)
+    setIsExperienceEditModalOpen(true)
+  }
+
+  const handleEditExperience = (index: number) => {
+    if (user && user.experience_details && user.experience_details[index]) {
+      setExperienceEditMode('edit')
+      setEditingExperience(user.experience_details[index])
+      setEditingExperienceIndex(index)
+      setIsExperienceEditModalOpen(true)
+    }
+  }
+
+  const handleDeleteSingleExperience = async (index: number) => {
+    if (!user || !user.experience_details) return
+    
+    try {
+      const updatedExperiences = user.experience_details.filter((_, i) => i !== index)
+      
+      // Call API to update experiences
+      await updateProfileSection("experience", { experience_details: updatedExperiences })
+      
+      // Update local state
+      setUser({
+        ...user,
+        experience_details: updatedExperiences
+      })
+      
+      // Update global auth context
+      updateUser({ experience_details: updatedExperiences })
+      
+      console.log('✅ Experience deleted successfully')
+    } catch (error) {
+      console.error('❌ Error deleting experience:', error)
     }
   }
 
@@ -453,8 +532,12 @@ export default function CurrentUserProfilePage() {
           isEditMode={isEditMode}
           onEditAbout={() => setIsAboutEditModalOpen(true)}
           onEditSkills={() => setIsSkillsEditModalOpen(true)}
+          onEditExperience={handleAddExperience}
+          onEditSingleExperience={handleEditExperience}
+          onDeleteSingleExperience={handleDeleteSingleExperience}
           onDeleteAbout={handleAboutDelete}
           onDeleteSkills={handleSkillsDelete}
+          onDeleteExperience={handleExperienceDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -474,8 +557,12 @@ export default function CurrentUserProfilePage() {
           isEditMode={isEditMode}
           onEditAbout={() => setIsAboutEditModalOpen(true)}
           onEditSkills={() => setIsSkillsEditModalOpen(true)}
+          onEditExperience={handleAddExperience}
+          onEditSingleExperience={handleEditExperience}
+          onDeleteSingleExperience={handleDeleteSingleExperience}
           onDeleteAbout={handleAboutDelete}
           onDeleteSkills={handleSkillsDelete}
+          onDeleteExperience={handleExperienceDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -526,6 +613,17 @@ export default function CurrentUserProfilePage() {
         onClose={() => setIsSkillsEditModalOpen(false)}
         currentSkills={user?.skills || []}
         onUpdate={handleSkillsUpdate}
+      />
+
+      {/* Experience Section Edit Modal */}
+      <ExperienceSectionEditModal
+        isOpen={isExperienceEditModalOpen}
+        onClose={() => setIsExperienceEditModalOpen(false)}
+        currentExperiences={user?.experience_details || []}
+        onUpdate={handleExperienceUpdate}
+        editingExperience={editingExperience}
+        editingIndex={editingExperienceIndex}
+        mode={experienceEditMode}
       />
 
       <RateLimitModal

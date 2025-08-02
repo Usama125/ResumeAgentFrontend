@@ -45,8 +45,12 @@ interface ProfileSectionsProps {
   isEditMode?: boolean
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onEditExperience?: () => void
+  onEditSingleExperience?: (index: number) => void
+  onDeleteSingleExperience?: (index: number) => void
   onDeleteAbout?: () => void
   onDeleteSkills?: () => void
+  onDeleteExperience?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -96,8 +100,12 @@ const ProfileSections = memo(function ProfileSections({
   isEditMode = false,
   onEditAbout,
   onEditSkills,
+  onEditExperience,
+  onEditSingleExperience,
+  onDeleteSingleExperience,
   onDeleteAbout,
   onDeleteSkills,
+  onDeleteExperience,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
@@ -229,7 +237,15 @@ const ProfileSections = memo(function ProfileSections({
           />
         )
       case 'experience':
-        return <ExperienceSection {...commonProps} />
+        return (
+          <ExperienceSection
+            {...commonProps}
+            onDelete={onDeleteExperience}
+            onAddExperience={onEditExperience}
+            onEditExperience={onEditSingleExperience}
+            onDeleteExperience={onDeleteSingleExperience}
+          />
+        )
       case 'projects':
         return <ProjectsSection {...commonProps} />
       case 'education':
@@ -249,7 +265,7 @@ const ProfileSections = memo(function ProfileSections({
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onDeleteAbout, onDeleteSkills])
+  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onDeleteAbout, onDeleteSkills, onDeleteExperience])
 
   if (isEditMode) {
     return (

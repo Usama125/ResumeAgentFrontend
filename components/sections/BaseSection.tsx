@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, ReactNode } from "react"
-import { ChevronDown, ChevronUp, Edit, Trash2, GripVertical } from "lucide-react"
+import { ChevronDown, ChevronUp, Edit, Trash2, GripVertical, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/context/ThemeContext"
 import ConfirmationModal from "@/components/ConfirmationModal"
@@ -17,6 +17,7 @@ interface BaseSectionProps {
   onEdit?: () => void
   onDelete?: () => void
   onToggleExpand?: () => void
+  onAdd?: () => void
   className?: string
   showDragHandle?: boolean
   dragHandleProps?: any
@@ -33,6 +34,7 @@ export default function BaseSection({
   onEdit,
   onDelete,
   onToggleExpand,
+  onAdd,
   className = "",
   showDragHandle = false,
   dragHandleProps = {}
@@ -75,7 +77,7 @@ export default function BaseSection({
       </div>
       
       <div className="flex items-center gap-2 flex-shrink-0">
-        {isEditMode && (onEdit || onDelete) && (
+        {isEditMode && (onEdit || onDelete || onAdd) && (
           <>
             {onDelete && (
               <Button
@@ -86,6 +88,17 @@ export default function BaseSection({
                 title="Delete this section"
               >
                 <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
+            {onAdd && (
+              <Button
+                onClick={onAdd}
+                size="sm"
+                variant="ghost"
+                className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-2"
+                title="Add new item"
+              >
+                <Plus className="w-4 h-4" />
               </Button>
             )}
             {onEdit && (

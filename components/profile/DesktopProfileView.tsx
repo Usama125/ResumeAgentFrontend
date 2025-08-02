@@ -43,8 +43,12 @@ interface DesktopProfileViewProps {
   isEditMode?: boolean
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onEditExperience?: () => void
+  onEditSingleExperience?: (index: number) => void
+  onDeleteSingleExperience?: (index: number) => void
   onDeleteAbout?: () => void
   onDeleteSkills?: () => void
+  onDeleteExperience?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -67,8 +71,12 @@ const PortfolioSection = memo<{
   onEditPhoto?: () => void
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onEditExperience?: () => void
+  onEditSingleExperience?: (index: number) => void
+  onDeleteSingleExperience?: (index: number) => void
   onDeleteAbout?: () => void
   onDeleteSkills?: () => void
+  onDeleteExperience?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -82,8 +90,12 @@ const PortfolioSection = memo<{
   onEditPhoto,
   onEditAbout,
   onEditSkills,
+  onEditExperience,
+  onEditSingleExperience,
+  onDeleteSingleExperience,
   onDeleteAbout,
   onDeleteSkills,
+  onDeleteExperience,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -369,8 +381,12 @@ const PortfolioSection = memo<{
                 isEditMode={isEditMode}
                 onEditAbout={onEditAbout}
                 onEditSkills={onEditSkills}
+                onEditExperience={onEditExperience}
+                onEditSingleExperience={onEditSingleExperience}
+                onDeleteSingleExperience={onDeleteSingleExperience}
                 onDeleteAbout={onDeleteAbout}
                 onDeleteSkills={onDeleteSkills}
+                onDeleteExperience={onDeleteExperience}
                 onSectionOrderChange={onSectionOrderChange}
                 onAddSection={onAddSection}
               />
@@ -427,8 +443,12 @@ export default function DesktopProfileView({
   isEditMode = false,
   onEditAbout,
   onEditSkills,
+  onEditExperience,
+  onEditSingleExperience,
+  onDeleteSingleExperience,
   onDeleteAbout,
   onDeleteSkills,
+  onDeleteExperience,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -461,12 +481,16 @@ export default function DesktopProfileView({
     onEditPhoto,
     onEditAbout,
     onEditSkills,
+    onEditExperience,
+    onEditSingleExperience,
+    onDeleteSingleExperience,
     onDeleteAbout,
     onDeleteSkills,
+    onDeleteExperience,
     onEditModeToggle,
     onSectionOrderChange,
     onAddSection
-  }), [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onDeleteAbout, onDeleteSkills, onEditModeToggle, onSectionOrderChange, onAddSection])
+  }), [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onDeleteAbout, onDeleteSkills, onDeleteExperience, onEditModeToggle, onSectionOrderChange, onAddSection])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,

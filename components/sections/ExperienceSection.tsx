@@ -1,6 +1,7 @@
 "use client"
 
-import { Briefcase } from "lucide-react"
+import { Briefcase, Edit, Trash2, Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
@@ -16,6 +17,9 @@ interface ExperienceSectionProps {
   onToggleExpand?: () => void
   showDragHandle?: boolean
   dragHandleProps?: any
+  onEditExperience?: (index: number) => void
+  onDeleteExperience?: (index: number) => void
+  onAddExperience?: () => void
 }
 
 export default function ExperienceSection({
@@ -27,7 +31,10 @@ export default function ExperienceSection({
   onDelete,
   onToggleExpand,
   showDragHandle = false,
-  dragHandleProps = {}
+  dragHandleProps = {},
+  onEditExperience,
+  onDeleteExperience,
+  onAddExperience
 }: ExperienceSectionProps) {
   const { isDark } = useTheme()
 
@@ -47,8 +54,8 @@ export default function ExperienceSection({
       isEditMode={isEditMode}
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
-      onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={hasData ? onDelete : undefined}
+      onAdd={isEditMode ? onAddExperience : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
@@ -59,25 +66,56 @@ export default function ExperienceSection({
             <div key={index} className="relative pl-8 border-l-2 border-[#10a37f]/30">
               <div className={`absolute -left-2 top-0 w-4 h-4 bg-[#10a37f] rounded-full border-2 ${isDark ? 'border-[#0a0a0a]' : 'border-white'}`}></div>
               <div className="space-y-2">
-                <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>{exp.position}</h3>
-                <p className="text-[#10a37f] font-medium">{exp.company}</p>
-                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{exp.duration}</p>
-                <div className="relative">
-                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed ${exp.description && exp.description.length > 100 ? 'line-clamp-2' : ''}`}>
-                    {exp.description}
-                  </p>
-                  {exp.description && exp.description.length > 100 && (
-                    <div className="relative inline-block mt-2">
-                      <span className="text-[#10a37f] hover:text-[#0d8f6f] text-sm font-medium transition-colors cursor-pointer group">
-                        See More
-                        <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[99999] transform-gpu top-full left-0 mt-2">
-                          <div className={`${isDark ? 'bg-[#2a2a2a] border-[#10a37f]/30' : 'bg-white border-gray-200'} border rounded-lg p-4 shadow-2xl max-w-md w-96`}>
-                            <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed text-sm`}>
-                              {exp.description}
-                            </p>
-                          </div>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>{exp.position}</h3>
+                    <p className="text-[#10a37f] font-medium">{exp.company}</p>
+                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{exp.duration}</p>
+                    <div className="relative">
+                      <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed ${exp.description && exp.description.length > 100 ? 'line-clamp-2' : ''}`}>
+                        {exp.description}
+                      </p>
+                      {exp.description && exp.description.length > 100 && (
+                        <div className="relative inline-block mt-2">
+                          <span className="text-[#10a37f] hover:text-[#0d8f6f] text-sm font-medium transition-colors cursor-pointer group">
+                            See More
+                            <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[99999] transform-gpu top-full left-0 mt-2">
+                              <div className={`${isDark ? 'bg-[#2a2a2a] border-[#10a37f]/30' : 'bg-white border-gray-200'} border rounded-lg p-4 shadow-2xl max-w-md w-96`}>
+                                <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed text-sm`}>
+                                  {exp.description}
+                                </p>
+                              </div>
+                            </div>
+                          </span>
                         </div>
-                      </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {isEditMode && (onEditExperience || onDeleteExperience) && (
+                    <div className="flex gap-2 ml-4">
+                      {onDeleteExperience && (
+                        <Button
+                          onClick={() => onDeleteExperience(index)}
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-2"
+                          title="Delete experience"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {onEditExperience && (
+                        <Button
+                          onClick={() => onEditExperience(index)}
+                          size="sm"
+                          variant="ghost"
+                          className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-2"
+                          title="Edit experience"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>
