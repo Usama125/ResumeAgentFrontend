@@ -39,6 +39,7 @@ import {
   DEFAULT_SECTION_ORDER,
   hasSectionData
 } from "@/components/sections"
+import ProfileCompletionSection from "@/components/sections/ProfileCompletionSection"
 
 interface ProfileSectionsProps {
   user: UserType
@@ -406,6 +407,22 @@ const ProfileSections = function ProfileSections({
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-6">
+            {/* Profile Completion Section - Always at top in edit mode */}
+            <ProfileCompletionSection
+              user={user}
+              isEditMode={isEditMode}
+              onEditAbout={onEditAbout}
+              onEditSkills={onEditSkills}
+              onEditExperience={onEditExperience}
+              onEditProject={onEditProject}
+              onEditEducation={onEditEducation}
+              onEditContact={onEditContact}
+              onAddLanguage={onAddLanguage}
+              onAddAward={onAddAward}
+              onAddPublication={onAddPublication}
+              onAddVolunteerExperience={onAddVolunteerExperience}
+              onAddInterests={onAddInterests}
+            />
             {sectionsToRender.map((sectionId) => (
               <SortableSectionWrapper
                 key={sectionId}

@@ -11,6 +11,7 @@ export { default as AwardsSection } from './AwardsSection'
 export { default as PublicationsSection } from './PublicationsSection'
 export { default as VolunteerSection } from './VolunteerSection'
 export { default as InterestsSection } from './InterestsSection'
+export { default as ProfileCompletionSection } from './ProfileCompletionSection'
 
 // Section registry for dynamic rendering
 import { User as UserType } from "@/types"
