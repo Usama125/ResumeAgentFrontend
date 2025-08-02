@@ -94,10 +94,16 @@ export class UserService {
     // Send request body with section_order field as expected by backend
     return authAPI.put<User>(`/users/me/sections/reorder`, { section_order: sectionOrder }, token);
   }
+
+  // Delete specific profile section
+  static async deleteProfileSection(sectionName: string, token?: string): Promise<User> {
+    return authAPI.delete<User>(`/users/me/sections/${sectionName}`, token);
+  }
 }
 
 // Export individual functions for easier imports
 export const updateProfileSection = UserService.updateProfileSection;
+export const deleteProfileSection = UserService.deleteProfileSection;
 export const reorderSkills = UserService.reorderSkills;
 export const reorderSections = UserService.reorderSections;
 export const getCurrentUser = UserService.getCurrentUser;

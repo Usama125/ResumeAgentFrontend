@@ -47,7 +47,7 @@ export default function AboutSection({
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
       onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={hasData ? onDelete : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}

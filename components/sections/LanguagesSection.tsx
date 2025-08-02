@@ -68,7 +68,7 @@ export default function LanguagesSection({
                 {lang.proficiency && (
                   <span className={`text-xs px-2 py-1 rounded-full ${
                     lang.proficiency === "Native" 
-                      ? "bg-green-500 text-white" 
+                      ? "bg-[#10a37f] text-white" 
                       : lang.proficiency === "Fluent"
                       ? "bg-blue-500 text-white"
                       : lang.proficiency === "Advanced"

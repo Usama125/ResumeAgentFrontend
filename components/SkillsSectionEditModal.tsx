@@ -76,7 +76,7 @@ function SortableSkillItem({
 
   const getLevelColor = (level: string) => {
     switch(level) {
-      case "Expert": return "bg-green-500"
+      case "Expert": return "bg-[#10a37f]"
       case "Advanced": return "bg-blue-500"
       case "Intermediate": return "bg-gray-500"
       default: return "bg-gray-400"

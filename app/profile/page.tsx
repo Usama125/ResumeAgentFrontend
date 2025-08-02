@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { UserService } from "@/services/user"
+import { UserService, deleteProfileSection } from "@/services/user"
 import { User as UserType } from "@/types"
 import { useAuth } from "@/context/AuthContext"
 import AuthService from "@/services/auth"
@@ -321,6 +321,48 @@ export default function CurrentUserProfilePage() {
     }
   }
 
+  const handleAboutDelete = async () => {
+    if (!user) return
+    
+    try {
+      const updatedUser = await deleteProfileSection('about')
+      
+      // Update local state
+      setUser({
+        ...user,
+        summary: ''
+      })
+      
+      // Update global auth context
+      updateUser({ summary: '' })
+      
+      console.log('✅ About section deleted successfully')
+    } catch (error) {
+      console.error('❌ Error deleting about section:', error)
+    }
+  }
+
+  const handleSkillsDelete = async () => {
+    if (!user) return
+    
+    try {
+      const updatedUser = await deleteProfileSection('skills')
+      
+      // Update local state
+      setUser({
+        ...user,
+        skills: []
+      })
+      
+      // Update global auth context
+      updateUser({ skills: [] })
+      
+      console.log('✅ Skills section deleted successfully')
+    } catch (error) {
+      console.error('❌ Error deleting skills section:', error)
+    }
+  }
+
   const handleEditModeToggle = (newEditMode: boolean) => {
     setIsEditMode(newEditMode)
   }
@@ -410,6 +452,8 @@ export default function CurrentUserProfilePage() {
           isEditMode={isEditMode}
           onEditAbout={() => setIsAboutEditModalOpen(true)}
           onEditSkills={() => setIsSkillsEditModalOpen(true)}
+          onDeleteAbout={handleAboutDelete}
+          onDeleteSkills={handleSkillsDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -429,6 +473,8 @@ export default function CurrentUserProfilePage() {
           isEditMode={isEditMode}
           onEditAbout={() => setIsAboutEditModalOpen(true)}
           onEditSkills={() => setIsSkillsEditModalOpen(true)}
+          onDeleteAbout={handleAboutDelete}
+          onDeleteSkills={handleSkillsDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}

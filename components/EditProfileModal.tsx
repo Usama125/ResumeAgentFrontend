@@ -544,7 +544,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                             <span className={`text-xs ${themeClasses.text.tertiary}`}>Level:</span>
                             <Badge 
                               className={`${
-                                skill.level === 'Expert' ? 'bg-green-500 hover:bg-green-600' :
+                                skill.level === 'Expert' ? 'bg-[#10a37f] hover:bg-[#0d8f6f]' :
                                 skill.level === 'Advanced' ? 'bg-blue-500 hover:bg-blue-600' :
                                 skill.level === 'Intermediate' ? 'bg-gray-500 hover:bg-gray-600' :
                                 'bg-gray-400 hover:bg-gray-500'

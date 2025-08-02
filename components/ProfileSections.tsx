@@ -45,6 +45,8 @@ interface ProfileSectionsProps {
   isEditMode?: boolean
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onDeleteAbout?: () => void
+  onDeleteSkills?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -94,6 +96,8 @@ const ProfileSections = memo(function ProfileSections({
   isEditMode = false,
   onEditAbout,
   onEditSkills,
+  onDeleteAbout,
+  onDeleteSkills,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
@@ -213,6 +217,7 @@ const ProfileSections = memo(function ProfileSections({
           <AboutSection
             {...commonProps}
             onEdit={onEditAbout}
+            onDelete={onDeleteAbout}
           />
         )
       case 'skills':
@@ -220,6 +225,7 @@ const ProfileSections = memo(function ProfileSections({
           <SkillsSection
             {...commonProps}
             onEdit={onEditSkills}
+            onDelete={onDeleteSkills}
           />
         )
       case 'experience':
@@ -243,7 +249,7 @@ const ProfileSections = memo(function ProfileSections({
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills])
+  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onDeleteAbout, onDeleteSkills])
 
   if (isEditMode) {
     return (

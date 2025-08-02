@@ -43,6 +43,8 @@ interface MobileProfileViewProps {
   isEditMode?: boolean
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onDeleteAbout?: () => void
+  onDeleteSkills?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
@@ -65,6 +67,8 @@ export default function MobileProfileView({
   isEditMode = false,
   onEditAbout,
   onEditSkills,
+  onDeleteAbout,
+  onDeleteSkills,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -330,6 +334,8 @@ export default function MobileProfileView({
               isEditMode={isEditMode}
               onEditAbout={onEditAbout}
               onEditSkills={onEditSkills}
+              onDeleteAbout={onDeleteAbout}
+              onDeleteSkills={onDeleteSkills}
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />

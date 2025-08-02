@@ -43,6 +43,8 @@ interface DesktopProfileViewProps {
   isEditMode?: boolean
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onDeleteAbout?: () => void
+  onDeleteSkills?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -65,6 +67,8 @@ const PortfolioSection = memo<{
   onEditPhoto?: () => void
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onDeleteAbout?: () => void
+  onDeleteSkills?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -78,6 +82,8 @@ const PortfolioSection = memo<{
   onEditPhoto,
   onEditAbout,
   onEditSkills,
+  onDeleteAbout,
+  onDeleteSkills,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -363,6 +369,8 @@ const PortfolioSection = memo<{
                 isEditMode={isEditMode}
                 onEditAbout={onEditAbout}
                 onEditSkills={onEditSkills}
+                onDeleteAbout={onDeleteAbout}
+                onDeleteSkills={onDeleteSkills}
                 onSectionOrderChange={onSectionOrderChange}
                 onAddSection={onAddSection}
               />
@@ -419,6 +427,8 @@ export default function DesktopProfileView({
   isEditMode = false,
   onEditAbout,
   onEditSkills,
+  onDeleteAbout,
+  onDeleteSkills,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -443,10 +453,12 @@ export default function DesktopProfileView({
     onEditPhoto,
     onEditAbout,
     onEditSkills,
+    onDeleteAbout,
+    onDeleteSkills,
     onEditModeToggle,
     onSectionOrderChange,
     onAddSection
-  }), [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditModeToggle, onSectionOrderChange, onAddSection])
+  }), [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onDeleteAbout, onDeleteSkills, onEditModeToggle, onSectionOrderChange, onAddSection])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,
