@@ -403,7 +403,7 @@ export default function DesktopPublicProfileView({
     <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">
       <ResizableSplitPane
         isVisible={isChatVisible}
-        defaultLeftWidth={50}
+        defaultLeftWidth={65}
         minLeftWidth={30}
         maxLeftWidth={70}
       >
