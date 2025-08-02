@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { UserService, deleteProfileSection, updateProfileSection } from "@/services/user"
 import { User as UserType } from "@/types"
@@ -19,6 +19,7 @@ import EditModeToggle from "@/components/EditModeToggle"
 import AboutSectionEditModal from "@/components/AboutSectionEditModal"
 import SkillsSectionEditModal from "@/components/SkillsSectionEditModal"
 import ExperienceSectionEditModal from "@/components/ExperienceSectionEditModal"
+import ProjectsSectionEditModal from "@/components/ProjectsSectionEditModal"
 import ConfirmationModal from "@/components/ConfirmationModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
@@ -64,6 +65,19 @@ export default function CurrentUserProfilePage() {
     experienceIndex: null,
     experienceTitle: ""
   })
+  const [isProjectsEditModalOpen, setIsProjectsEditModalOpen] = useState(false)
+  const [projectsEditMode, setProjectsEditMode] = useState<'add' | 'edit'>('add')
+  const [editingProject, setEditingProject] = useState<any | null>(null)
+  const [editingProjectIndex, setEditingProjectIndex] = useState<number | null>(null)
+  const [deleteProjectConfirm, setDeleteProjectConfirm] = useState<{
+    isOpen: boolean
+    projectIndex: number | null
+    projectTitle: string
+  }>({
+    isOpen: false,
+    projectIndex: null,
+    projectTitle: ""
+  })
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -73,6 +87,70 @@ export default function CurrentUserProfilePage() {
   const { isDark } = useTheme()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
   const { toast } = useToast()
+
+  // Projects handlers - moved to top level to follow Rules of Hooks
+  const handleAddProject = useCallback(() => {
+    console.log('handleAddProject called')
+    setProjectsEditMode('add')
+    setEditingProject(null)
+    setEditingProjectIndex(null)
+    setIsProjectsEditModalOpen(true)
+  }, [])
+
+  const handleEditProject = useCallback((index: number) => {
+    if (user && user.projects && user.projects[index]) {
+      setProjectsEditMode('edit')
+      setEditingProject(user.projects[index])
+      setEditingProjectIndex(index)
+      setIsProjectsEditModalOpen(true)
+    }
+  }, [user])
+
+  const handleDeleteSingleProject = useCallback((index: number) => {
+    if (!user || !user.projects || !user.projects[index]) return
+    
+    const project = user.projects[index]
+    setDeleteProjectConfirm({
+      isOpen: true,
+      projectIndex: index,
+      projectTitle: project.name
+    })
+  }, [user])
+
+  const handleProjectsDelete = useCallback(async () => {
+    if (!user) return
+    
+    try {
+      // Call API to delete projects section
+      await deleteProfileSection("projects")
+      
+      // Update local state
+      setUser({
+        ...user,
+        projects: []
+      })
+      
+      // Update global auth context
+      updateUser({ projects: [] })
+      
+      // Show success toast
+      toast({
+        title: "Success",
+        description: "Projects section deleted successfully",
+      })
+      
+      console.log('✅ Projects section deleted successfully')
+    } catch (error: any) {
+      console.error('❌ Error deleting projects section:', error)
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete projects section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
 
   // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
@@ -497,6 +575,60 @@ export default function CurrentUserProfilePage() {
     }
   }
 
+
+
+  const confirmDeleteProject = async () => {
+    if (!user || !user.projects || deleteProjectConfirm.projectIndex === null) return
+    
+    try {
+      const updatedProjects = user.projects.filter((_, i) => i !== deleteProjectConfirm.projectIndex)
+      
+      // Call API to update projects
+      await updateProfileSection("projects", { projects: updatedProjects })
+      
+      // Update local state
+      setUser({
+        ...user,
+        projects: updatedProjects
+      })
+      
+      // Update global auth context
+      updateUser({ projects: updatedProjects })
+      
+      // Show success toast
+      toast({
+        title: "Success",
+        description: "Project deleted successfully",
+      })
+      
+      console.log('✅ Project deleted successfully')
+    } catch (error: any) {
+      console.error('❌ Error deleting project:', error)
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete project",
+        variant: "destructive"
+      })
+    } finally {
+      setDeleteProjectConfirm({
+        isOpen: false,
+        projectIndex: null,
+        projectTitle: ""
+      })
+    }
+  }
+
+  const handleProjectsUpdate = (newProjects: any[]) => {
+    if (user) {
+      setUser({
+        ...user,
+        projects: newProjects
+      })
+    }
+  }
+
   const handleEditModeToggle = (newEditMode: boolean, shouldShowChat?: boolean) => {
     setIsEditMode(newEditMode)
     // Pass chat visibility control to child components
@@ -590,15 +722,21 @@ export default function CurrentUserProfilePage() {
           onEditExperience={handleAddExperience}
           onEditSingleExperience={handleEditExperience}
           onDeleteSingleExperience={handleDeleteSingleExperience}
+          onEditProject={handleAddProject}
+          onEditSingleProject={handleEditProject}
+          onDeleteSingleProject={handleDeleteSingleProject}
           onDeleteAbout={handleAboutDelete}
           onDeleteSkills={handleSkillsDelete}
           onDeleteExperience={handleExperienceDelete}
+          onDeleteProjects={handleProjectsDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
         />
       ) : (
-        <DesktopProfileView
+        <>
+
+          <DesktopProfileView
           user={user}
           chatHistory={chatHistory}
           setChatHistory={setChatHistory}
@@ -615,13 +753,18 @@ export default function CurrentUserProfilePage() {
           onEditExperience={handleAddExperience}
           onEditSingleExperience={handleEditExperience}
           onDeleteSingleExperience={handleDeleteSingleExperience}
+          onEditProject={handleAddProject}
+          onEditSingleProject={handleEditProject}
+          onDeleteSingleProject={handleDeleteSingleProject}
           onDeleteAbout={handleAboutDelete}
           onDeleteSkills={handleSkillsDelete}
           onDeleteExperience={handleExperienceDelete}
+          onDeleteProjects={handleProjectsDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
         />
+        </>
       )}
 
       {/* Edit Profile Modal - Responsive */}
@@ -681,6 +824,17 @@ export default function CurrentUserProfilePage() {
         mode={experienceEditMode}
       />
 
+      {/* Projects Section Edit Modal */}
+      <ProjectsSectionEditModal
+        isOpen={isProjectsEditModalOpen}
+        onClose={() => setIsProjectsEditModalOpen(false)}
+        currentProjects={user?.projects || []}
+        onUpdate={handleProjectsUpdate}
+        editingProject={editingProject}
+        editingIndex={editingProjectIndex}
+        mode={projectsEditMode}
+      />
+
       <RateLimitModal
         isOpen={rateLimitState.isOpen}
         onClose={hideRateLimitModal}
@@ -697,6 +851,18 @@ export default function CurrentUserProfilePage() {
         onConfirm={confirmDeleteExperience}
         title="Delete Experience"
         message={`Are you sure you want to delete "${deleteExperienceConfirm.experienceTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+
+      {/* Delete Project Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteProjectConfirm.isOpen}
+        onClose={() => setDeleteProjectConfirm({ isOpen: false, projectIndex: null, projectTitle: "" })}
+        onConfirm={confirmDeleteProject}
+        title="Delete Project"
+        message={`Are you sure you want to delete "${deleteProjectConfirm.projectTitle}"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"

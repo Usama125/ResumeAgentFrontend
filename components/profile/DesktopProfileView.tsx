@@ -46,9 +46,13 @@ interface DesktopProfileViewProps {
   onEditExperience?: () => void
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
+  onEditProject?: () => void
+  onEditSingleProject?: (index: number) => void
+  onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
   onDeleteSkills?: () => void
   onDeleteExperience?: () => void
+  onDeleteProjects?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -60,27 +64,8 @@ import EditModeToggle from '@/components/EditModeToggle';
 import ProfileSections from '@/components/ProfileSections';
 import AddMissingSections from '@/components/AddMissingSections';
 
-// Memoized Portfolio Section Component
-const PortfolioSection = memo<{
-  user: UserType
-  isChatVisible: boolean
-  isCurrentUser: boolean
-  isEditMode: boolean
-  isDark: boolean
-  onChatToggle: () => void
-  onEditPhoto?: () => void
-  onEditAbout?: () => void
-  onEditSkills?: () => void
-  onEditExperience?: () => void
-  onEditSingleExperience?: (index: number) => void
-  onDeleteSingleExperience?: (index: number) => void
-  onDeleteAbout?: () => void
-  onDeleteSkills?: () => void
-  onDeleteExperience?: () => void
-  onEditModeToggle?: (editMode: boolean) => void
-  onSectionOrderChange?: (sections: any[]) => void
-  onAddSection?: (sectionId: string) => void
-}>(function PortfolioSection({
+// Portfolio Section Component
+const PortfolioSection = function({
   user,
   isChatVisible,
   isCurrentUser,
@@ -93,13 +78,42 @@ const PortfolioSection = memo<{
   onEditExperience,
   onEditSingleExperience,
   onDeleteSingleExperience,
+  onEditProject,
+  onEditSingleProject,
+  onDeleteSingleProject,
   onDeleteAbout,
   onDeleteSkills,
   onDeleteExperience,
+  onDeleteProjects,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
+}: {
+  user: UserType
+  isChatVisible: boolean
+  isCurrentUser: boolean
+  isEditMode: boolean
+  isDark: boolean
+  onChatToggle: () => void
+  onEditPhoto?: () => void
+  onEditAbout?: () => void
+  onEditSkills?: () => void
+  onEditExperience?: () => void
+  onEditSingleExperience?: (index: number) => void
+  onDeleteSingleExperience?: (index: number) => void
+  onEditProject?: () => void
+  onEditSingleProject?: (index: number) => void
+  onDeleteSingleProject?: (index: number) => void
+  onDeleteAbout?: () => void
+  onDeleteSkills?: () => void
+  onDeleteExperience?: () => void
+  onDeleteProjects?: () => void
+  onEditModeToggle?: (editMode: boolean) => void
+  onSectionOrderChange?: (sections: any[]) => void
+  onAddSection?: (sectionId: string) => void
 }) {
+
+
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
         
@@ -377,6 +391,7 @@ const PortfolioSection = memo<{
             {/* Sections Container */}
             <div className="space-y-6">
               <ProfileSections
+                key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}`}
                 user={user}
                 isEditMode={isEditMode}
                 onEditAbout={onEditAbout}
@@ -384,9 +399,13 @@ const PortfolioSection = memo<{
                 onEditExperience={onEditExperience}
                 onEditSingleExperience={onEditSingleExperience}
                 onDeleteSingleExperience={onDeleteSingleExperience}
+                onEditProject={onEditProject}
+                onEditSingleProject={onEditSingleProject}
+                onDeleteSingleProject={onDeleteSingleProject}
                 onDeleteAbout={onDeleteAbout}
                 onDeleteSkills={onDeleteSkills}
                 onDeleteExperience={onDeleteExperience}
+                onDeleteProjects={onDeleteProjects}
                 onSectionOrderChange={onSectionOrderChange}
                 onAddSection={onAddSection}
               />
@@ -395,7 +414,7 @@ const PortfolioSection = memo<{
         </div>
     </div>
   )
-})
+}
 
 // Memoized Chat Section Component
 const ChatSection = memo<{
@@ -446,16 +465,23 @@ export default function DesktopProfileView({
   onEditExperience,
   onEditSingleExperience,
   onDeleteSingleExperience,
+  onEditProject,
+  onEditSingleProject,
+  onDeleteSingleProject,
   onDeleteAbout,
   onDeleteSkills,
   onDeleteExperience,
+  onDeleteProjects,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
 }: DesktopProfileViewProps) {
+
   const [isChatVisible, setIsChatVisible] = useState(true)
   const { isDark } = useTheme()
   const router = useRouter()
+  
+
 
   // Auto-hide chat when entering edit mode, keep hidden when exiting edit mode
   useEffect(() => {
@@ -471,26 +497,38 @@ export default function DesktopProfileView({
   }, [isChatVisible])
 
   // Memoized props to prevent unnecessary re-renders
-  const portfolioSectionProps = useMemo(() => ({
-    user,
-    isChatVisible,
-    isCurrentUser,
-    isEditMode,
-    isDark,
-    onChatToggle: handleChatToggle,
-    onEditPhoto,
-    onEditAbout,
-    onEditSkills,
-    onEditExperience,
-    onEditSingleExperience,
-    onDeleteSingleExperience,
-    onDeleteAbout,
-    onDeleteSkills,
-    onDeleteExperience,
-    onEditModeToggle,
-    onSectionOrderChange,
-    onAddSection
-  }), [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onDeleteAbout, onDeleteSkills, onDeleteExperience, onEditModeToggle, onSectionOrderChange, onAddSection])
+  const portfolioSectionProps = useMemo(() => {
+    console.log('DesktopProfileView: Creating portfolioSectionProps with Projects handlers:', {
+      onEditProject: !!onEditProject,
+      onEditSingleProject: !!onEditSingleProject,
+      onDeleteSingleProject: !!onDeleteSingleProject,
+      onDeleteProjects: !!onDeleteProjects
+    })
+    return {
+      user,
+      isChatVisible,
+      isCurrentUser,
+      isEditMode,
+      isDark,
+      onChatToggle: handleChatToggle,
+      onEditPhoto,
+      onEditAbout,
+      onEditSkills,
+      onEditExperience,
+      onEditSingleExperience,
+      onDeleteSingleExperience,
+      onEditProject,
+      onEditSingleProject,
+      onDeleteSingleProject,
+      onDeleteAbout,
+      onDeleteSkills,
+      onDeleteExperience,
+      onDeleteProjects,
+      onEditModeToggle,
+      onSectionOrderChange,
+      onAddSection
+    }
+  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditModeToggle, onSectionOrderChange, onAddSection])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,

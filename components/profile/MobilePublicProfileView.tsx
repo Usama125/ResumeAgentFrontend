@@ -260,7 +260,7 @@ export default function MobilePublicProfileView({
               {/* Stats Row */}
               <div className="flex justify-center space-x-4">
                 <div className="text-center">
-                  <div className={`text-lg font-bold ${getThemeClasses().text}`}>
+                  <div className={`text-lg font-bold ${getThemeClasses(isDark).text.primary}`}>
                     {(() => {
                       if (user.experience && user.experience.trim() !== '') {
                         return user.experience;
@@ -272,11 +272,11 @@ export default function MobilePublicProfileView({
                   <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Experience</div>
                 </div>
                 <div className="text-center">
-                  <div className={`text-lg font-bold ${getThemeClasses().text}`}>{(user.skills || []).length}</div>
+                  <div className={`text-lg font-bold ${getThemeClasses(isDark).text.primary}`}>{(user.skills || []).length}</div>
                   <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Skills</div>
                 </div>
                 <div className="text-center">
-                  <div className={`text-lg font-bold ${getThemeClasses().text}`}>{(user.projects || []).length}</div>
+                  <div className={`text-lg font-bold ${getThemeClasses(isDark).text.primary}`}>{(user.projects || []).length}</div>
                   <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Projects</div>
                 </div>
               </div>

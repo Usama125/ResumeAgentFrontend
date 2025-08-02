@@ -48,9 +48,13 @@ interface ProfileSectionsProps {
   onEditExperience?: () => void
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
+  onEditProject?: () => void
+  onEditSingleProject?: (index: number) => void
+  onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
   onDeleteSkills?: () => void
   onDeleteExperience?: () => void
+  onDeleteProjects?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -95,7 +99,7 @@ function SortableSectionWrapper({ id, children, isEditMode }: SortableSectionWra
   )
 }
 
-const ProfileSections = memo(function ProfileSections({
+const ProfileSections = function ProfileSections({
   user,
   isEditMode = false,
   onEditAbout,
@@ -103,12 +107,19 @@ const ProfileSections = memo(function ProfileSections({
   onEditExperience,
   onEditSingleExperience,
   onDeleteSingleExperience,
+  onEditProject,
+  onEditSingleProject,
+  onDeleteSingleProject,
   onDeleteAbout,
   onDeleteSkills,
   onDeleteExperience,
+  onDeleteProjects,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
+  
+
+  
   const { isDark } = useTheme()
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
@@ -247,7 +258,15 @@ const ProfileSections = memo(function ProfileSections({
           />
         )
       case 'projects':
-        return <ProjectsSection {...commonProps} />
+        return (
+          <ProjectsSection
+            {...commonProps}
+            onDelete={onDeleteProjects}
+            onAddProject={onEditProject}
+            onEditProject={onEditSingleProject}
+            onDeleteProject={onDeleteSingleProject}
+          />
+        )
       case 'education':
         return <EducationSection {...commonProps} />
       case 'contact':
@@ -265,7 +284,7 @@ const ProfileSections = memo(function ProfileSections({
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onDeleteAbout, onDeleteSkills, onDeleteExperience])
+  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects])
 
   if (isEditMode) {
     return (
@@ -303,6 +322,6 @@ const ProfileSections = memo(function ProfileSections({
       ))}
     </div>
   )
-})
+}
 
 export default ProfileSections

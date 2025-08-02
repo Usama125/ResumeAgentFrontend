@@ -46,9 +46,13 @@ interface MobileProfileViewProps {
   onEditExperience?: () => void
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
+  onEditProject?: () => void
+  onEditSingleProject?: (index: number) => void
+  onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
   onDeleteSkills?: () => void
   onDeleteExperience?: () => void
+  onDeleteProjects?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
@@ -74,9 +78,13 @@ export default function MobileProfileView({
   onEditExperience,
   onEditSingleExperience,
   onDeleteSingleExperience,
+  onEditProject,
+  onEditSingleProject,
+  onDeleteSingleProject,
   onDeleteAbout,
   onDeleteSkills,
   onDeleteExperience,
+  onDeleteProjects,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -84,6 +92,8 @@ export default function MobileProfileView({
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
   const { isDark } = useTheme()
   const router = useRouter()
+  
+
 
   return (
     <div className="flex h-[calc(100vh-56px)] relative w-full">
@@ -338,6 +348,7 @@ export default function MobileProfileView({
 
             {/* Profile Sections */}
             <ProfileSections
+              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}`}
               user={user}
               isEditMode={isEditMode}
               onEditAbout={onEditAbout}
@@ -345,9 +356,13 @@ export default function MobileProfileView({
               onEditExperience={onEditExperience}
               onEditSingleExperience={onEditSingleExperience}
               onDeleteSingleExperience={onDeleteSingleExperience}
+              onEditProject={onEditProject}
+              onEditSingleProject={onEditSingleProject}
+              onDeleteSingleProject={onDeleteSingleProject}
               onDeleteAbout={onDeleteAbout}
               onDeleteSkills={onDeleteSkills}
               onDeleteExperience={onDeleteExperience}
+              onDeleteProjects={onDeleteProjects}
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />
