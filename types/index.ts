@@ -155,6 +155,8 @@ export interface PublicUser {
   // Additional fields that might be needed
   expected_salary?: string | null;
   email?: string;
+  // Section ordering for consistent display
+  section_order?: string[];
 }
 
 // =============================================================================
