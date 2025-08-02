@@ -46,18 +46,16 @@ function SortableSkillItem({
   isEditing, 
   onEdit, 
   onDelete, 
-  onSave, 
   onCancel, 
   onUpdateSkill, 
   isSubmitting 
 }: {
-  skill: Skill & { id?: string }
+  skill: Skill & { id?: string, isNew?: boolean }
   index: number
   isDark: boolean
   isEditing: boolean
   onEdit: () => void
   onDelete: () => void
-  onSave: () => void
   onCancel: () => void
   onUpdateSkill: (index: number, field: keyof Skill, value: string | number) => void
   isSubmitting: boolean
@@ -132,25 +130,6 @@ function SortableSkillItem({
               </div>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              onClick={onSave}
-              disabled={isSubmitting || !skill.name.trim() || skill.years > 50}
-              className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-3 py-1 rounded text-sm disabled:opacity-50"
-            >
-              Save
-            </Button>
-            <Button
-              type="button"
-              onClick={onCancel}
-              disabled={isSubmitting}
-              variant="outline"
-              className={`${isDark ? 'border-[#10a37f]/30 text-gray-300 hover:bg-[#10a37f]/10' : 'border-gray-300 text-gray-700 hover:bg-gray-100'} px-3 py-1 rounded text-sm disabled:opacity-50`}
-            >
-              Cancel
-            </Button>
-          </div>
         </div>
       ) : (
         // View mode
@@ -178,17 +157,20 @@ function SortableSkillItem({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button
-              type="button"
-              onClick={onDelete}
-              size="sm"
-              variant="ghost"
-              className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-2"
-              title="Delete skill"
-              disabled={isSubmitting}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            {/* Only show delete button for existing skills (not newly added ones) */}
+            {!skill.isNew && (
+              <Button
+                type="button"
+                onClick={onDelete}
+                size="sm"
+                variant="ghost"
+                className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-2"
+                title="Delete skill"
+                disabled={isSubmitting}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
             <Button
               type="button"
               onClick={onEdit}
@@ -341,7 +323,7 @@ export default function SkillsSectionEditModal({
     }
   };
 
-  const handleAddSkill = async () => {
+  const handleAddSkill = () => {
     if (!newSkill.name.trim()) {
       toast({
         title: "Error",
@@ -351,138 +333,55 @@ export default function SkillsSectionEditModal({
       return
     }
 
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to update your profile",
-        variant: "destructive"
-      })
-      return
-    }
-
     const skill: Skill & { id?: string } = {
       name: newSkill.name.trim(),
       level: newSkill.level,
       years: newSkill.years,
-      id: `skill-${Date.now()}` // Generate unique ID
+      id: `skill-${Date.now()}`, // Generate unique ID
+      isNew: true // Mark as newly added for UI logic
     }
 
-    const updatedSkills = [...skills, skill]
-    setSkills(updatedSkills)
+    // Add new skill to the top of the list
+    setSkills(prev => [skill, ...prev])
     setNewSkill({ name: "", level: "Intermediate", years: 0 })
-
-    setIsSubmitting(true)
-    try {
-      await updateProfileSection("skills", { skills: updatedSkills })
-      onUpdate(updatedSkills)
-      updateUser({ skills: updatedSkills })
-      toast({
-        title: "Success",
-        description: "Skill added successfully",
-      })
-      onClose() // Auto close modal after successful addition
-    } catch (error: any) {
-      console.error("Error adding skill:", error)
-      toast({
-        title: "Error",
-        description: error.message || "Failed to add skill",
-        variant: "destructive"
-      })
-      // Revert on error
-      setSkills(skills)
-    } finally {
-      setIsSubmitting(false)
-    }
   }
 
-  const handleUpdateSkill = async (index: number, field: keyof Skill, value: string | number) => {
+  const handleUpdateSkill = (index: number, field: keyof Skill, value: string | number) => {
     const updatedSkills = [...skills]
     updatedSkills[index] = { ...updatedSkills[index], [field]: value }
     setSkills(updatedSkills)
   }
 
-  const handleSaveSkill = async (index: number) => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to update your profile",
-        variant: "destructive"
-      })
-      return
-    }
-
-    setIsSubmitting(true)
-    try {
-      await updateProfileSection("skills", { skills })
-      onUpdate(skills)
-      updateUser({ skills })
-      setEditingIndex(null)
-      toast({
-        title: "Success",
-        description: "Skill updated successfully",
-      })
-      onClose() // Auto close modal after successful update
-    } catch (error: any) {
-      console.error("Error updating skill:", error)
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update skill",
-        variant: "destructive"
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
 
   const handleDeleteSkill = (index: number) => {
     const skill = skills[index]
-    setDeleteConfirmModal({
-      isOpen: true,
-      skillIndex: index,
-      skillName: skill.name
-    })
+    
+    // If it's a newly added skill (not saved to backend), delete immediately
+    if (skill.isNew) {
+      const updatedSkills = skills.filter((_, i) => i !== index)
+      setSkills(updatedSkills)
+      if (editingIndex === index) {
+        setEditingIndex(null)
+      }
+    } else {
+      // For existing skills, show confirmation modal
+      setDeleteConfirmModal({
+        isOpen: true,
+        skillIndex: index,
+        skillName: skill.name
+      })
+    }
   }
 
-  const confirmDeleteSkill = async () => {
+  const confirmDeleteSkill = () => {
     if (deleteConfirmModal.skillIndex === null) return
-
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to update your profile",
-        variant: "destructive"
-      })
-      return
-    }
 
     const updatedSkills = skills.filter((_, i) => i !== deleteConfirmModal.skillIndex)
     setSkills(updatedSkills)
     if (editingIndex === deleteConfirmModal.skillIndex) {
       setEditingIndex(null)
     }
-
-    setIsSubmitting(true)
-    try {
-      await updateProfileSection("skills", { skills: updatedSkills })
-      onUpdate(updatedSkills)
-      updateUser({ skills: updatedSkills })
-      toast({
-        title: "Success",
-        description: "Skill deleted successfully",
-      })
-      onClose() // Auto close modal after successful deletion
-    } catch (error: any) {
-      console.error("Error deleting skill:", error)
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete skill",
-        variant: "destructive"
-      })
-      // Revert on error
-      setSkills(skills)
-    } finally {
-      setIsSubmitting(false)
-    }
+    setDeleteConfirmModal({ isOpen: false, skillIndex: null, skillName: "" })
   }
 
   const startEditing = (index: number) => {
@@ -491,6 +390,79 @@ export default function SkillsSectionEditModal({
 
   const stopEditing = () => {
     setEditingIndex(null)
+  }
+
+  // Check if there are any changes from the original skills
+  const hasChanges = () => {
+    // Check if any new skills were added
+    const hasNewSkills = skills.some(skill => skill.isNew)
+    if (hasNewSkills) return true
+    
+    // Filter out new skills for comparison with original
+    const existingSkills = skills.filter(skill => !skill.isNew)
+    
+    // Check if skills were deleted
+    if (existingSkills.length !== currentSkills.length) return true
+    
+    // Check if any existing skill has been modified
+    return existingSkills.some((skill, index) => {
+      const originalSkill = currentSkills.find(orig => orig.id === skill.id || orig.name === skill.name)
+      if (!originalSkill) return true
+      return (
+        skill.name !== originalSkill.name ||
+        skill.level !== originalSkill.level ||
+        skill.years !== originalSkill.years
+      )
+    })
+  }
+
+  // Save all changes to backend
+  const handleSaveChanges = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to update your profile",
+        variant: "destructive"
+      })
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      // Remove isNew flag from skills before saving
+      const skillsToSave = skills.map(skill => {
+        const { isNew, ...skillWithoutFlag } = skill
+        return skillWithoutFlag
+      })
+
+      await updateProfileSection("skills", { skills: skillsToSave })
+      onUpdate(skillsToSave)
+      updateUser({ skills: skillsToSave })
+      toast({
+        title: "Success",
+        description: "Skills updated successfully",
+      })
+      onClose()
+    } catch (error: any) {
+      console.error("Error updating skills:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update skills",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Revert all changes to original state
+  const handleRevertChanges = () => {
+    setSkills(currentSkills.map((skill, index) => ({
+      ...skill,
+      id: skill.id || `skill-${index}`
+    })))
+    setEditingIndex(null)
+    setNewSkill({ name: "", level: "Intermediate", years: 0 })
   }
 
   if (!isOpen) return null
@@ -646,7 +618,6 @@ export default function SkillsSectionEditModal({
                             isEditing={editingIndex === index}
                             onEdit={() => startEditing(index)}
                             onDelete={() => handleDeleteSkill(index)}
-                            onSave={() => handleSaveSkill(index)}
                             onCancel={stopEditing}
                             onUpdateSkill={handleUpdateSkill}
                             isSubmitting={isSubmitting}
@@ -662,6 +633,29 @@ export default function SkillsSectionEditModal({
                     </SortableContext>
                   </DndContext>
                 </div>
+              </div>
+            </div>
+
+            {/* Sticky Footer with Save/Revert Buttons */}
+            <div className={`shrink-0 p-6 border-t ${isDark ? 'border-[#10a37f]/20 bg-[#1a1a1a]/95' : 'border-gray-200 bg-gray-50/95'} backdrop-blur-sm`}>
+              <div className="flex gap-3 justify-end">
+                <Button
+                  type="button"
+                  onClick={handleRevertChanges}
+                  disabled={!hasChanges() || isSubmitting}
+                  variant="outline"
+                  className={`${isDark ? 'border-[#10a37f]/30 text-gray-300 hover:bg-[#10a37f]/10' : 'border-gray-300 text-gray-700 hover:bg-gray-100'} disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  Revert Changes
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleSaveChanges}
+                  disabled={!hasChanges() || isSubmitting}
+                  className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </Button>
               </div>
             </div>
           </div>
