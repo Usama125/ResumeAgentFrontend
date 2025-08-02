@@ -72,7 +72,7 @@ export default function ExperienceSection({
                     <p className="text-[#10a37f] font-medium">{exp.company}</p>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{exp.duration}</p>
                     <div className="relative">
-                      <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed ${exp.description && exp.description.length > 100 ? 'line-clamp-2' : ''}`}>
+                      <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden ${exp.description && exp.description.length > 100 ? 'line-clamp-2' : ''}`}>
                         {exp.description}
                       </p>
                       {exp.description && exp.description.length > 100 && (

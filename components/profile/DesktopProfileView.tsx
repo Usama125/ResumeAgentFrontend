@@ -67,6 +67,17 @@ interface DesktopProfileViewProps {
   onDeleteAward?: (index: number) => void
   onAddAward?: () => void
   onDeleteAwards?: () => void
+  onEditPublication?: (index: number) => void
+  onDeletePublication?: (index: number) => void
+  onAddPublication?: () => void
+  onDeletePublications?: () => void
+  onEditVolunteerExperience?: (index: number) => void
+  onDeleteVolunteerExperience?: (index: number) => void
+  onAddVolunteerExperience?: () => void
+  onDeleteVolunteerExperiences?: () => void
+  onEditInterests?: () => void
+  onDeleteInterests?: () => void
+  onAddInterests?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -113,6 +124,17 @@ const PortfolioSection = function({
   onDeleteAward,
   onAddAward,
   onDeleteAwards,
+  onEditPublication,
+  onDeletePublication,
+  onAddPublication,
+  onDeletePublications,
+  onEditVolunteerExperience,
+  onDeleteVolunteerExperience,
+  onAddVolunteerExperience,
+  onDeleteVolunteerExperiences,
+  onEditInterests,
+  onDeleteInterests,
+  onAddInterests,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -150,6 +172,17 @@ const PortfolioSection = function({
   onDeleteAward?: (index: number) => void
   onAddAward?: () => void
   onDeleteAwards?: () => void
+  onEditPublication?: (index: number) => void
+  onDeletePublication?: (index: number) => void
+  onAddPublication?: () => void
+  onDeletePublications?: () => void
+  onEditVolunteerExperience?: (index: number) => void
+  onDeleteVolunteerExperience?: (index: number) => void
+  onAddVolunteerExperience?: () => void
+  onDeleteVolunteerExperiences?: () => void
+  onEditInterests?: () => void
+  onDeleteInterests?: () => void
+  onAddInterests?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -450,7 +483,7 @@ const PortfolioSection = function({
             {/* Sections Container */}
             <div className="space-y-6">
               <ProfileSections
-                key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}`}
+                key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}-${!!onEditLanguage}-${!!onDeleteLanguage}-${!!onAddLanguage}-${!!onDeleteLanguages}-${!!onEditAward}-${!!onDeleteAward}-${!!onAddAward}-${!!onDeleteAwards}-${!!onEditPublication}-${!!onDeletePublication}-${!!onAddPublication}-${!!onDeletePublications}-${!!onEditVolunteerExperience}-${!!onDeleteVolunteerExperience}-${!!onAddVolunteerExperience}-${!!onDeleteVolunteerExperiences}-${!!onEditInterests}-${!!onDeleteInterests}-${!!onAddInterests}`}
                 user={user}
                 isEditMode={isEditMode}
                 onEditAbout={onEditAbout}
@@ -479,6 +512,17 @@ const PortfolioSection = function({
                 onDeleteAward={onDeleteAward}
                 onAddAward={onAddAward}
                 onDeleteAwards={onDeleteAwards}
+                onEditPublication={onEditPublication}
+                onDeletePublication={onDeletePublication}
+                onAddPublication={onAddPublication}
+                onDeletePublications={onDeletePublications}
+                onEditVolunteerExperience={onEditVolunteerExperience}
+                onDeleteVolunteerExperience={onDeleteVolunteerExperience}
+                onAddVolunteerExperience={onAddVolunteerExperience}
+                onDeleteVolunteerExperiences={onDeleteVolunteerExperiences}
+                onEditInterests={onEditInterests}
+                onDeleteInterests={onDeleteInterests}
+                onAddInterests={onAddInterests}
                 onSectionOrderChange={onSectionOrderChange}
                 onAddSection={onAddSection}
               />
@@ -559,6 +603,17 @@ export default function DesktopProfileView({
   onDeleteAward,
   onAddAward,
   onDeleteAwards,
+  onEditPublication,
+  onDeletePublication,
+  onAddPublication,
+  onDeletePublications,
+  onEditVolunteerExperience,
+  onDeleteVolunteerExperience,
+  onAddVolunteerExperience,
+  onDeleteVolunteerExperiences,
+  onEditInterests,
+  onDeleteInterests,
+  onAddInterests,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -639,11 +694,22 @@ export default function DesktopProfileView({
       onDeleteAward,
       onAddAward,
       onDeleteAwards,
+      onEditPublication,
+      onDeletePublication,
+      onAddPublication,
+      onDeletePublications,
+      onEditVolunteerExperience,
+      onDeleteVolunteerExperience,
+      onAddVolunteerExperience,
+      onDeleteVolunteerExperiences,
+      onEditInterests,
+      onDeleteInterests,
+      onAddInterests,
       onEditModeToggle,
       onSectionOrderChange,
       onAddSection
     }
-  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditModeToggle, onSectionOrderChange, onAddSection])
+  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditPublication, onDeletePublication, onAddPublication, onDeletePublications, onEditVolunteerExperience, onDeleteVolunteerExperience, onAddVolunteerExperience, onDeleteVolunteerExperiences, onEditInterests, onDeleteInterests, onAddInterests, onEditModeToggle, onSectionOrderChange, onAddSection])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,

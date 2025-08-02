@@ -69,6 +69,17 @@ interface ProfileSectionsProps {
   onDeleteAward?: (index: number) => void
   onAddAward?: () => void
   onDeleteAwards?: () => void
+  onEditPublication?: (index: number) => void
+  onDeletePublication?: (index: number) => void
+  onAddPublication?: () => void
+  onDeletePublications?: () => void
+  onEditVolunteerExperience?: (index: number) => void
+  onDeleteVolunteerExperience?: (index: number) => void
+  onAddVolunteerExperience?: () => void
+  onDeleteVolunteerExperiences?: () => void
+  onEditInterests?: () => void
+  onDeleteInterests?: () => void
+  onAddInterests?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -142,6 +153,17 @@ const ProfileSections = function ProfileSections({
   onDeleteAward,
   onAddAward,
   onDeleteAwards,
+  onEditPublication,
+  onDeletePublication,
+  onAddPublication,
+  onDeletePublications,
+  onEditVolunteerExperience,
+  onDeleteVolunteerExperience,
+  onAddVolunteerExperience,
+  onDeleteVolunteerExperiences,
+  onEditInterests,
+  onDeleteInterests,
+  onAddInterests,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
@@ -319,12 +341,6 @@ const ProfileSections = function ProfileSections({
         )
 
       case 'languages':
-        console.log('ProfileSections: Rendering LanguagesSection with handlers:', {
-          onDeleteLanguages: !!onDeleteLanguages,
-          onAddLanguage: !!onAddLanguage,
-          onEditLanguage: !!onEditLanguage,
-          onDeleteLanguage: !!onDeleteLanguage
-        })
         return (
           <LanguagesSection
             {...commonProps}
@@ -335,12 +351,6 @@ const ProfileSections = function ProfileSections({
           />
         )
       case 'awards':
-        console.log('ProfileSections: Rendering AwardsSection with handlers:', {
-          onDeleteAwards: !!onDeleteAwards,
-          onAddAward: !!onAddAward,
-          onEditAward: !!onEditAward,
-          onDeleteAward: !!onDeleteAward
-        })
         return (
           <AwardsSection
             {...commonProps}
@@ -351,15 +361,38 @@ const ProfileSections = function ProfileSections({
           />
         )
       case 'publications':
-        return <PublicationsSection {...commonProps} />
+        return (
+          <PublicationsSection
+            {...commonProps}
+            onDelete={onDeletePublications}
+            onAddPublication={onAddPublication}
+            onEditPublication={onEditPublication}
+            onDeletePublication={onDeletePublication}
+          />
+        )
       case 'volunteer':
-        return <VolunteerSection {...commonProps} />
+        return (
+          <VolunteerSection
+            {...commonProps}
+            onDelete={onDeleteVolunteerExperiences}
+            onAddVolunteerExperience={onAddVolunteerExperience}
+            onEditVolunteerExperience={onEditVolunteerExperience}
+            onDeleteVolunteerExperience={onDeleteVolunteerExperience}
+          />
+        )
       case 'interests':
-        return <InterestsSection {...commonProps} />
+        return (
+          <InterestsSection
+            {...commonProps}
+            onDelete={onDeleteInterests}
+            onAddInterests={onAddInterests}
+            onEditInterests={onEditInterests}
+          />
+        )
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards])
+  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditPublication, onDeletePublication, onAddPublication, onDeletePublications, onEditVolunteerExperience, onDeleteVolunteerExperience, onAddVolunteerExperience, onDeleteVolunteerExperiences, onEditInterests, onDeleteInterests, onAddInterests])
 
   if (isEditMode) {
     return (

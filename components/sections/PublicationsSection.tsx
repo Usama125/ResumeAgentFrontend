@@ -1,9 +1,10 @@
 "use client"
 
-import { FileText } from "lucide-react"
+import { FileText, Edit, Trash2 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
+import { Button } from "@/components/ui/button"
 import BaseSection from "./BaseSection"
 
 interface PublicationsSectionProps {
@@ -16,6 +17,9 @@ interface PublicationsSectionProps {
   onToggleExpand?: () => void
   showDragHandle?: boolean
   dragHandleProps?: any
+  onEditPublication?: (index: number) => void
+  onDeletePublication?: (index: number) => void
+  onAddPublication?: () => void
 }
 
 export default function PublicationsSection({
@@ -27,7 +31,10 @@ export default function PublicationsSection({
   onDelete,
   onToggleExpand,
   showDragHandle = false,
-  dragHandleProps = {}
+  dragHandleProps = {},
+  onEditPublication,
+  onDeletePublication,
+  onAddPublication
 }: PublicationsSectionProps) {
   const { isDark } = useTheme()
 
@@ -52,7 +59,8 @@ export default function PublicationsSection({
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
       onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={hasData ? onDelete : undefined}
+      onAdd={isEditMode ? onAddPublication : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
@@ -60,25 +68,18 @@ export default function PublicationsSection({
       <div className="space-y-4">
         {hasData ? (
           user.publications.map((pub, index) => (
-            <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-xl p-5 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300`}>
+            <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-xl p-5 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300 relative`}>
               <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
-                      {pub.title}
-                    </h3>
-                    {pub.publisher && (
-                      <p className="text-[#10a37f] font-medium">{pub.publisher}</p>
-                    )}
-                  </div>
-                  {pub.date && (
-                    <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {pub.date}
-                    </span>
+                <div>
+                  <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
+                    {pub.title}
+                  </h3>
+                  {pub.publisher && (
+                    <p className="text-[#10a37f] font-medium">{pub.publisher}</p>
                   )}
                 </div>
                 {pub.description && (
-                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
+                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden`}>
                     {pub.description}
                   </p>
                 )}
@@ -95,6 +96,44 @@ export default function PublicationsSection({
                     Read Publication
                   </a>
                 )}
+                {/* Bottom row with date and edit/delete buttons */}
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex-1"></div>
+                  <div className="flex items-center gap-3">
+                    {pub.date && (
+                      <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {pub.date}
+                      </span>
+                    )}
+                    {/* Edit/Delete buttons - only show in edit mode */}
+                    {isEditMode && (onEditPublication || onDeletePublication) && (
+                      <div className="flex gap-1">
+                        {onEditPublication && (
+                          <Button
+                            onClick={() => onEditPublication(index)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-1 h-6 w-6"
+                            title="Edit publication"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                        )}
+                        {onDeletePublication && (
+                          <Button
+                            onClick={() => onDeletePublication(index)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-1 h-6 w-6"
+                            title="Delete publication"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ))

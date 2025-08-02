@@ -24,6 +24,9 @@ import EducationSectionEditModal from "@/components/EducationSectionEditModal"
 import ContactSectionEditModal from "@/components/ContactSectionEditModal"
 import LanguagesSectionEditModal from "@/components/LanguagesSectionEditModal"
 import AwardsSectionEditModal from "@/components/AwardsSectionEditModal"
+import PublicationsSectionEditModal from "@/components/PublicationsSectionEditModal"
+import VolunteerExperienceSectionEditModal from "@/components/VolunteerExperienceSectionEditModal"
+import InterestsSectionEditModal from "@/components/InterestsSectionEditModal"
 import ConfirmationModal from "@/components/ConfirmationModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
@@ -110,6 +113,40 @@ export default function CurrentUserProfilePage() {
   const [editingAward, setEditingAward] = useState<any>(null)
   const [editingAwardIndex, setEditingAwardIndex] = useState<number | null>(null)
   const [deleteAwardConfirm, setDeleteAwardConfirm] = useState(false)
+
+  // Publications modal state
+  const [isPublicationsEditModalOpen, setIsPublicationsEditModalOpen] = useState(false)
+  const [publicationsEditMode, setPublicationsEditMode] = useState<'add' | 'edit'>('add')
+  const [editingPublication, setEditingPublication] = useState<any>(null)
+  const [editingPublicationIndex, setEditingPublicationIndex] = useState<number | null>(null)
+  const [deletePublicationConfirm, setDeletePublicationConfirm] = useState<{
+    isOpen: boolean
+    publicationIndex: number | null
+    publicationTitle: string
+  }>({
+    isOpen: false,
+    publicationIndex: null,
+    publicationTitle: ""
+  })
+
+  // Volunteer Experience modal state
+  const [isVolunteerExperienceEditModalOpen, setIsVolunteerExperienceEditModalOpen] = useState(false)
+  const [volunteerExperienceEditMode, setVolunteerExperienceEditMode] = useState<'add' | 'edit'>('add')
+  const [editingVolunteerExperience, setEditingVolunteerExperience] = useState<any>(null)
+  const [editingVolunteerExperienceIndex, setEditingVolunteerExperienceIndex] = useState<number | null>(null)
+  const [deleteVolunteerExperienceConfirm, setDeleteVolunteerExperienceConfirm] = useState<{
+    isOpen: boolean
+    volunteerExperienceIndex: number | null
+    volunteerExperienceTitle: string
+  }>({
+    isOpen: false,
+    volunteerExperienceIndex: null,
+    volunteerExperienceTitle: ""
+  })
+
+  // Interests modal state
+  const [isInterestsEditModalOpen, setIsInterestsEditModalOpen] = useState(false)
+  const [interestsEditMode, setInterestsEditMode] = useState<'add' | 'edit'>('add')
 
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
@@ -465,6 +502,230 @@ export default function CurrentUserProfilePage() {
       toast({
         title: "Error",
         description: error.message || "Failed to delete awards section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Publications handlers
+  const handleAddPublication = useCallback(() => {
+    setPublicationsEditMode('add')
+    setEditingPublication(null)
+    setEditingPublicationIndex(null)
+    setIsPublicationsEditModalOpen(true)
+  }, [])
+
+  const handleEditPublication = useCallback((index: number) => {
+    if (!user?.publications) return
+    
+    setPublicationsEditMode('edit')
+    setEditingPublication(user.publications[index])
+    setEditingPublicationIndex(index)
+    setIsPublicationsEditModalOpen(true)
+  }, [user])
+
+  const handleDeleteSinglePublication = useCallback((index: number) => {
+    if (!user || !user.publications || !user.publications[index]) return
+    
+    const publication = user.publications[index]
+    setDeletePublicationConfirm({
+      isOpen: true,
+      publicationIndex: index,
+      publicationTitle: publication.title
+    })
+  }, [user])
+
+  const confirmDeletePublication = useCallback(async () => {
+    if (!user || deletePublicationConfirm.publicationIndex === null) return
+
+    try {
+      const updatedPublications = user.publications.filter((_, index) => index !== deletePublicationConfirm.publicationIndex)
+      
+      await updateProfileSection("publications", { publications: updatedPublications })
+      
+      // Update frontend state
+      setUser({ ...user, publications: updatedPublications })
+      updateUser({ publications: updatedPublications })
+      
+      toast({
+        title: "Success",
+        description: "Publication deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting publication:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete publication",
+        variant: "destructive"
+      })
+    } finally {
+      setDeletePublicationConfirm({
+        isOpen: false,
+        publicationIndex: null,
+        publicationTitle: ""
+      })
+    }
+  }, [user, deletePublicationConfirm, updateUser, toast])
+
+  const handlePublicationsUpdate = useCallback((newPublications: any[]) => {
+    if (!user) return
+    
+    setUser({ ...user, publications: newPublications })
+    updateUser({ publications: newPublications })
+  }, [user, updateUser])
+
+  const handlePublicationsDelete = useCallback(async () => {
+    if (!user) return
+
+    try {
+      await deleteProfileSection("publications")
+      
+      // Update frontend state
+      setUser({ ...user, publications: [] })
+      updateUser({ publications: [] })
+      
+      toast({
+        title: "Success",
+        description: "Publications section deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting publications section:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete publications section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Volunteer Experience handlers
+  const handleAddVolunteerExperience = useCallback(() => {
+    setVolunteerExperienceEditMode('add')
+    setEditingVolunteerExperience(null)
+    setEditingVolunteerExperienceIndex(null)
+    setIsVolunteerExperienceEditModalOpen(true)
+  }, [])
+
+  const handleEditVolunteerExperience = useCallback((index: number) => {
+    if (!user?.volunteer_experience) return
+    
+    setVolunteerExperienceEditMode('edit')
+    setEditingVolunteerExperience(user.volunteer_experience[index])
+    setEditingVolunteerExperienceIndex(index)
+    setIsVolunteerExperienceEditModalOpen(true)
+  }, [user])
+
+  const handleDeleteSingleVolunteerExperience = useCallback((index: number) => {
+    if (!user || !user.volunteer_experience || !user.volunteer_experience[index]) return
+    
+    const volunteerExperience = user.volunteer_experience[index]
+    setDeleteVolunteerExperienceConfirm({
+      isOpen: true,
+      volunteerExperienceIndex: index,
+      volunteerExperienceTitle: volunteerExperience.role
+    })
+  }, [user])
+
+  const confirmDeleteVolunteerExperience = useCallback(async () => {
+    if (!user || deleteVolunteerExperienceConfirm.volunteerExperienceIndex === null) return
+
+    try {
+      const updatedVolunteerExperience = user.volunteer_experience.filter((_, index) => index !== deleteVolunteerExperienceConfirm.volunteerExperienceIndex)
+      
+      await updateProfileSection("volunteer", { volunteer_experience: updatedVolunteerExperience })
+      
+      // Update frontend state
+      setUser({ ...user, volunteer_experience: updatedVolunteerExperience })
+      updateUser({ volunteer_experience: updatedVolunteerExperience })
+      
+      toast({
+        title: "Success",
+        description: "Volunteer experience deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting volunteer experience:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete volunteer experience",
+        variant: "destructive"
+      })
+    } finally {
+      setDeleteVolunteerExperienceConfirm({
+        isOpen: false,
+        volunteerExperienceIndex: null,
+        volunteerExperienceTitle: ""
+      })
+    }
+  }, [user, deleteVolunteerExperienceConfirm, updateUser, toast])
+
+  const handleVolunteerExperienceUpdate = useCallback((newVolunteerExperience: any[]) => {
+    if (!user) return
+    
+    setUser({ ...user, volunteer_experience: newVolunteerExperience })
+    updateUser({ volunteer_experience: newVolunteerExperience })
+  }, [user, updateUser])
+
+  const handleVolunteerExperiencesDelete = useCallback(async () => {
+    if (!user) return
+
+    try {
+      await deleteProfileSection("volunteer")
+      
+      // Update frontend state
+      setUser({ ...user, volunteer_experience: [] })
+      updateUser({ volunteer_experience: [] })
+      
+      toast({
+        title: "Success",
+        description: "Volunteer experience section deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting volunteer experience section:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete volunteer experience section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Interests handlers
+  const handleAddInterests = useCallback(() => {
+    setInterestsEditMode('add')
+    setIsInterestsEditModalOpen(true)
+  }, [])
+
+  const handleEditInterests = useCallback(() => {
+    setInterestsEditMode('edit')
+    setIsInterestsEditModalOpen(true)
+  }, [])
+
+  const handleInterestsUpdate = useCallback((newInterests: string[]) => {
+    if (!user) return
+    
+    setUser({ ...user, interests: newInterests })
+    updateUser({ interests: newInterests })
+  }, [user, updateUser])
+
+  const handleInterestsDelete = useCallback(async () => {
+    if (!user) return
+
+    try {
+      await deleteProfileSection("interests")
+      
+      // Update frontend state
+      setUser({ ...user, interests: [] })
+      updateUser({ interests: [] })
+      
+      toast({
+        title: "Success",
+        description: "Interests section deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting interests section:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete interests section",
         variant: "destructive"
       })
     }
@@ -1061,6 +1322,17 @@ export default function CurrentUserProfilePage() {
               onDeleteAward={handleDeleteSingleAward}
               onAddAward={handleAddAward}
               onDeleteAwards={handleAwardsDelete}
+              onEditPublication={handleEditPublication}
+              onDeletePublication={handleDeleteSinglePublication}
+              onAddPublication={handleAddPublication}
+              onDeletePublications={handlePublicationsDelete}
+              onEditVolunteerExperience={handleEditVolunteerExperience}
+              onDeleteVolunteerExperience={handleDeleteSingleVolunteerExperience}
+              onAddVolunteerExperience={handleAddVolunteerExperience}
+              onDeleteVolunteerExperiences={handleVolunteerExperiencesDelete}
+              onEditInterests={handleEditInterests}
+              onDeleteInterests={handleInterestsDelete}
+              onAddInterests={handleAddInterests}
               onEditModeToggle={handleEditModeToggle}
               onSectionOrderChange={handleSectionOrderChange}
               onAddSection={handleAddSection}
@@ -1106,6 +1378,17 @@ export default function CurrentUserProfilePage() {
           onDeleteAward={handleDeleteSingleAward}
           onAddAward={handleAddAward}
           onDeleteAwards={handleAwardsDelete}
+          onEditPublication={handleEditPublication}
+          onDeletePublication={handleDeleteSinglePublication}
+          onAddPublication={handleAddPublication}
+          onDeletePublications={handlePublicationsDelete}
+          onEditVolunteerExperience={handleEditVolunteerExperience}
+          onDeleteVolunteerExperience={handleDeleteSingleVolunteerExperience}
+          onAddVolunteerExperience={handleAddVolunteerExperience}
+          onDeleteVolunteerExperiences={handleVolunteerExperiencesDelete}
+          onEditInterests={handleEditInterests}
+          onDeleteInterests={handleInterestsDelete}
+          onAddInterests={handleAddInterests}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -1222,6 +1505,37 @@ export default function CurrentUserProfilePage() {
         mode={awardsEditMode}
       />
 
+      {/* Publications Section Edit Modal */}
+      <PublicationsSectionEditModal
+        isOpen={isPublicationsEditModalOpen}
+        onClose={() => setIsPublicationsEditModalOpen(false)}
+        currentPublications={user?.publications || []}
+        onUpdate={handlePublicationsUpdate}
+        editingPublication={editingPublication}
+        editingIndex={editingPublicationIndex}
+        mode={publicationsEditMode}
+      />
+
+      {/* Volunteer Experience Section Edit Modal */}
+      <VolunteerExperienceSectionEditModal
+        isOpen={isVolunteerExperienceEditModalOpen}
+        onClose={() => setIsVolunteerExperienceEditModalOpen(false)}
+        currentVolunteerExperience={user?.volunteer_experience || []}
+        onUpdate={handleVolunteerExperienceUpdate}
+        editingVolunteerExperience={editingVolunteerExperience}
+        editingIndex={editingVolunteerExperienceIndex}
+        mode={volunteerExperienceEditMode}
+      />
+
+      {/* Interests Section Edit Modal */}
+      <InterestsSectionEditModal
+        isOpen={isInterestsEditModalOpen}
+        onClose={() => setIsInterestsEditModalOpen(false)}
+        currentInterests={user?.interests || []}
+        onUpdate={handleInterestsUpdate}
+        mode={interestsEditMode}
+      />
+
       {/* Education Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={deleteEducationConfirm.isOpen}
@@ -1290,6 +1604,38 @@ export default function CurrentUserProfilePage() {
         onConfirm={confirmDeleteAward}
         title="Delete Award"
         message="Are you sure you want to delete this award?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+
+      {/* Publication Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deletePublicationConfirm.isOpen}
+        onClose={() => setDeletePublicationConfirm({
+          isOpen: false,
+          publicationIndex: null,
+          publicationTitle: ""
+        })}
+        onConfirm={confirmDeletePublication}
+        title="Delete Publication"
+        message={`Are you sure you want to delete "${deletePublicationConfirm.publicationTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+
+      {/* Volunteer Experience Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteVolunteerExperienceConfirm.isOpen}
+        onClose={() => setDeleteVolunteerExperienceConfirm({
+          isOpen: false,
+          volunteerExperienceIndex: null,
+          volunteerExperienceTitle: ""
+        })}
+        onConfirm={confirmDeleteVolunteerExperience}
+        title="Delete Volunteer Experience"
+        message={`Are you sure you want to delete "${deleteVolunteerExperienceConfirm.volunteerExperienceTitle}"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"

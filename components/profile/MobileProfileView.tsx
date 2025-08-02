@@ -67,6 +67,17 @@ interface MobileProfileViewProps {
   onDeleteAward?: (index: number) => void
   onAddAward?: () => void
   onDeleteAwards?: () => void
+  onEditPublication?: (index: number) => void
+  onDeletePublication?: (index: number) => void
+  onAddPublication?: () => void
+  onDeletePublications?: () => void
+  onEditVolunteerExperience?: (index: number) => void
+  onDeleteVolunteerExperience?: (index: number) => void
+  onAddVolunteerExperience?: () => void
+  onDeleteVolunteerExperiences?: () => void
+  onEditInterests?: () => void
+  onDeleteInterests?: () => void
+  onAddInterests?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
@@ -113,6 +124,17 @@ export default function MobileProfileView({
   onDeleteAward,
   onAddAward,
   onDeleteAwards,
+  onEditPublication,
+  onDeletePublication,
+  onAddPublication,
+  onDeletePublications,
+  onEditVolunteerExperience,
+  onDeleteVolunteerExperience,
+  onAddVolunteerExperience,
+  onDeleteVolunteerExperiences,
+  onEditInterests,
+  onDeleteInterests,
+  onAddInterests,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -393,7 +415,7 @@ export default function MobileProfileView({
 
             {/* Profile Sections */}
             <ProfileSections
-              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}-${!!onEditLanguage}-${!!onDeleteLanguage}-${!!onAddLanguage}-${!!onDeleteLanguages}-${!!onEditAward}-${!!onDeleteAward}-${!!onAddAward}-${!!onDeleteAwards}`}
+              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}-${!!onEditLanguage}-${!!onDeleteLanguage}-${!!onAddLanguage}-${!!onDeleteLanguages}-${!!onEditAward}-${!!onDeleteAward}-${!!onAddAward}-${!!onDeleteAwards}-${!!onEditPublication}-${!!onDeletePublication}-${!!onAddPublication}-${!!onDeletePublications}-${!!onEditVolunteerExperience}-${!!onDeleteVolunteerExperience}-${!!onAddVolunteerExperience}-${!!onDeleteVolunteerExperiences}-${!!onEditInterests}-${!!onDeleteInterests}-${!!onAddInterests}`}
               user={user}
               isEditMode={isEditMode}
               onEditAbout={onEditAbout}
@@ -422,6 +444,17 @@ export default function MobileProfileView({
               onDeleteAward={onDeleteAward}
               onAddAward={onAddAward}
               onDeleteAwards={onDeleteAwards}
+              onEditPublication={onEditPublication}
+              onDeletePublication={onDeletePublication}
+              onAddPublication={onAddPublication}
+              onDeletePublications={onDeletePublications}
+              onEditVolunteerExperience={onEditVolunteerExperience}
+              onDeleteVolunteerExperience={onDeleteVolunteerExperience}
+              onAddVolunteerExperience={onAddVolunteerExperience}
+              onDeleteVolunteerExperiences={onDeleteVolunteerExperiences}
+              onEditInterests={onEditInterests}
+              onDeleteInterests={onDeleteInterests}
+              onAddInterests={onAddInterests}
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />

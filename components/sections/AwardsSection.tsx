@@ -80,54 +80,58 @@ export default function AwardsSection({
         {hasData ? (
           user.awards.map((award, index) => (
             <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-xl p-5 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300 relative`}>
-              {/* Edit/Delete buttons - only show in edit mode */}
-              {isEditMode && (onEditAward || onDeleteAward) && (
-                <div className="absolute top-3 right-3 flex gap-1">
-                  {onEditAward && (
-                    <Button
-                      onClick={() => onEditAward(index)}
-                      size="sm"
-                      variant="ghost"
-                      className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-1 h-6 w-6"
-                      title="Edit award"
-                    >
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                  )}
-                  {onDeleteAward && (
-                    <Button
-                      onClick={() => onDeleteAward(index)}
-                      size="sm"
-                      variant="ghost"
-                      className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-1 h-6 w-6"
-                      title="Delete award"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              )}
               <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
-                      {award.title}
-                    </h3>
-                    {award.issuer && (
-                      <p className="text-[#10a37f] font-medium">{award.issuer}</p>
-                    )}
-                  </div>
-                  {award.date && (
-                    <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {award.date}
-                    </span>
+                <div>
+                  <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
+                    {award.title}
+                  </h3>
+                  {award.issuer && (
+                    <p className="text-[#10a37f] font-medium">{award.issuer}</p>
                   )}
                 </div>
                 {award.description && (
-                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
+                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden`}>
                     {award.description}
                   </p>
                 )}
+                {/* Bottom row with date and edit/delete buttons */}
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex-1"></div>
+                  <div className="flex items-center gap-3">
+                    {award.date && (
+                      <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {award.date}
+                      </span>
+                    )}
+                    {/* Edit/Delete buttons - only show in edit mode */}
+                    {isEditMode && (onEditAward || onDeleteAward) && (
+                      <div className="flex gap-1">
+                        {onEditAward && (
+                          <Button
+                            onClick={() => onEditAward(index)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-1 h-6 w-6"
+                            title="Edit award"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                        )}
+                        {onDeleteAward && (
+                          <Button
+                            onClick={() => onDeleteAward(index)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-1 h-6 w-6"
+                            title="Delete award"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ))

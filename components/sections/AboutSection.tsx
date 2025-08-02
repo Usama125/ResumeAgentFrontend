@@ -55,7 +55,7 @@ export default function AboutSection({
       <div className="relative">
         {hasData ? (
           <>
-            <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed ${user.summary && user.summary.length > 200 ? 'line-clamp-3' : ''}`}>
+            <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden ${user.summary && user.summary.length > 200 ? 'line-clamp-3' : ''}`}>
               {user.summary}
             </p>
             {user.summary && user.summary.length > 200 && (

@@ -1,9 +1,10 @@
 "use client"
 
-import { Heart } from "lucide-react"
+import { Heart, Edit, Trash2 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
+import { Button } from "@/components/ui/button"
 import BaseSection from "./BaseSection"
 
 interface InterestsSectionProps {
@@ -16,6 +17,9 @@ interface InterestsSectionProps {
   onToggleExpand?: () => void
   showDragHandle?: boolean
   dragHandleProps?: any
+  onEditInterests?: () => void
+  onDeleteInterests?: () => void
+  onAddInterests?: () => void
 }
 
 export default function InterestsSection({
@@ -27,7 +31,10 @@ export default function InterestsSection({
   onDelete,
   onToggleExpand,
   showDragHandle = false,
-  dragHandleProps = {}
+  dragHandleProps = {},
+  onEditInterests,
+  onDeleteInterests,
+  onAddInterests
 }: InterestsSectionProps) {
   const { isDark } = useTheme()
 
@@ -52,7 +59,8 @@ export default function InterestsSection({
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
       onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={hasData ? onDelete : undefined}
+      onAdd={isEditMode ? onAddInterests : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
