@@ -61,6 +61,14 @@ interface ProfileSectionsProps {
   onDeleteEducation?: () => void
   onEditContact?: () => void
   onDeleteContact?: () => void
+  onEditLanguage?: (index: number) => void
+  onDeleteLanguage?: (index: number) => void
+  onAddLanguage?: () => void
+  onDeleteLanguages?: () => void
+  onEditAward?: (index: number) => void
+  onDeleteAward?: (index: number) => void
+  onAddAward?: () => void
+  onDeleteAwards?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -126,6 +134,14 @@ const ProfileSections = function ProfileSections({
   onDeleteEducation,
   onEditContact,
   onDeleteContact,
+  onEditLanguage,
+  onDeleteLanguage,
+  onAddLanguage,
+  onDeleteLanguages,
+  onEditAward,
+  onDeleteAward,
+  onAddAward,
+  onDeleteAwards,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
@@ -219,7 +235,7 @@ const ProfileSections = function ProfileSections({
 
   // Get sections to render based on data availability
   const sectionsToRender = useMemo(() => {
-    return sectionOrder.filter(sectionId => {
+    const filtered = sectionOrder.filter(sectionId => {
       const sectionDef = SECTION_REGISTRY[sectionId]
       if (!sectionDef) return false
       
@@ -228,6 +244,18 @@ const ProfileSections = function ProfileSections({
       // Always show sections with data, or show empty sections in edit mode
       return hasData || isEditMode
     })
+    
+    console.log('ProfileSections: sectionsToRender:', {
+      sectionOrder,
+      isEditMode,
+      filtered,
+      userLanguages: user.languages,
+      userAwards: user.awards,
+      languagesHasData: hasSectionData(user, 'languages'),
+      awardsHasData: hasSectionData(user, 'awards')
+    })
+    
+    return filtered
   }, [sectionOrder, user, isEditMode])
 
   const renderSection = useCallback((sectionId: string) => {
@@ -291,9 +319,37 @@ const ProfileSections = function ProfileSections({
         )
 
       case 'languages':
-        return <LanguagesSection {...commonProps} />
+        console.log('ProfileSections: Rendering LanguagesSection with handlers:', {
+          onDeleteLanguages: !!onDeleteLanguages,
+          onAddLanguage: !!onAddLanguage,
+          onEditLanguage: !!onEditLanguage,
+          onDeleteLanguage: !!onDeleteLanguage
+        })
+        return (
+          <LanguagesSection
+            {...commonProps}
+            onDelete={onDeleteLanguages}
+            onAddLanguage={onAddLanguage}
+            onEditLanguage={onEditLanguage}
+            onDeleteLanguage={onDeleteLanguage}
+          />
+        )
       case 'awards':
-        return <AwardsSection {...commonProps} />
+        console.log('ProfileSections: Rendering AwardsSection with handlers:', {
+          onDeleteAwards: !!onDeleteAwards,
+          onAddAward: !!onAddAward,
+          onEditAward: !!onEditAward,
+          onDeleteAward: !!onDeleteAward
+        })
+        return (
+          <AwardsSection
+            {...commonProps}
+            onDelete={onDeleteAwards}
+            onAddAward={onAddAward}
+            onEditAward={onEditAward}
+            onDeleteAward={onDeleteAward}
+          />
+        )
       case 'publications':
         return <PublicationsSection {...commonProps} />
       case 'volunteer':
@@ -303,7 +359,7 @@ const ProfileSections = function ProfileSections({
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact])
+  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards])
 
   if (isEditMode) {
     return (

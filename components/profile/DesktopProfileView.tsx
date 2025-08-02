@@ -59,6 +59,14 @@ interface DesktopProfileViewProps {
   onDeleteEducation?: () => void
   onEditContact?: () => void
   onDeleteContact?: () => void
+  onEditLanguage?: (index: number) => void
+  onDeleteLanguage?: (index: number) => void
+  onAddLanguage?: () => void
+  onDeleteLanguages?: () => void
+  onEditAward?: (index: number) => void
+  onDeleteAward?: (index: number) => void
+  onAddAward?: () => void
+  onDeleteAwards?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -97,6 +105,14 @@ const PortfolioSection = function({
   onDeleteEducation,
   onEditContact,
   onDeleteContact,
+  onEditLanguage,
+  onDeleteLanguage,
+  onAddLanguage,
+  onDeleteLanguages,
+  onEditAward,
+  onDeleteAward,
+  onAddAward,
+  onDeleteAwards,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -126,6 +142,14 @@ const PortfolioSection = function({
   onDeleteEducation?: () => void
   onEditContact?: () => void
   onDeleteContact?: () => void
+  onEditLanguage?: (index: number) => void
+  onDeleteLanguage?: (index: number) => void
+  onAddLanguage?: () => void
+  onDeleteLanguages?: () => void
+  onEditAward?: (index: number) => void
+  onDeleteAward?: (index: number) => void
+  onAddAward?: () => void
+  onDeleteAwards?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -447,6 +471,14 @@ const PortfolioSection = function({
                 onDeleteEducation={onDeleteEducation}
                 onEditContact={onEditContact}
                 onDeleteContact={onDeleteContact}
+                onEditLanguage={onEditLanguage}
+                onDeleteLanguage={onDeleteLanguage}
+                onAddLanguage={onAddLanguage}
+                onDeleteLanguages={onDeleteLanguages}
+                onEditAward={onEditAward}
+                onDeleteAward={onDeleteAward}
+                onAddAward={onAddAward}
+                onDeleteAwards={onDeleteAwards}
                 onSectionOrderChange={onSectionOrderChange}
                 onAddSection={onAddSection}
               />
@@ -519,6 +551,14 @@ export default function DesktopProfileView({
   onDeleteEducation,
   onEditContact,
   onDeleteContact,
+  onEditLanguage,
+  onDeleteLanguage,
+  onAddLanguage,
+  onDeleteLanguages,
+  onEditAward,
+  onDeleteAward,
+  onAddAward,
+  onDeleteAwards,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -545,17 +585,25 @@ export default function DesktopProfileView({
 
   // Memoized props to prevent unnecessary re-renders
   const portfolioSectionProps = useMemo(() => {
-    console.log('DesktopProfileView: Creating portfolioSectionProps with Projects and Education handlers:', {
+    console.log('DesktopProfileView: Creating portfolioSectionProps with all handlers:', {
       onEditProject: !!onEditProject,
       onEditSingleProject: !!onEditSingleProject,
       onDeleteSingleProject: !!onDeleteSingleProject,
       onDeleteProjects: !!onDeleteProjects,
-              onEditEducation: !!onEditEducation,
-        onEditSingleEducation: !!onEditSingleEducation,
-        onDeleteSingleEducation: !!onDeleteSingleEducation,
-        onDeleteEducation: !!onDeleteEducation,
-        onEditContact: !!onEditContact,
-        onDeleteContact: !!onDeleteContact
+      onEditEducation: !!onEditEducation,
+      onEditSingleEducation: !!onEditSingleEducation,
+      onDeleteSingleEducation: !!onDeleteSingleEducation,
+      onDeleteEducation: !!onDeleteEducation,
+      onEditContact: !!onEditContact,
+      onDeleteContact: !!onDeleteContact,
+      onEditLanguage: !!onEditLanguage,
+      onDeleteLanguage: !!onDeleteLanguage,
+      onAddLanguage: !!onAddLanguage,
+      onDeleteLanguages: !!onDeleteLanguages,
+      onEditAward: !!onEditAward,
+      onDeleteAward: !!onDeleteAward,
+      onAddAward: !!onAddAward,
+      onDeleteAwards: !!onDeleteAwards
     })
     return {
       user,
@@ -583,11 +631,19 @@ export default function DesktopProfileView({
       onDeleteEducation,
       onEditContact,
       onDeleteContact,
+      onEditLanguage,
+      onDeleteLanguage,
+      onAddLanguage,
+      onDeleteLanguages,
+      onEditAward,
+      onDeleteAward,
+      onAddAward,
+      onDeleteAwards,
       onEditModeToggle,
       onSectionOrderChange,
       onAddSection
     }
-  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditModeToggle, onSectionOrderChange, onAddSection])
+  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditModeToggle, onSectionOrderChange, onAddSection])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,

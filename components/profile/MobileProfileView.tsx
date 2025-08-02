@@ -59,6 +59,14 @@ interface MobileProfileViewProps {
   onDeleteEducation?: () => void
   onEditContact?: () => void
   onDeleteContact?: () => void
+  onEditLanguage?: (index: number) => void
+  onDeleteLanguage?: (index: number) => void
+  onAddLanguage?: () => void
+  onDeleteLanguages?: () => void
+  onEditAward?: (index: number) => void
+  onDeleteAward?: (index: number) => void
+  onAddAward?: () => void
+  onDeleteAwards?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
@@ -97,6 +105,14 @@ export default function MobileProfileView({
   onDeleteEducation,
   onEditContact,
   onDeleteContact,
+  onEditLanguage,
+  onDeleteLanguage,
+  onAddLanguage,
+  onDeleteLanguages,
+  onEditAward,
+  onDeleteAward,
+  onAddAward,
+  onDeleteAwards,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -377,7 +393,7 @@ export default function MobileProfileView({
 
             {/* Profile Sections */}
             <ProfileSections
-              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}`}
+              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}-${!!onEditLanguage}-${!!onDeleteLanguage}-${!!onAddLanguage}-${!!onDeleteLanguages}-${!!onEditAward}-${!!onDeleteAward}-${!!onAddAward}-${!!onDeleteAwards}`}
               user={user}
               isEditMode={isEditMode}
               onEditAbout={onEditAbout}
@@ -398,6 +414,14 @@ export default function MobileProfileView({
               onDeleteEducation={onDeleteEducation}
               onEditContact={onEditContact}
               onDeleteContact={onDeleteContact}
+              onEditLanguage={onEditLanguage}
+              onDeleteLanguage={onDeleteLanguage}
+              onAddLanguage={onAddLanguage}
+              onDeleteLanguages={onDeleteLanguages}
+              onEditAward={onEditAward}
+              onDeleteAward={onDeleteAward}
+              onAddAward={onAddAward}
+              onDeleteAwards={onDeleteAwards}
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />

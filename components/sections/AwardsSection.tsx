@@ -1,10 +1,11 @@
 "use client"
 
-import { Award } from "lucide-react"
+import { Award, Edit, Trash2 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
 import BaseSection from "./BaseSection"
+import { Button } from "@/components/ui/button"
 
 interface AwardsSectionProps {
   user: UserType
@@ -16,6 +17,9 @@ interface AwardsSectionProps {
   onToggleExpand?: () => void
   showDragHandle?: boolean
   dragHandleProps?: any
+  onEditAward?: (index: number) => void
+  onDeleteAward?: (index: number) => void
+  onAddAward?: () => void
 }
 
 export default function AwardsSection({
@@ -27,8 +31,19 @@ export default function AwardsSection({
   onDelete,
   onToggleExpand,
   showDragHandle = false,
-  dragHandleProps = {}
+  dragHandleProps = {},
+  onEditAward,
+  onDeleteAward,
+  onAddAward
 }: AwardsSectionProps) {
+  console.log('AwardsSection: Received handlers:', {
+    isEditMode,
+    onDelete: !!onDelete,
+    onAddAward: !!onAddAward,
+    onEditAward: !!onEditAward,
+    onDeleteAward: !!onDeleteAward,
+    hasData: !!(user.awards && user.awards.length > 0)
+  })
   const { isDark } = useTheme()
 
   // Check if section has data
@@ -39,6 +54,14 @@ export default function AwardsSection({
     return null
   }
 
+  console.log('AwardsSection: BaseSection props:', {
+    isEditMode,
+    hasData,
+    onDelete: !!onDelete,
+    onAddAward: !!onAddAward,
+    onAdd: !!(isEditMode ? onAddAward : undefined)
+  })
+  
   return (
     <BaseSection
       id="awards"
@@ -47,8 +70,8 @@ export default function AwardsSection({
       isEditMode={isEditMode}
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
-      onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={hasData ? onDelete : undefined}
+      onAdd={isEditMode ? onAddAward : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
@@ -56,7 +79,34 @@ export default function AwardsSection({
       <div className="space-y-4">
         {hasData ? (
           user.awards.map((award, index) => (
-            <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-xl p-5 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300`}>
+            <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-xl p-5 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300 relative`}>
+              {/* Edit/Delete buttons - only show in edit mode */}
+              {isEditMode && (onEditAward || onDeleteAward) && (
+                <div className="absolute top-3 right-3 flex gap-1">
+                  {onEditAward && (
+                    <Button
+                      onClick={() => onEditAward(index)}
+                      size="sm"
+                      variant="ghost"
+                      className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-1 h-6 w-6"
+                      title="Edit award"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                  )}
+                  {onDeleteAward && (
+                    <Button
+                      onClick={() => onDeleteAward(index)}
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-1 h-6 w-6"
+                      title="Delete award"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              )}
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

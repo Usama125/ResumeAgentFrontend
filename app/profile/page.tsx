@@ -22,6 +22,8 @@ import ExperienceSectionEditModal from "@/components/ExperienceSectionEditModal"
 import ProjectsSectionEditModal from "@/components/ProjectsSectionEditModal"
 import EducationSectionEditModal from "@/components/EducationSectionEditModal"
 import ContactSectionEditModal from "@/components/ContactSectionEditModal"
+import LanguagesSectionEditModal from "@/components/LanguagesSectionEditModal"
+import AwardsSectionEditModal from "@/components/AwardsSectionEditModal"
 import ConfirmationModal from "@/components/ConfirmationModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
@@ -94,6 +96,21 @@ export default function CurrentUserProfilePage() {
     educationTitle: ""
   })
   const [isContactEditModalOpen, setIsContactEditModalOpen] = useState(false)
+
+  // Languages modal state
+  const [isLanguagesEditModalOpen, setIsLanguagesEditModalOpen] = useState(false)
+  const [languagesEditMode, setLanguagesEditMode] = useState<'add' | 'edit'>('add')
+  const [editingLanguage, setEditingLanguage] = useState<any>(null)
+  const [editingLanguageIndex, setEditingLanguageIndex] = useState<number | null>(null)
+  const [deleteLanguageConfirm, setDeleteLanguageConfirm] = useState(false)
+
+  // Awards modal state
+  const [isAwardsEditModalOpen, setIsAwardsEditModalOpen] = useState(false)
+  const [awardsEditMode, setAwardsEditMode] = useState<'add' | 'edit'>('add')
+  const [editingAward, setEditingAward] = useState<any>(null)
+  const [editingAwardIndex, setEditingAwardIndex] = useState<number | null>(null)
+  const [deleteAwardConfirm, setDeleteAwardConfirm] = useState(false)
+
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -290,6 +307,164 @@ export default function CurrentUserProfilePage() {
       toast({
         title: "Error",
         description: error.message || "Failed to delete contact information",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Languages handlers
+  const handleAddLanguage = useCallback(() => {
+    setLanguagesEditMode('add')
+    setEditingLanguage(null)
+    setEditingLanguageIndex(null)
+    setIsLanguagesEditModalOpen(true)
+  }, [])
+
+  const handleEditLanguage = useCallback((index: number) => {
+    if (!user?.languages) return
+    
+    setLanguagesEditMode('edit')
+    setEditingLanguage(user.languages[index])
+    setEditingLanguageIndex(index)
+    setIsLanguagesEditModalOpen(true)
+  }, [user])
+
+  const handleDeleteSingleLanguage = useCallback((index: number) => {
+    if (!user || !user.languages || !user.languages[index]) return
+    
+    const language = user.languages[index]
+    setDeleteLanguageConfirm(true)
+    setEditingLanguageIndex(index)
+  }, [user])
+
+  const confirmDeleteLanguage = useCallback(async () => {
+    if (!user || editingLanguageIndex === null) return
+    
+    try {
+      const updatedLanguages = user.languages.filter((_, index) => index !== editingLanguageIndex)
+      await updateProfileSection("languages", { languages: updatedLanguages })
+      
+      setUser({ ...user, languages: updatedLanguages })
+      updateUser({ languages: updatedLanguages })
+      
+      toast({
+        title: "Success",
+        description: "Language deleted successfully",
+      })
+      
+      setDeleteLanguageConfirm(false)
+      setEditingLanguageIndex(null)
+    } catch (error: any) {
+      console.error("Error deleting language:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete language",
+        variant: "destructive"
+      })
+    }
+  }, [user, editingLanguageIndex, updateUser, toast])
+
+  const handleLanguagesUpdate = useCallback((newLanguages: any[]) => {
+    if (!user) return
+    setUser({ ...user, languages: newLanguages })
+    updateUser({ languages: newLanguages })
+  }, [user, updateUser])
+
+  const handleLanguagesDelete = useCallback(async () => {
+    if (!user) return
+    
+    try {
+      await deleteProfileSection("languages")
+      setUser({ ...user, languages: [] })
+      updateUser({ languages: [] })
+      toast({
+        title: "Success",
+        description: "Languages section deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting languages section:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete languages section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Awards handlers
+  const handleAddAward = useCallback(() => {
+    setAwardsEditMode('add')
+    setEditingAward(null)
+    setEditingAwardIndex(null)
+    setIsAwardsEditModalOpen(true)
+  }, [])
+
+  const handleEditAward = useCallback((index: number) => {
+    if (!user?.awards) return
+    
+    setAwardsEditMode('edit')
+    setEditingAward(user.awards[index])
+    setEditingAwardIndex(index)
+    setIsAwardsEditModalOpen(true)
+  }, [user])
+
+  const handleDeleteSingleAward = useCallback((index: number) => {
+    if (!user || !user.awards || !user.awards[index]) return
+    
+    const award = user.awards[index]
+    setDeleteAwardConfirm(true)
+    setEditingAwardIndex(index)
+  }, [user])
+
+  const confirmDeleteAward = useCallback(async () => {
+    if (!user || editingAwardIndex === null) return
+    
+    try {
+      const updatedAwards = user.awards.filter((_, index) => index !== editingAwardIndex)
+      await updateProfileSection("awards", { awards: updatedAwards })
+      
+      setUser({ ...user, awards: updatedAwards })
+      updateUser({ awards: updatedAwards })
+      
+      toast({
+        title: "Success",
+        description: "Award deleted successfully",
+      })
+      
+      setDeleteAwardConfirm(false)
+      setEditingAwardIndex(null)
+    } catch (error: any) {
+      console.error("Error deleting award:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete award",
+        variant: "destructive"
+      })
+    }
+  }, [user, editingAwardIndex, updateUser, toast])
+
+  const handleAwardsUpdate = useCallback((newAwards: any[]) => {
+    if (!user) return
+    setUser({ ...user, awards: newAwards })
+    updateUser({ awards: newAwards })
+  }, [user, updateUser])
+
+  const handleAwardsDelete = useCallback(async () => {
+    if (!user) return
+    
+    try {
+      await deleteProfileSection("awards")
+      setUser({ ...user, awards: [] })
+      updateUser({ awards: [] })
+      toast({
+        title: "Success",
+        description: "Awards section deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting awards section:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete awards section",
         variant: "destructive"
       })
     }
@@ -876,6 +1051,16 @@ export default function CurrentUserProfilePage() {
               onEditSingleEducation={handleEditEducation}
               onDeleteSingleEducation={handleDeleteSingleEducation}
               onDeleteEducation={handleEducationDelete}
+              onEditContact={handleEditContact}
+              onDeleteContact={handleContactDelete}
+              onEditLanguage={handleEditLanguage}
+              onDeleteLanguage={handleDeleteSingleLanguage}
+              onAddLanguage={handleAddLanguage}
+              onDeleteLanguages={handleLanguagesDelete}
+              onEditAward={handleEditAward}
+              onDeleteAward={handleDeleteSingleAward}
+              onAddAward={handleAddAward}
+              onDeleteAwards={handleAwardsDelete}
               onEditModeToggle={handleEditModeToggle}
               onSectionOrderChange={handleSectionOrderChange}
               onAddSection={handleAddSection}
@@ -913,6 +1098,14 @@ export default function CurrentUserProfilePage() {
           onDeleteEducation={handleEducationDelete}
           onEditContact={handleEditContact}
           onDeleteContact={handleContactDelete}
+          onEditLanguage={handleEditLanguage}
+          onDeleteLanguage={handleDeleteSingleLanguage}
+          onAddLanguage={handleAddLanguage}
+          onDeleteLanguages={handleLanguagesDelete}
+          onEditAward={handleEditAward}
+          onDeleteAward={handleDeleteSingleAward}
+          onAddAward={handleAddAward}
+          onDeleteAwards={handleAwardsDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -1007,6 +1200,28 @@ export default function CurrentUserProfilePage() {
         onUpdate={handleContactUpdate}
       />
 
+      {/* Languages Section Edit Modal */}
+      <LanguagesSectionEditModal
+        isOpen={isLanguagesEditModalOpen}
+        onClose={() => setIsLanguagesEditModalOpen(false)}
+        currentLanguages={user?.languages || []}
+        onUpdate={handleLanguagesUpdate}
+        editingLanguage={editingLanguage}
+        editingIndex={editingLanguageIndex}
+        mode={languagesEditMode}
+      />
+
+      {/* Awards Section Edit Modal */}
+      <AwardsSectionEditModal
+        isOpen={isAwardsEditModalOpen}
+        onClose={() => setIsAwardsEditModalOpen(false)}
+        currentAwards={user?.awards || []}
+        onUpdate={handleAwardsUpdate}
+        editingAward={editingAward}
+        editingIndex={editingAwardIndex}
+        mode={awardsEditMode}
+      />
+
       {/* Education Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={deleteEducationConfirm.isOpen}
@@ -1051,6 +1266,30 @@ export default function CurrentUserProfilePage() {
         onConfirm={confirmDeleteProject}
         title="Delete Project"
         message={`Are you sure you want to delete "${deleteProjectConfirm.projectTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+
+      {/* Language Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteLanguageConfirm}
+        onClose={() => setDeleteLanguageConfirm(false)}
+        onConfirm={confirmDeleteLanguage}
+        title="Delete Language"
+        message="Are you sure you want to delete this language?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+
+      {/* Award Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteAwardConfirm}
+        onClose={() => setDeleteAwardConfirm(false)}
+        onConfirm={confirmDeleteAward}
+        title="Delete Award"
+        message="Are you sure you want to delete this award?"
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"

@@ -79,6 +79,7 @@ export default function BaseSection({
       <div className="flex items-center gap-2 flex-shrink-0">
         {isEditMode && (onEdit || onDelete || onAdd) && (
           <>
+            {console.log('BaseSection: Rendering buttons:', { isEditMode, onEdit: !!onEdit, onDelete: !!onDelete, onAdd: !!onAdd })}
             {onDelete && (
               <Button
                 onClick={handleDeleteClick}
