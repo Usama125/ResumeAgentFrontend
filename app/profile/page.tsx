@@ -20,6 +20,7 @@ import AboutSectionEditModal from "@/components/AboutSectionEditModal"
 import SkillsSectionEditModal from "@/components/SkillsSectionEditModal"
 import ExperienceSectionEditModal from "@/components/ExperienceSectionEditModal"
 import ProjectsSectionEditModal from "@/components/ProjectsSectionEditModal"
+import EducationSectionEditModal from "@/components/EducationSectionEditModal"
 import ConfirmationModal from "@/components/ConfirmationModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
@@ -77,6 +78,19 @@ export default function CurrentUserProfilePage() {
     isOpen: false,
     projectIndex: null,
     projectTitle: ""
+  })
+  const [isEducationEditModalOpen, setIsEducationEditModalOpen] = useState(false)
+  const [educationEditMode, setEducationEditMode] = useState<'add' | 'edit'>('add')
+  const [editingEducation, setEditingEducation] = useState<any | null>(null)
+  const [editingEducationIndex, setEditingEducationIndex] = useState<number | null>(null)
+  const [deleteEducationConfirm, setDeleteEducationConfirm] = useState<{
+    isOpen: boolean
+    educationIndex: number | null
+    educationTitle: string
+  }>({
+    isOpen: false,
+    educationIndex: null,
+    educationTitle: ""
   })
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
@@ -147,6 +161,97 @@ export default function CurrentUserProfilePage() {
       toast({
         title: "Error",
         description: error.message || "Failed to delete projects section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Education handlers - moved to top level to follow Rules of Hooks
+  const handleAddEducation = useCallback(() => {
+    setEducationEditMode('add')
+    setEditingEducation(null)
+    setEditingEducationIndex(null)
+    setIsEducationEditModalOpen(true)
+  }, [])
+
+  const handleEditEducation = useCallback((index: number) => {
+    if (!user?.education) return
+    
+    setEducationEditMode('edit')
+    setEditingEducation(user.education[index])
+    setEditingEducationIndex(index)
+    setIsEducationEditModalOpen(true)
+  }, [user])
+
+  const handleDeleteSingleEducation = useCallback((index: number) => {
+    if (!user?.education) return
+    
+    const education = user.education[index]
+    setDeleteEducationConfirm({
+      isOpen: true,
+      educationIndex: index,
+      educationTitle: education.degree || education.institution
+    })
+  }, [user])
+
+  const confirmDeleteEducation = useCallback(async () => {
+    if (!user || deleteEducationConfirm.educationIndex === null) return
+
+    try {
+      const updatedEducation = user.education.filter((_, index) => index !== deleteEducationConfirm.educationIndex)
+      
+      await updateProfileSection("education", { education: updatedEducation })
+      
+      // Update frontend state
+      setUser({ ...user, education: updatedEducation })
+      updateUser({ education: updatedEducation })
+      
+      toast({
+        title: "Success",
+        description: "Education deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting education:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete education",
+        variant: "destructive"
+      })
+    } finally {
+      setDeleteEducationConfirm({
+        isOpen: false,
+        educationIndex: null,
+        educationTitle: ""
+      })
+    }
+  }, [user, deleteEducationConfirm, updateUser, toast])
+
+  const handleEducationUpdate = useCallback((newEducation: any[]) => {
+    if (!user) return
+    
+    setUser({ ...user, education: newEducation })
+    updateUser({ education: newEducation })
+  }, [user, updateUser])
+
+  const handleEducationDelete = useCallback(async () => {
+    if (!user) return
+
+    try {
+      await deleteProfileSection("education")
+      
+      // Update frontend state
+      setUser({ ...user, education: [] })
+      updateUser({ education: [] })
+      
+      toast({
+        title: "Success",
+        description: "Education section deleted successfully",
+      })
+    } catch (error: any) {
+      console.error("Error deleting education section:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete education section",
         variant: "destructive"
       })
     }
@@ -705,34 +810,38 @@ export default function CurrentUserProfilePage() {
 
       {/* Main Content */}
       {isMobile ? (
-        <MobileProfileView
-          user={user}
-          chatHistory={chatHistory}
-          setChatHistory={setChatHistory}
-          suggestedQuestions={suggestedQuestions}
-          message={message}
-          setMessage={setMessage}
-          isLoading={isLoading}
-          handleSendMessage={handleSendMessage}
-          isCurrentUser={true}
-          onEditPhoto={() => setIsEditPhotoModalOpen(true)}
-          isEditMode={isEditMode}
-          onEditAbout={() => setIsAboutEditModalOpen(true)}
-          onEditSkills={() => setIsSkillsEditModalOpen(true)}
-          onEditExperience={handleAddExperience}
-          onEditSingleExperience={handleEditExperience}
-          onDeleteSingleExperience={handleDeleteSingleExperience}
-          onEditProject={handleAddProject}
-          onEditSingleProject={handleEditProject}
-          onDeleteSingleProject={handleDeleteSingleProject}
-          onDeleteAbout={handleAboutDelete}
-          onDeleteSkills={handleSkillsDelete}
-          onDeleteExperience={handleExperienceDelete}
-          onDeleteProjects={handleProjectsDelete}
-          onEditModeToggle={handleEditModeToggle}
-          onSectionOrderChange={handleSectionOrderChange}
-          onAddSection={handleAddSection}
-        />
+                    <MobileProfileView
+              user={user}
+              chatHistory={chatHistory}
+              setChatHistory={setChatHistory}
+              suggestedQuestions={suggestedQuestions}
+              message={message}
+              setMessage={setMessage}
+              isLoading={isLoading}
+              handleSendMessage={handleSendMessage}
+              isCurrentUser={true}
+              onEditPhoto={() => setIsEditPhotoModalOpen(true)}
+              isEditMode={isEditMode}
+              onEditAbout={() => setIsAboutEditModalOpen(true)}
+              onEditSkills={() => setIsSkillsEditModalOpen(true)}
+              onEditExperience={handleAddExperience}
+              onEditSingleExperience={handleEditExperience}
+              onDeleteSingleExperience={handleDeleteSingleExperience}
+              onEditProject={handleAddProject}
+              onEditSingleProject={handleEditProject}
+              onDeleteSingleProject={handleDeleteSingleProject}
+              onDeleteAbout={handleAboutDelete}
+              onDeleteSkills={handleSkillsDelete}
+              onDeleteExperience={handleExperienceDelete}
+              onDeleteProjects={handleProjectsDelete}
+              onEditEducation={handleAddEducation}
+              onEditSingleEducation={handleEditEducation}
+              onDeleteSingleEducation={handleDeleteSingleEducation}
+              onDeleteEducation={handleEducationDelete}
+              onEditModeToggle={handleEditModeToggle}
+              onSectionOrderChange={handleSectionOrderChange}
+              onAddSection={handleAddSection}
+            />
       ) : (
         <>
 
@@ -760,6 +869,10 @@ export default function CurrentUserProfilePage() {
           onDeleteSkills={handleSkillsDelete}
           onDeleteExperience={handleExperienceDelete}
           onDeleteProjects={handleProjectsDelete}
+          onEditEducation={handleAddEducation}
+          onEditSingleEducation={handleEditEducation}
+          onDeleteSingleEducation={handleDeleteSingleEducation}
+          onDeleteEducation={handleEducationDelete}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -833,6 +946,33 @@ export default function CurrentUserProfilePage() {
         editingProject={editingProject}
         editingIndex={editingProjectIndex}
         mode={projectsEditMode}
+      />
+
+      {/* Education Edit Modal */}
+      <EducationSectionEditModal
+        isOpen={isEducationEditModalOpen}
+        onClose={() => setIsEducationEditModalOpen(false)}
+        currentEducation={user?.education || []}
+        onUpdate={handleEducationUpdate}
+        editingEducation={editingEducation}
+        editingIndex={editingEducationIndex}
+        mode={educationEditMode}
+      />
+
+      {/* Education Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteEducationConfirm.isOpen}
+        onClose={() => setDeleteEducationConfirm({
+          isOpen: false,
+          educationIndex: null,
+          educationTitle: ""
+        })}
+        onConfirm={confirmDeleteEducation}
+        title="Delete Education"
+        message={`Are you sure you want to delete "${deleteEducationConfirm.educationTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
       />
 
       <RateLimitModal

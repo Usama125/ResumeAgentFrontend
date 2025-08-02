@@ -1,10 +1,11 @@
 "use client"
 
-import { BookOpen } from "lucide-react"
+import { BookOpen, Edit, Trash2 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
 import { getThemeClasses } from "@/utils/theme"
 import BaseSection from "./BaseSection"
+import { Button } from "@/components/ui/button"
 
 interface EducationSectionProps {
   user: UserType
@@ -16,6 +17,9 @@ interface EducationSectionProps {
   onToggleExpand?: () => void
   showDragHandle?: boolean
   dragHandleProps?: any
+  onEditEducation?: (index: number) => void
+  onDeleteEducation?: (index: number) => void
+  onAddEducation?: () => void
 }
 
 export default function EducationSection({
@@ -27,7 +31,10 @@ export default function EducationSection({
   onDelete,
   onToggleExpand,
   showDragHandle = false,
-  dragHandleProps = {}
+  dragHandleProps = {},
+  onEditEducation,
+  onDeleteEducation,
+  onAddEducation
 }: EducationSectionProps) {
   const { isDark } = useTheme()
 
@@ -53,8 +60,8 @@ export default function EducationSection({
       isEditMode={isEditMode}
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
-      onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={hasData ? onDelete : undefined}
+      onAdd={isEditMode ? onAddEducation : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
@@ -76,26 +83,56 @@ export default function EducationSection({
                       </p>
                     )}
                   </div>
-                  <div className="text-right">
-                    {edu.start_date && edu.end_date && (
-                      <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {edu.start_date} - {edu.end_date}
-                      </span>
-                    )}
-                    {edu.grade && (
-                      <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
-                        Grade: {edu.grade}
-                      </div>
-                    )}
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="flex gap-2">
+                      {isEditMode && (onEditEducation || onDeleteEducation) && (
+                        <>
+                          {onDeleteEducation && (
+                            <Button
+                              onClick={() => onDeleteEducation(index)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-2"
+                              title="Delete education"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {onEditEducation && (
+                            <Button
+                              onClick={() => onEditEducation(index)}
+                              size="sm"
+                              variant="ghost"
+                              className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-2"
+                              title="Edit education"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      {edu.start_date && edu.end_date && (
+                        <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {edu.start_date} - {edu.end_date}
+                        </span>
+                      )}
+                      {edu.grade && (
+                        <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
+                          Grade: {edu.grade}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 {edu.description && (
-                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
+                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden`}>
                     {edu.description}
                   </p>
                 )}
                 {edu.activities && (
-                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} break-all overflow-hidden`}>
                     <span className="font-medium">Activities:</span> {edu.activities}
                   </p>
                 )}

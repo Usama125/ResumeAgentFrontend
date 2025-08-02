@@ -55,6 +55,10 @@ interface ProfileSectionsProps {
   onDeleteSkills?: () => void
   onDeleteExperience?: () => void
   onDeleteProjects?: () => void
+  onEditEducation?: () => void
+  onEditSingleEducation?: (index: number) => void
+  onDeleteSingleEducation?: (index: number) => void
+  onDeleteEducation?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -114,6 +118,10 @@ const ProfileSections = function ProfileSections({
   onDeleteSkills,
   onDeleteExperience,
   onDeleteProjects,
+  onEditEducation,
+  onEditSingleEducation,
+  onDeleteSingleEducation,
+  onDeleteEducation,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
@@ -268,7 +276,15 @@ const ProfileSections = function ProfileSections({
           />
         )
       case 'education':
-        return <EducationSection {...commonProps} />
+        return (
+          <EducationSection
+            {...commonProps}
+            onDelete={onDeleteEducation}
+            onAddEducation={onEditEducation}
+            onEditEducation={onEditSingleEducation}
+            onDeleteEducation={onDeleteSingleEducation}
+          />
+        )
       case 'contact':
         return <ContactSection {...commonProps} />
       case 'languages':
@@ -284,7 +300,7 @@ const ProfileSections = function ProfileSections({
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects])
+  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation])
 
   if (isEditMode) {
     return (

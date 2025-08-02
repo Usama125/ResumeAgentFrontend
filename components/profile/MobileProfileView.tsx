@@ -53,6 +53,10 @@ interface MobileProfileViewProps {
   onDeleteSkills?: () => void
   onDeleteExperience?: () => void
   onDeleteProjects?: () => void
+  onEditEducation?: () => void
+  onEditSingleEducation?: (index: number) => void
+  onDeleteSingleEducation?: (index: number) => void
+  onDeleteEducation?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
@@ -85,6 +89,10 @@ export default function MobileProfileView({
   onDeleteSkills,
   onDeleteExperience,
   onDeleteProjects,
+  onEditEducation,
+  onEditSingleEducation,
+  onDeleteSingleEducation,
+  onDeleteEducation,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -348,7 +356,7 @@ export default function MobileProfileView({
 
             {/* Profile Sections */}
             <ProfileSections
-              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}`}
+              key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}`}
               user={user}
               isEditMode={isEditMode}
               onEditAbout={onEditAbout}
@@ -363,6 +371,10 @@ export default function MobileProfileView({
               onDeleteSkills={onDeleteSkills}
               onDeleteExperience={onDeleteExperience}
               onDeleteProjects={onDeleteProjects}
+              onEditEducation={onEditEducation}
+              onEditSingleEducation={onEditSingleEducation}
+              onDeleteSingleEducation={onDeleteSingleEducation}
+              onDeleteEducation={onDeleteEducation}
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />

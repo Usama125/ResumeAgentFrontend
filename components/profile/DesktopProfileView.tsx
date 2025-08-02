@@ -53,6 +53,10 @@ interface DesktopProfileViewProps {
   onDeleteSkills?: () => void
   onDeleteExperience?: () => void
   onDeleteProjects?: () => void
+  onEditEducation?: () => void
+  onEditSingleEducation?: (index: number) => void
+  onDeleteSingleEducation?: (index: number) => void
+  onDeleteEducation?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -85,6 +89,10 @@ const PortfolioSection = function({
   onDeleteSkills,
   onDeleteExperience,
   onDeleteProjects,
+  onEditEducation,
+  onEditSingleEducation,
+  onDeleteSingleEducation,
+  onDeleteEducation,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -108,6 +116,10 @@ const PortfolioSection = function({
   onDeleteSkills?: () => void
   onDeleteExperience?: () => void
   onDeleteProjects?: () => void
+  onEditEducation?: () => void
+  onEditSingleEducation?: (index: number) => void
+  onDeleteSingleEducation?: (index: number) => void
+  onDeleteEducation?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -391,7 +403,7 @@ const PortfolioSection = function({
             {/* Sections Container */}
             <div className="space-y-6">
               <ProfileSections
-                key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}`}
+                key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}`}
                 user={user}
                 isEditMode={isEditMode}
                 onEditAbout={onEditAbout}
@@ -406,6 +418,10 @@ const PortfolioSection = function({
                 onDeleteSkills={onDeleteSkills}
                 onDeleteExperience={onDeleteExperience}
                 onDeleteProjects={onDeleteProjects}
+                onEditEducation={onEditEducation}
+                onEditSingleEducation={onEditSingleEducation}
+                onDeleteSingleEducation={onDeleteSingleEducation}
+                onDeleteEducation={onDeleteEducation}
                 onSectionOrderChange={onSectionOrderChange}
                 onAddSection={onAddSection}
               />
@@ -472,6 +488,10 @@ export default function DesktopProfileView({
   onDeleteSkills,
   onDeleteExperience,
   onDeleteProjects,
+  onEditEducation,
+  onEditSingleEducation,
+  onDeleteSingleEducation,
+  onDeleteEducation,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -498,11 +518,15 @@ export default function DesktopProfileView({
 
   // Memoized props to prevent unnecessary re-renders
   const portfolioSectionProps = useMemo(() => {
-    console.log('DesktopProfileView: Creating portfolioSectionProps with Projects handlers:', {
+    console.log('DesktopProfileView: Creating portfolioSectionProps with Projects and Education handlers:', {
       onEditProject: !!onEditProject,
       onEditSingleProject: !!onEditSingleProject,
       onDeleteSingleProject: !!onDeleteSingleProject,
-      onDeleteProjects: !!onDeleteProjects
+      onDeleteProjects: !!onDeleteProjects,
+      onEditEducation: !!onEditEducation,
+      onEditSingleEducation: !!onEditSingleEducation,
+      onDeleteSingleEducation: !!onDeleteSingleEducation,
+      onDeleteEducation: !!onDeleteEducation
     })
     return {
       user,
@@ -524,11 +548,15 @@ export default function DesktopProfileView({
       onDeleteSkills,
       onDeleteExperience,
       onDeleteProjects,
+      onEditEducation,
+      onEditSingleEducation,
+      onDeleteSingleEducation,
+      onDeleteEducation,
       onEditModeToggle,
       onSectionOrderChange,
       onAddSection
     }
-  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditModeToggle, onSectionOrderChange, onAddSection])
+  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditModeToggle, onSectionOrderChange, onAddSection])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,
