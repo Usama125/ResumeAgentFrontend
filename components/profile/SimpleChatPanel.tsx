@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Send, Sparkles, CheckCircle, Trash2, Copy } from 'lucide-react'
 
@@ -15,7 +15,7 @@ interface SimpleChatPanelProps {
   className?: string
 }
 
-export function SimpleChatPanel({
+export const SimpleChatPanel = memo(function SimpleChatPanel({
   chatHistory,
   setChatHistory,
   suggestedQuestions,
@@ -55,14 +55,14 @@ export function SimpleChatPanel({
     }
   }
   
-  const selectSuggestion = (suggestion: string) => {
+  const selectSuggestion = useCallback((suggestion: string) => {
     setLocalMessage(suggestion)
     inputRef.current?.focus()
-  }
+  }, [])
   
-  const clearChat = () => {
+  const clearChat = useCallback(() => {
     setChatHistory([])
-  }
+  }, [setChatHistory])
   
   return (
     <div className={`flex flex-col h-full relative ${className || ''}`}>
@@ -232,4 +232,4 @@ export function SimpleChatPanel({
       </div>
     </div>
   )
-}
+})

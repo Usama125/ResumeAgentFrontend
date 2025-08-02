@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, memo, useMemo, useCallback } from "react"
 import {
   Send,
   MapPin,
@@ -35,20 +35,19 @@ import { getImageUrl } from '@/utils/imageUtils';
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils';
 import ProfileSections from '@/components/ProfileSections';
 
-export default function DesktopPublicProfileView({
+// Memoized Portfolio Section Component
+const PortfolioSection = memo<{
+  user: PublicUser
+  isChatVisible: boolean
+  isDark: boolean
+  onChatToggle: () => void
+}>(function PortfolioSection({
   user,
-  chatHistory,
-  setChatHistory,
-  suggestedQuestions,
-  message,
-  setMessage,
-  isLoading,
-  handleSendMessage
-}: DesktopPublicProfileViewProps) {
-  const [isChatVisible, setIsChatVisible] = useState(true)
-  const { isDark } = useTheme()
-
-  const PortfolioSection = () => (
+  isChatVisible,
+  isDark,
+  onChatToggle
+}) {
+  return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
         
         {/* Toggle Button - Inside Portfolio Section */}
@@ -56,7 +55,7 @@ export default function DesktopPublicProfileView({
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
             <button
-              onClick={() => setIsChatVisible(!isChatVisible)}
+              onClick={onChatToggle}
               className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
                 isDark 
                   ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
@@ -326,8 +325,29 @@ export default function DesktopPublicProfileView({
         </div>
     </div>
   )
+})
 
-  const ChatSection = () => (
+// Memoized Chat Section Component
+const ChatSection = memo<{
+  user: PublicUser
+  chatHistory: Array<{ type: "user" | "ai"; content: string }>
+  setChatHistory: React.Dispatch<React.SetStateAction<Array<{ type: "user" | "ai"; content: string }>>>
+  suggestedQuestions: string[]
+  message: string
+  setMessage: React.Dispatch<React.SetStateAction<string>>
+  isLoading: boolean
+  handleSendMessage: (messageText?: string) => Promise<void>
+}>(function ChatSection({
+  user,
+  chatHistory,
+  setChatHistory,
+  suggestedQuestions,
+  message,
+  setMessage,
+  isLoading,
+  handleSendMessage
+}) {
+  return (
     <PublicChatPanel
       user={user}
       chatHistory={chatHistory}
@@ -340,6 +360,44 @@ export default function DesktopPublicProfileView({
       className="h-full"
     />
   )
+})
+
+export default function DesktopPublicProfileView({
+  user,
+  chatHistory,
+  setChatHistory,
+  suggestedQuestions,
+  message,
+  setMessage,
+  isLoading,
+  handleSendMessage
+}: DesktopPublicProfileViewProps) {
+  const [isChatVisible, setIsChatVisible] = useState(true)
+  const { isDark } = useTheme()
+
+  // Memoized handlers to prevent unnecessary re-renders
+  const handleChatToggle = useCallback(() => {
+    setIsChatVisible(!isChatVisible)
+  }, [isChatVisible])
+
+  // Memoized props to prevent unnecessary re-renders
+  const portfolioSectionProps = useMemo(() => ({
+    user,
+    isChatVisible,
+    isDark,
+    onChatToggle: handleChatToggle
+  }), [user, isChatVisible, isDark, handleChatToggle])
+
+  const chatSectionProps = useMemo(() => ({
+    user,
+    chatHistory,
+    setChatHistory,
+    suggestedQuestions,
+    message,
+    setMessage,
+    isLoading,
+    handleSendMessage
+  }), [user, chatHistory, setChatHistory, suggestedQuestions, message, setMessage, isLoading, handleSendMessage])
 
   return (
     <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">
@@ -349,8 +407,8 @@ export default function DesktopPublicProfileView({
         minLeftWidth={30}
         maxLeftWidth={70}
       >
-        <PortfolioSection />
-        <ChatSection />
+        <PortfolioSection {...portfolioSectionProps} />
+        <ChatSection {...chatSectionProps} />
       </ResizableSplitPane>
     </div>
   )

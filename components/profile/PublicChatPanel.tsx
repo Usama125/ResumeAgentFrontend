@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Send, Sparkles, CheckCircle, Trash2, Copy } from 'lucide-react'
 import { PublicUser } from '@/types'
@@ -17,7 +17,7 @@ interface PublicChatPanelProps {
   className?: string
 }
 
-export function PublicChatPanel({
+export const PublicChatPanel = memo(function PublicChatPanel({
   user,
   chatHistory,
   setChatHistory,
@@ -58,14 +58,14 @@ export function PublicChatPanel({
     }
   }
   
-  const selectSuggestion = (suggestion: string) => {
+  const selectSuggestion = useCallback((suggestion: string) => {
     setLocalMessage(suggestion)
     inputRef.current?.focus()
-  }
+  }, [])
   
-  const clearChat = () => {
+  const clearChat = useCallback(() => {
     setChatHistory([])
-  }
+  }, [setChatHistory])
   
   const firstName = user.name.split(' ')[0]
   
@@ -237,4 +237,4 @@ export function PublicChatPanel({
       </div>
     </div>
   )
-}
+})

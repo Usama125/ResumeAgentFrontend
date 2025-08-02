@@ -116,20 +116,27 @@ function SortableSkillItem({
                 <SelectItem value="Expert">Expert</SelectItem>
               </SelectContent>
             </Select>
-            <Input
-              type="number"
-              min="0"
-              max="50"
-              value={skill.years}
-              onChange={(e) => onUpdateSkill(index, 'years', parseInt(e.target.value) || 0)}
-              className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
-            />
+            <div className="space-y-1">
+              <Input
+                type="number"
+                min="0"
+                max="50"
+                value={skill.years}
+                onChange={(e) => onUpdateSkill(index, 'years', parseInt(e.target.value) || 0)}
+                className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'} ${skill.years > 50 ? 'border-red-500' : ''}`}
+              />
+              <div className="h-4">
+                {skill.years > 50 && (
+                  <p className="text-red-500 text-xs">Maximum 50 years allowed</p>
+                )}
+              </div>
+            </div>
           </div>
           <div className="flex gap-2">
             <Button
               type="button"
               onClick={onSave}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !skill.name.trim() || skill.years > 50}
               className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-3 py-1 rounded text-sm disabled:opacity-50"
             >
               Save
@@ -539,7 +546,7 @@ export default function SkillsSectionEditModal({
                   Add New Skill
                 </h3>
                 
-                <div className="flex gap-3 items-end">
+                <div className="flex gap-3 items-start">
                   <div className="flex-1 space-y-2">
                     <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       Skill Name
@@ -550,6 +557,7 @@ export default function SkillsSectionEditModal({
                       placeholder="e.g., React.js, Python, AWS"
                       className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-500'}`}
                     />
+                    <div className="h-4"></div>
                   </div>
                   
                   <div className="flex-1 space-y-2">
@@ -572,31 +580,43 @@ export default function SkillsSectionEditModal({
                         <SelectItem value="Expert">Expert</SelectItem>
                       </SelectContent>
                     </Select>
+                    <div className="h-4"></div>
                   </div>
                   
                   <div className="flex-1 space-y-2">
                     <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       Years of Experience
                     </label>
-                    <Input
-                      type="number"
-                      min="0"
-                      max="50"
-                      value={newSkill.years}
-                      onChange={(e) => setNewSkill({ ...newSkill, years: parseInt(e.target.value) || 0 })}
-                      className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
-                    />
+                    <div className="space-y-1">
+                      <Input
+                        type="number"
+                        min="0"
+                        max="50"
+                        value={newSkill.years}
+                        onChange={(e) => setNewSkill({ ...newSkill, years: parseInt(e.target.value) || 0 })}
+                        className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'} ${newSkill.years > 50 ? 'border-red-500' : ''}`}
+                      />
+                      <div className="h-4">
+                        {newSkill.years > 50 && (
+                          <p className="text-red-500 text-xs">Maximum 50 years allowed</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   
-                  <Button
-                    type="button"
-                    onClick={handleAddSkill}
-                    disabled={isSubmitting || !newSkill.name.trim()}
-                    className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-10"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Skill
-                  </Button>
+                  <div className="flex flex-col space-y-2">
+                    <div className="h-6"></div>
+                    <Button
+                      type="button"
+                      onClick={handleAddSkill}
+                      disabled={isSubmitting || !newSkill.name.trim() || newSkill.years > 50}
+                      className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-10"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Skill
+                    </Button>
+                    <div className="h-4"></div>
+                  </div>
                 </div>
               </div>
 

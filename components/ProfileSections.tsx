@@ -89,7 +89,7 @@ function SortableSectionWrapper({ id, children, isEditMode }: SortableSectionWra
   )
 }
 
-function ProfileSections({
+const ProfileSections = memo(function ProfileSections({
   user,
   isEditMode = false,
   onEditAbout,
@@ -281,6 +281,6 @@ function ProfileSections({
       ))}
     </div>
   )
-}
+})
 
-export default memo(ProfileSections)
+export default ProfileSections
