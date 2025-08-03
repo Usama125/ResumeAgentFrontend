@@ -7,6 +7,7 @@ import { User, Settings, LogOut, ChevronDown, Edit, Search, MessageCircle, Downl
 import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { getThemeClasses } from '@/utils/theme'
+import { UserService } from '@/services/user'
 
 import { getImageUrl } from '@/utils/imageUtils';
 
@@ -71,10 +72,29 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
     console.log('Settings clicked - not implemented yet')
   }
 
-  const handleDownloadResume = () => {
+  const handleDownloadProfile = async () => {
     setIsOpen(false)
-    // TODO: Implement resume download
-    console.log('Download resume clicked')
+    if (!user) return
+    
+    try {
+      const token = localStorage.getItem('auth_token')
+      if (!token) {
+        console.error('No authentication token found')
+        return
+      }
+      
+      const blob = await UserService.downloadProfile(token)
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${user.name.replace(/\s+/g, '_')}_profile.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error downloading profile:', error)
+    }
   }
 
   const handleLogout = () => {
@@ -190,11 +210,11 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
             </button>
 
             <button
-              onClick={handleDownloadResume}
+              onClick={handleDownloadProfile}
               className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3`}
             >
               <Download className="w-4 h-4" />
-              <span>Download Resume</span>
+              <span>Download Profile</span>
             </button>
             
             <button

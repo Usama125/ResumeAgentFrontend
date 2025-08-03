@@ -57,7 +57,7 @@ export default function SkillsSection({
         <>
           <div className="flex items-center justify-between mb-6">
             <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              {user.skills.length} skills
+              {user.skills.length > 15 ? `15 of ${user.skills.length} skills` : `${user.skills.length} skills`}
             </div>
           </div>
           
@@ -75,6 +75,7 @@ export default function SkillsSection({
                 };
                 return getPriority(a.level) - getPriority(b.level);
               })
+              .slice(0, 15) // Show only first 15 skills
               .map((skill, index) => (
               <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-lg p-3 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300 group`}>
                 <div className="space-y-2">
@@ -133,6 +134,21 @@ export default function SkillsSection({
               </div>
             </div>
           </div>
+          
+          {/* See More Button if more than 15 skills */}
+          {user.skills.length > 15 && (
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => window.open(`/profile/${user.username}`, '_blank')}
+                className={`px-4 py-2 text-sm ${isDark ? 'text-[#10a37f] hover:text-[#10a37f]/80' : 'text-[#10a37f] hover:text-[#10a37f]/80'} transition-colors flex items-center gap-2`}
+              >
+                See More ({user.skills.length - 15} more skills)
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} italic text-center py-4`}>
