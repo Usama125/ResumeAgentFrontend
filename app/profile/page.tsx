@@ -321,6 +321,8 @@ export default function CurrentUserProfilePage() {
   const handleContactUpdate = useCallback((newContactInfo: any) => {
     if (!user) return
     
+    // The modal now handles both contact info and basic info updates
+    // The basic info is updated directly in the modal, so we only need to handle contact info here
     setUser({ ...user, contact_info: newContactInfo })
     updateUser({ contact_info: newContactInfo })
   }, [user, updateUser])
@@ -1481,6 +1483,7 @@ export default function CurrentUserProfilePage() {
         onClose={() => setIsContactEditModalOpen(false)}
         currentContactInfo={user?.contact_info}
         onUpdate={handleContactUpdate}
+        currentUser={user}
       />
 
       {/* Languages Section Edit Modal */}

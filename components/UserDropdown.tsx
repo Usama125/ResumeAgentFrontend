@@ -173,13 +173,13 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
               <span>View Profile</span>
             </button>
             
-            <button
+            {/* <button
               onClick={handleEditProfile}
               className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3`}
             >
               <Edit className="w-4 h-4" />
               <span>Edit Profile</span>
-            </button>
+            </button> */}
 
             <button
               onClick={handleSearchProfiles}

@@ -148,7 +148,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               <ThemeToggle />
               
               {/* Profile page specific buttons */}
-              {isProfilePage && onEditProfile && (
+              {/* {isProfilePage && onEditProfile && (
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -158,7 +158,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                   <Edit className="w-4 h-4 sm:mr-2" />
                   <span className="hidden sm:inline">Edit Profile</span>
                 </Button>
-              )}
+              )} */}
 
               {/* Auth state dependent content */}
               {authLoading ? (

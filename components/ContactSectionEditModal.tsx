@@ -15,13 +15,15 @@ interface ContactSectionEditModalProps {
   onClose: () => void
   currentContactInfo: ContactInfo | undefined
   onUpdate: (newContactInfo: ContactInfo) => void
+  currentUser?: any // Add user prop for basic info
 }
 
 export default function ContactSectionEditModal({
   isOpen,
   onClose,
   currentContactInfo,
-  onUpdate
+  onUpdate,
+  currentUser
 }: ContactSectionEditModalProps) {
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     email: '',
@@ -37,6 +39,12 @@ export default function ContactSectionEditModal({
     instagram: '',
     facebook: '',
     youtube: ''
+  })
+  const [basicInfo, setBasicInfo] = useState({
+    name: currentUser?.name || '',
+    designation: currentUser?.designation || '',
+    location: currentUser?.location || '',
+    experience: currentUser?.experience || ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -74,14 +82,18 @@ export default function ContactSectionEditModal({
         facebook: currentContactInfo?.facebook || '',
         youtube: currentContactInfo?.youtube || ''
       })
+      setBasicInfo({
+        name: currentUser?.name || '',
+        designation: currentUser?.designation || '',
+        location: currentUser?.location || '',
+        experience: currentUser?.experience || ''
+      })
     }
-  }, [isOpen, currentContactInfo])
+  }, [isOpen, currentContactInfo, currentUser])
 
   // Check if there are changes
   const hasChanges = () => {
-    if (!currentContactInfo) return Object.values(contactInfo).some(value => value.trim() !== '')
-    
-    return (
+    const contactChanges = !currentContactInfo ? Object.values(contactInfo).some(value => value.trim() !== '') : (
       contactInfo.email !== (currentContactInfo.email || '') ||
       contactInfo.phone !== (currentContactInfo.phone || '') ||
       contactInfo.linkedin !== (currentContactInfo.linkedin || '') ||
@@ -96,29 +108,57 @@ export default function ContactSectionEditModal({
       contactInfo.facebook !== (currentContactInfo.facebook || '') ||
       contactInfo.youtube !== (currentContactInfo.youtube || '')
     )
+    
+    const basicInfoChanges = (
+      basicInfo.name !== (currentUser?.name || '') ||
+      basicInfo.designation !== (currentUser?.designation || '') ||
+      basicInfo.location !== (currentUser?.location || '') ||
+      basicInfo.experience !== (currentUser?.experience || '')
+    )
+    
+    return contactChanges || basicInfoChanges
   }
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
     
     try {
+      // Update basic info
+      if (basicInfo.name !== currentUser?.name || 
+          basicInfo.designation !== currentUser?.designation || 
+          basicInfo.location !== currentUser?.location || 
+          basicInfo.experience !== currentUser?.experience) {
+        await updateProfileSection("basic_info", {
+          name: basicInfo.name,
+          designation: basicInfo.designation,
+          location: basicInfo.location,
+          experience: basicInfo.experience
+        })
+      }
+      
       // Call API to update contact info
       await updateProfileSection("contact", { contact_info: contactInfo })
       
       // Update frontend state
       onUpdate(contactInfo)
-      updateUser({ contact_info: contactInfo })
+      updateUser({ 
+        contact_info: contactInfo,
+        name: basicInfo.name,
+        designation: basicInfo.designation,
+        location: basicInfo.location,
+        experience: basicInfo.experience
+      })
       
       toast({
         title: "Success",
-        description: "Contact information updated successfully",
+        description: "Basic Info Updated successfully",
       })
       onClose()
     } catch (error: any) {
-      console.error("Error updating contact information:", error)
+      console.error("Error updating information:", error)
       toast({
         title: "Error",
-        description: error.message || "Failed to update contact information",
+        description: error.message || "Failed to update information",
         variant: "destructive"
       })
     } finally {
@@ -126,33 +166,7 @@ export default function ContactSectionEditModal({
     }
   }
 
-  const handleDelete = async () => {
-    setIsSubmitting(true)
-    
-    try {
-      // Call API to delete contact info
-      await updateProfileSection("contact", { contact_info: {} })
-      
-      // Update frontend state
-      onUpdate({})
-      updateUser({ contact_info: {} })
-      
-      toast({
-        title: "Success",
-        description: "Contact information deleted successfully",
-      })
-      onClose()
-    } catch (error: any) {
-      console.error("Error deleting contact information:", error)
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete contact information",
-        variant: "destructive"
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  // Remove handleDelete function as we don't want Delete All button
 
   if (!isOpen) return null
 
@@ -183,7 +197,7 @@ export default function ContactSectionEditModal({
           <div className={`shrink-0 p-6 border-b ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                Contact Information
+                Edit Basic Info & Contact
               </h2>
               <button
                 onClick={onClose}
@@ -197,10 +211,67 @@ export default function ContactSectionEditModal({
           {/* Content */}
           <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6 min-h-0">
             <div className="space-y-6">
+              {/* Basic Information */}
+              <div className="space-y-4">
+                <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  Basic Information
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Full Name
+                    </label>
+                    <Input
+                      value={basicInfo.name}
+                      onChange={(e) => setBasicInfo({ ...basicInfo, name: e.target.value })}
+                      placeholder="Your full name"
+                      className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-500'}`}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Designation/Title
+                    </label>
+                    <Input
+                      value={basicInfo.designation}
+                      onChange={(e) => setBasicInfo({ ...basicInfo, designation: e.target.value })}
+                      placeholder="e.g., Full Stack Developer"
+                      className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-500'}`}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Location
+                    </label>
+                    <Input
+                      value={basicInfo.location}
+                      onChange={(e) => setBasicInfo({ ...basicInfo, location: e.target.value })}
+                      placeholder="e.g., New York, NY"
+                      className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-500'}`}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Experience
+                    </label>
+                    <Input
+                      value={basicInfo.experience}
+                      onChange={(e) => setBasicInfo({ ...basicInfo, experience: e.target.value })}
+                      placeholder="e.g., 5 years"
+                      className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-500'}`}
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Primary Contact Information */}
               <div className="space-y-4">
                 <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Primary Contact
+                  Contact Information
                 </h3>
                 
                 <div className="space-y-4">
@@ -405,53 +476,34 @@ export default function ContactSectionEditModal({
 
           {/* Footer */}
           <div className={`shrink-0 p-6 border-t ${isDark ? 'border-[#10a37f]/20 bg-[#212121]' : 'border-gray-200 bg-gray-50'}`}>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-3">
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleDelete}
-                disabled={isSubmitting || !Object.values(contactInfo).some(value => value.trim() !== '')}
-                className={`bg-transparent ${isDark ? 'border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50' : 'border-red-300 text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-400'} disabled:opacity-50 disabled:cursor-not-allowed px-6 py-2 rounded-lg transition-colors`}
+                onClick={onClose}
+                disabled={isSubmitting}
+                className={`bg-transparent ${isDark ? 'border-[#10a37f]/30 text-gray-300 hover:bg-[#10a37f]/10 hover:text-white hover:border-[#10a37f]/50' : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 hover:border-gray-400'} disabled:opacity-50 disabled:cursor-not-allowed px-6 py-2 rounded-lg transition-colors`}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting || !hasChanges()}
+                className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-8 py-2 rounded-lg transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Deleting...
+                    Updating...
                   </>
                 ) : (
-                  'Delete All'
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Update Basic Info
+                  </>
                 )}
               </Button>
-              
-              <div className="flex space-x-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onClose}
-                  disabled={isSubmitting}
-                  className={`bg-transparent ${isDark ? 'border-[#10a37f]/30 text-gray-300 hover:bg-[#10a37f]/10 hover:text-white hover:border-[#10a37f]/50' : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900 hover:border-gray-400'} disabled:opacity-50 disabled:cursor-not-allowed px-6 py-2 rounded-lg transition-colors`}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !hasChanges()}
-                  className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-8 py-2 rounded-lg transition-colors disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Updating...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Update Contact Info
-                    </>
-                  )}
-                </Button>
-              </div>
             </div>
           </div>
         </div>

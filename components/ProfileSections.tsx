@@ -442,10 +442,7 @@ const ProfileSections = function ProfileSections({
                 {renderSection(sectionId)}
               </SortableSectionWrapper>
             ))}
-            <PreferencesSection
-              user={user}
-              isEditMode={isEditMode}
-            />
+            {/* PreferencesSection is now handled in renderSection function */}
           </div>
         </SortableContext>
       </DndContext>

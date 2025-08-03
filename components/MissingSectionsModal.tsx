@@ -154,7 +154,7 @@ export default function MissingSectionsModal({
                     </p>
                   ) : (
                     <p className={`text-sm ${themeClasses.text.secondary} max-w-2xl mx-auto`}>
-                      Great! We extracted information from your resume. You can enhance your profile further by clicking "Edit Profile" in your profile header to add more details.
+                      Great! We extracted information from your resume. You can enhance your profile further by clicking "Edit Basic Info" below your profile information to add more details.
                     </p>
                   )}
                 </div>
@@ -182,7 +182,7 @@ export default function MissingSectionsModal({
                     <div>
                       <h4 className={`font-semibold ${isDark ? 'text-green-400' : 'text-green-800'} mb-1`}>Profile Complete</h4>
                       <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'}`}>
-                        We successfully extracted information from your resume. You can enhance your profile further by clicking "Edit Profile" in your profile header.
+                        We successfully extracted information from your resume. You can enhance your profile further by clicking "Edit Basic Info" below your profile information.
                       </p>
                     </div>
                   </div>
@@ -207,7 +207,7 @@ export default function MissingSectionsModal({
                     </li>
                     <li className="flex items-start">
                       <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 flex-shrink-0"></span>
-                      Visit the "Edit Profile" section anytime to add or update information
+                      Visit the "Edit Basic Info" section anytime to add or update information
                     </li>
                     <li className="flex items-start">
                       <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 flex-shrink-0"></span>
