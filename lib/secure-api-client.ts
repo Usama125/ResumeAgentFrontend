@@ -226,30 +226,41 @@ class SecureAPIClient {
       headers,
     });
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      // If 401 error and not already a retry, attempt token refresh
-      if (response.status === 401 && !isRetry && endpoint !== '/auth/refresh') {
-        console.log('🔄 401 error received, attempting token refresh...');
-        
-        // Dynamically import to avoid circular dependency
-        const { default: AuthService } = await import('@/services/auth');
-        const refreshResult = await AuthService.refreshToken();
-        
-        if (refreshResult) {
-          console.log('🔄 Token refreshed successfully, retrying request...');
-          // Retry the request with new token
-          return this.authenticatedRequest(endpoint, options, refreshResult.access_token, true);
-        } else {
-          console.log('🚨 Token refresh failed, user needs to re-login');
+    // Handle different response types
+    if (response.headers.get('content-type')?.includes('application/pdf')) {
+      // For PDF responses, return blob directly
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw this.handleError(response, errorData);
+      }
+      return response.blob() as T;
+    } else {
+      // For JSON responses, parse as JSON
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // If 401 error and not already a retry, attempt token refresh
+        if (response.status === 401 && !isRetry && endpoint !== '/auth/refresh') {
+          console.log('🔄 401 error received, attempting token refresh...');
+          
+          // Dynamically import to avoid circular dependency
+          const { default: AuthService } = await import('@/services/auth');
+          const refreshResult = await AuthService.refreshToken();
+          
+          if (refreshResult) {
+            console.log('🔄 Token refreshed successfully, retrying request...');
+            // Retry the request with new token
+            return this.authenticatedRequest(endpoint, options, refreshResult.access_token, true);
+          } else {
+            console.log('🚨 Token refresh failed, user needs to re-login');
+          }
         }
+        
+        throw this.handleError(response, data);
       }
       
-      throw this.handleError(response, data);
+      return data;
     }
-    
-    return data;
   }
 
   // Secure request (HMAC signature required)

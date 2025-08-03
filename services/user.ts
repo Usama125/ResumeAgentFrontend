@@ -99,6 +99,12 @@ export class UserService {
   static async deleteProfileSection(sectionName: string, token?: string): Promise<User> {
     return authAPI.delete<User>(`/users/me/sections/${sectionName}`, token);
   }
+
+  // Download profile as PDF
+  static async downloadProfile(token?: string): Promise<Blob> {
+    const response = await authAPI.get<Blob>('/users/me/download-profile', token);
+    return response;
+  }
 }
 
 // Export individual functions for easier imports
