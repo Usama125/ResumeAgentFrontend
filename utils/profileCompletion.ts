@@ -13,7 +13,7 @@ export interface ProfileCompletionData {
 }
 
 export const calculateProfileCompletion = (user: UserType): ProfileCompletionData => {
-  const sections = Object.values(SECTION_REGISTRY)
+  const sections = Object.values(SECTION_REGISTRY).filter(section => !section.isPrivate)
   let completedSections = 0
   const emptySections: Array<{ id: string; title: string; field: string }> = []
 
@@ -66,6 +66,16 @@ const hasSectionData = (user: UserType, field: string): boolean => {
       return !!(user.volunteer_experience && user.volunteer_experience.length > 0)
     case 'interests':
       return !!(user.interests && user.interests.length > 0)
+    case 'work_preferences':
+      return !!(user.work_preferences && (
+        user.work_preferences.preferred_work_mode?.length > 0 ||
+        user.work_preferences.preferred_employment_type?.length > 0 ||
+        user.work_preferences.preferred_location ||
+        user.work_preferences.notice_period ||
+        user.work_preferences.availability ||
+        user.current_salary ||
+        user.expected_salary
+      ))
     default:
       return false
   }

@@ -82,6 +82,7 @@ interface ProfileSectionsProps {
   onEditInterests?: () => void
   onDeleteInterests?: () => void
   onAddInterests?: () => void
+  onEditPreferences?: () => void
   onSectionOrderChange?: (newOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
 }
@@ -166,6 +167,7 @@ const ProfileSections = function ProfileSections({
   onEditInterests,
   onDeleteInterests,
   onAddInterests,
+  onEditPreferences,
   onSectionOrderChange,
   onAddSection
 }: ProfileSectionsProps) {
@@ -432,6 +434,7 @@ const ProfileSections = function ProfileSections({
               onAddPublication={onAddPublication}
               onAddVolunteerExperience={onAddVolunteerExperience}
               onAddInterests={onAddInterests}
+              onEditPreferences={onEditPreferences}
             />
             {sectionsToRender.map((sectionId) => (
               <SortableSectionWrapper

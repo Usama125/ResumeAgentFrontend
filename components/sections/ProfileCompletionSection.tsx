@@ -21,6 +21,7 @@ interface ProfileCompletionSectionProps {
   onAddPublication?: () => void
   onAddVolunteerExperience?: () => void
   onAddInterests?: () => void
+  onEditPreferences?: () => void
 }
 
 export default function ProfileCompletionSection({
@@ -36,13 +37,78 @@ export default function ProfileCompletionSection({
   onAddAward,
   onAddPublication,
   onAddVolunteerExperience,
-  onAddInterests
+  onAddInterests,
+  onEditPreferences
 }: ProfileCompletionSectionProps) {
   const { isDark } = useTheme()
   const completionData = calculateProfileCompletion(user)
 
+  // Check if work preferences is completed
+  const hasWorkPreferences = user.work_preferences && (
+    user.work_preferences.preferred_work_mode?.length > 0 ||
+    user.work_preferences.preferred_employment_type?.length > 0 ||
+    user.work_preferences.preferred_location ||
+    user.work_preferences.notice_period ||
+    user.work_preferences.availability ||
+    user.current_salary ||
+    user.expected_salary
+  )
+
+  // Check if about section is completed
+  const hasAbout = user.summary && user.summary.trim()
+
+  // Check if about section is already in the empty sections from main calculation
+  const aboutAlreadyInEmpty = completionData.emptySections.some(section => section.id === 'about')
+
+  // Add work preferences to empty sections if not completed
+  const allEmptySections = [...completionData.emptySections]
+  if (!hasWorkPreferences) {
+    allEmptySections.push({
+      id: 'preferences',
+      title: 'Work Preferences',
+      field: 'work_preferences'
+    })
+  }
+
+  // Add about section to empty sections if not completed and not already in the list
+  if (!hasAbout && !aboutAlreadyInEmpty) {
+    allEmptySections.push({
+      id: 'about',
+      title: 'About Me',
+      field: 'summary'
+    })
+  }
+
+  // Calculate adjusted percentage including work preferences and about
+  // If about is missing and not already counted, it should be added to total but not to completed
+  // If work preferences is missing, it should be added to total but not to completed
+  const missingWorkPreferences = hasWorkPreferences ? 0 : 1
+  const missingAbout = hasAbout ? 0 : (aboutAlreadyInEmpty ? 0 : 1)
+  const missingSections = missingWorkPreferences + missingAbout
+  const adjustedTotalSections = completionData.totalSections + missingSections
+  const adjustedCompletedSections = completionData.completedSections
+  const adjustedPercentage = Math.round((adjustedCompletedSections / adjustedTotalSections) * 100)
+
+  // Temporary debug logging
+  console.log('Profile Completion Debug:', {
+    userSummary: user.summary,
+    hasAbout,
+    hasWorkPreferences,
+    aboutAlreadyInEmpty,
+    originalPercentage: completionData.percentage,
+    originalTotal: completionData.totalSections,
+    originalCompleted: completionData.completedSections,
+    missingWorkPreferences,
+    missingAbout,
+    missingSections,
+    adjustedTotalSections,
+    adjustedCompletedSections,
+    adjustedPercentage,
+    allEmptySections: allEmptySections.map(s => s.title)
+  })
+
   // Don't show if no empty sections or not in edit mode
-  if (completionData.emptySections.length === 0 || !isEditMode) {
+  if (allEmptySections.length === 0 || !isEditMode) {
     return null
   }
 
@@ -70,6 +136,8 @@ export default function ProfileCompletionSection({
         return onAddVolunteerExperience
       case 'interests':
         return onAddInterests
+      case 'preferences':
+        return onEditPreferences
       default:
         return undefined
     }
@@ -78,7 +146,7 @@ export default function ProfileCompletionSection({
   const radius = 40
   const circumference = 2 * Math.PI * radius
   const strokeDasharray = circumference
-  const strokeDashoffset = circumference - (completionData.percentage / 100) * circumference
+  const strokeDashoffset = circumference - (adjustedPercentage / 100) * circumference
 
   return (
     <div className={`relative overflow-hidden rounded-2xl border ${
@@ -111,7 +179,7 @@ export default function ProfileCompletionSection({
             </p>
             
             <div className="flex flex-wrap gap-3">
-              {completionData.emptySections.map((section) => {
+              {allEmptySections.map((section) => {
                 const addHandler = getAddHandler(section.id)
                 
                 return (
@@ -171,7 +239,7 @@ export default function ProfileCompletionSection({
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    {completionData.percentage}%
+                    {adjustedPercentage}%
                   </div>
                   <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     Complete

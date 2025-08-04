@@ -31,6 +31,7 @@ import ConfirmationModal from "@/components/ConfirmationModal"
 import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
 import { useToast } from "@/hooks/use-toast"
+import PreferencesEditModal from "@/components/PreferencesEditModal"
 
 
 // Generate suggested questions based on user data
@@ -147,6 +148,7 @@ export default function CurrentUserProfilePage() {
   // Interests modal state
   const [isInterestsEditModalOpen, setIsInterestsEditModalOpen] = useState(false)
   const [interestsEditMode, setInterestsEditMode] = useState<'add' | 'edit'>('add')
+  const [isPreferencesEditModalOpen, setIsPreferencesEditModalOpen] = useState(false)
 
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
@@ -1391,6 +1393,7 @@ export default function CurrentUserProfilePage() {
           onEditInterests={handleEditInterests}
           onDeleteInterests={handleInterestsDelete}
           onAddInterests={handleAddInterests}
+          onEditPreferences={() => setIsPreferencesEditModalOpen(true)}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -1537,6 +1540,13 @@ export default function CurrentUserProfilePage() {
         currentInterests={user?.interests || []}
         onUpdate={handleInterestsUpdate}
         mode={interestsEditMode}
+      />
+
+      {/* Preferences Section Edit Modal */}
+      <PreferencesEditModal
+        isOpen={isPreferencesEditModalOpen}
+        onClose={() => setIsPreferencesEditModalOpen(false)}
+        user={user}
       />
 
       {/* Education Delete Confirmation Modal */}

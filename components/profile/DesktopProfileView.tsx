@@ -78,6 +78,7 @@ interface DesktopProfileViewProps {
   onEditInterests?: () => void
   onDeleteInterests?: () => void
   onAddInterests?: () => void
+  onEditPreferences?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -135,6 +136,7 @@ const PortfolioSection = function({
   onEditInterests,
   onDeleteInterests,
   onAddInterests,
+  onEditPreferences,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -183,6 +185,7 @@ const PortfolioSection = function({
   onEditInterests?: () => void
   onDeleteInterests?: () => void
   onAddInterests?: () => void
+  onEditPreferences?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -555,6 +558,7 @@ const PortfolioSection = function({
                 onEditInterests={onEditInterests}
                 onDeleteInterests={onDeleteInterests}
                 onAddInterests={onAddInterests}
+                onEditPreferences={onEditPreferences}
                 onSectionOrderChange={onSectionOrderChange}
                 onAddSection={onAddSection}
               />
@@ -646,6 +650,7 @@ export default function DesktopProfileView({
   onEditInterests,
   onDeleteInterests,
   onAddInterests,
+  onEditPreferences,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection
@@ -737,11 +742,12 @@ export default function DesktopProfileView({
       onEditInterests,
       onDeleteInterests,
       onAddInterests,
+      onEditPreferences,
       onEditModeToggle,
       onSectionOrderChange,
       onAddSection
     }
-  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditPublication, onDeletePublication, onAddPublication, onDeletePublications, onEditVolunteerExperience, onDeleteVolunteerExperience, onAddVolunteerExperience, onDeleteVolunteerExperiences, onEditInterests, onDeleteInterests, onAddInterests, onEditModeToggle, onSectionOrderChange, onAddSection])
+  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditPublication, onDeletePublication, onAddPublication, onDeletePublications, onEditVolunteerExperience, onDeleteVolunteerExperience, onAddVolunteerExperience, onDeleteVolunteerExperiences, onEditInterests, onDeleteInterests, onAddInterests, onEditPreferences, onEditModeToggle, onSectionOrderChange, onAddSection])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,

@@ -7,6 +7,7 @@ import { User, Settings, LogOut, ChevronDown, Edit, Search, MessageCircle, Downl
 import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { getThemeClasses } from '@/utils/theme'
+import { useToast } from '@/hooks/use-toast'
 
 import { getImageUrl } from '@/utils/imageUtils';
 
@@ -23,6 +24,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
   const { user, logout } = useAuth()
   const { isDark } = useTheme()
   const router = useRouter()
+  const { toast } = useToast()
   
   // Get theme classes
   const themeClasses = getThemeClasses(isDark)
@@ -71,10 +73,79 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
     console.log('Settings clicked - not implemented yet')
   }
 
-  const handleDownloadResume = () => {
+  const handleDownloadProfile = async () => {
     setIsOpen(false)
-    // TODO: Implement resume download
-    console.log('Download resume clicked')
+    
+    if (!user || !user.username) {
+      toast({
+        title: "Error",
+        description: "Username not found. Please try again.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    // Show progress toast
+    const progressToast = toast({
+      title: "Generating Profile PDF",
+      description: (
+        <div className="flex items-center space-x-3">
+          <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#10a37f] border-t-transparent"></div>
+          <span>Creating your professional profile PDF, please wait...</span>
+        </div>
+      ),
+      duration: 0, // Don't auto-dismiss
+    })
+
+    try {
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          username: user.username 
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF')
+      }
+
+      // Create blob from response
+      const blob = await response.blob()
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      a.download = `${user.username}-profile.pdf`
+      
+      // Trigger download
+      document.body.appendChild(a)
+      a.click()
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      // Show success toast
+      toast({
+        title: "Profile PDF Ready!",
+        description: "Your professional profile has been downloaded successfully.",
+      })
+      
+    } catch (error) {
+      console.error('❌ Error downloading profile PDF:', error)
+      
+      // Show error toast
+      toast({
+        title: "PDF Generation Failed",
+        description: "Unable to generate your profile PDF. Please try again.",
+        variant: "destructive"
+      })
+    }
   }
 
   const handleLogout = () => {
@@ -190,11 +261,11 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
             </button>
 
             <button
-              onClick={handleDownloadResume}
+              onClick={handleDownloadProfile}
               className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3`}
             >
               <Download className="w-4 h-4" />
-              <span>Download Resume</span>
+              <span>Download Profile</span>
             </button>
             
             <button
