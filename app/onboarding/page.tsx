@@ -873,7 +873,8 @@ export default function OnboardingPage() {
     validateCurrentStep,
     showSkipButton,
     handleSkip,
-    handleContinueToProfile
+    handleContinueToProfile,
+    pdfData: resumeData
   }
 
   // Modal handlers

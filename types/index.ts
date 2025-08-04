@@ -240,6 +240,9 @@ export interface StepCompletionResponse {
   next_step?: number;
   message: string;
   onboarding_completed: boolean;
+  qa_info?: {
+    user_message: string;
+  };
 }
 
 export interface PDFUploadResponse {

@@ -10,7 +10,7 @@ import UserDropdown from "@/components/UserDropdown"
 import ThemeToggle from "@/components/ThemeToggle"
 
 interface HeaderProps {
-  variant?: 'home' | 'profile' | 'auth' | 'onboarding'
+  variant?: 'home' | 'profile' | 'auth' | 'onboarding' | 'default'
   showBackButton?: boolean
   onEditProfile?: () => void
   profileData?: {
@@ -30,11 +30,12 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
   const isProfilePage = variant === 'profile'
   const isHomePage = variant === 'home'
   const isAuthPage = variant === 'auth'
+  const isDefaultPage = variant === 'default'
 
   return (
     <header className="sticky top-0 z-40 w-full relative">
-      {/* Enhanced gradient background for home page */}
-      {isHomePage && (
+      {/* Enhanced gradient background for home page and explore page */}
+      {(isHomePage || isDefaultPage) && (
         <>
           <div className={`absolute inset-0 transition-all duration-500 ${isDark ? 'bg-gradient-to-r from-[#1a1a1a] via-[#2f2f2f] to-[#1a1a1a]' : 'bg-gradient-to-r from-white via-gray-100 to-white'}`}></div>
           <div className={`absolute inset-0 transition-all duration-700 ${isDark ? 'bg-gradient-to-br from-[#10a37f]/10 via-transparent to-[#10a37f]/5' : 'bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/3'}`}></div>
@@ -54,7 +55,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
       )}
 
       {/* Background for other pages */}
-      {!isHomePage && (
+      {!isHomePage && !isDefaultPage && (
         <>
           {/* Profile page gets gradient background similar to home */}
           {isProfilePage ? (
@@ -72,7 +73,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
 
       <div className="relative backdrop-blur-sm overflow-hidden">
         <div className="w-full px-2 sm:px-4 lg:px-6">
-          <div className={`flex justify-between items-center ${isHomePage ? 'h-16 py-2' : 'h-14'} min-w-0`}>
+          <div className={`flex justify-between items-center ${(isHomePage || isDefaultPage) ? 'h-16 py-2' : 'h-14'} min-w-0`}>
             
             {/* Left side content */}
             <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
@@ -90,21 +91,51 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                 </Button>
               )}
 
-              {/* Logo and title for home page */}
-              {isHomePage && (
+              {/* Logo and title for home and default pages */}
+              {(isHomePage || isDefaultPage) && (
                 <>
-                  <div className="relative group cursor-pointer">
+                  <div className="relative group cursor-pointer" onClick={() => router.push("/")}>
                     <div className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-[#10a37f]/30 shadow-lg shadow-[#10a37f]/20 group-hover:ring-[#10a37f]/50 group-hover:shadow-[#10a37f]/40 transition-all duration-300 group-hover:scale-105">
-                      <img src="/placeholder-user.jpg" alt="AI Resume Builder" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      <img src="/placeholder-user.jpg" alt="CVChatter" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                     </div>
                     <div className="absolute -inset-1 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl opacity-20 blur group-hover:opacity-40 transition-opacity duration-300"></div>
                   </div>
-                  <div className="group cursor-pointer">
+                  <div className="group cursor-pointer" onClick={() => router.push("/")}>
                     <h1 className={`text-xl sm:text-2xl font-bold transition-all duration-300 group-hover:scale-105 ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent group-hover:from-white group-hover:via-[#10a37f] group-hover:to-gray-300' : 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent group-hover:from-gray-900 group-hover:via-[#10a37f] group-hover:to-gray-700'}`}>
-                      ResumeAI
+                      CVChatter
                     </h1>
                     <p className={`text-xs mt-0.5 transition-all duration-300 group-hover:text-[#10a37f] ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Smart Profiles</p>
                   </div>
+                  
+                  {/* Navigation Links for authenticated users */}
+                  {isAuthenticated && (
+                    <nav className="hidden md:flex items-center space-x-8" style={{ marginLeft: '6rem' }}>
+                      <button
+                        onClick={() => router.push("/")}
+                        className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                          isHomePage 
+                            ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
+                            : isDark 
+                              ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
+                              : 'bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]'
+                        }`}
+                      >
+                        Home
+                      </button>
+                      <button
+                        onClick={() => router.push("/explore")}
+                        className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                          isDefaultPage 
+                            ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
+                            : isDark 
+                              ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
+                              : 'bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]'
+                        }`}
+                      >
+                        Explore Talent
+                      </button>
+                    </nav>
+                  )}
                 </>
               )}
 
@@ -132,7 +163,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               )}
 
               {/* Simple title for other pages */}
-              {!isHomePage && !isProfilePage && (
+              {!isHomePage && !isProfilePage && !isDefaultPage && (
                 <div>
                   <h1 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {variant === 'auth' ? 'Welcome Back' : variant === 'onboarding' ? 'Profile Setup' : 'AI Resume Builder'}

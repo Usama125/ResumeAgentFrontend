@@ -64,7 +64,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
 
   const handleSearchProfiles = () => {
     setIsOpen(false)
-    router.push('/')
+    router.push('/explore')
   }
 
   const handleSettings = () => {
