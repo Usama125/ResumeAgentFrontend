@@ -220,15 +220,28 @@
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
-  background: #2f2f2f;
+  background: transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #565869;
+  background: rgba(156, 163, 175, 0.5); /* Light gray for light mode */
   border-radius: 3px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 163, 127, 0.6); /* Green hover for both modes */
+}
+
+/* Dark mode scrollbar overrides */
+.dark .overflow-y-auto::-webkit-scrollbar-track {
+  background: #2f2f2f;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #565869;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #10a37f;
 }
 
@@ -372,11 +385,24 @@
 }
 
 .profile-scroll::-webkit-scrollbar-thumb {
-  background: rgba(16, 163, 127, 0.3);
+  background: rgba(156, 163, 175, 0.4); /* Light gray for light mode */
   border-radius: 4px;
 }
 
 .profile-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 163, 127, 0.5); /* Green hover for both modes */
+}
+
+/* Dark mode profile scrollbar overrides */
+.dark .profile-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark .profile-scroll::-webkit-scrollbar-thumb {
+  background: rgba(16, 163, 127, 0.3);
+}
+
+.dark .profile-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(16, 163, 127, 0.5);
 }
 

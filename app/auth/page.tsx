@@ -327,7 +327,7 @@ export default function AuthPage() {
                           {usernameCheck.checking ? (
                             <p className="text-gray-400 text-sm">Checking availability...</p>
                           ) : usernameCheck.available === true ? (
-                            <p className="text-green-400 text-sm">✓ {usernameCheck.message}</p>
+                            <p className={`text-sm ${isDark ? 'text-green-400' : 'text-green-700'}`}>✓ {usernameCheck.message}</p>
                           ) : usernameCheck.available === false ? (
                             <p className="text-red-400 text-sm">✗ {usernameCheck.message}</p>
                           ) : null}

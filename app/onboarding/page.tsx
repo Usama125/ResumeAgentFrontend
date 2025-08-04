@@ -631,7 +631,15 @@ export default function OnboardingPage() {
   }
 
   const confirmCancel = () => {
-    router.push("/")
+    // Update user context to mark onboarding as completed
+    if (user) {
+      updateUser({ 
+        ...user,
+        onboarding_completed: true 
+      });
+    }
+    
+    router.push("/profile?edit=true");
   }
 
   const handleSkip = async () => {

@@ -199,6 +199,10 @@ export default function MissingSectionsModal({
                   <ul className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'} space-y-2`}>
                     <li className="flex items-start">
                       <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 flex-shrink-0"></span>
+                      Please review your profile for accuracy - while our extraction is thorough, manual verification ensures your information is perfectly represented
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 flex-shrink-0"></span>
                       Your profile has been created with all extracted information
                     </li>
                     <li className="flex items-start">
@@ -207,11 +211,11 @@ export default function MissingSectionsModal({
                     </li>
                     <li className="flex items-start">
                       <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 flex-shrink-0"></span>
-                      Visit the "Edit Basic Info" section anytime to add or update information
+                      Use Edit Mode anytime to enhance your profile - the more comprehensive your information, the better your chances of matching with opportunities
                     </li>
                     <li className="flex items-start">
                       <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 flex-shrink-0"></span>
-                      Our AI will help you enhance your profile as needed
+                      Visitors to your profile will receive accurate, detailed information about your background and skills
                     </li>
                   </ul>
                 </div>

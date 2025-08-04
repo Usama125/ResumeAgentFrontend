@@ -201,7 +201,7 @@ export default function OnboardingDesktop(props: OnboardingDesktopProps) {
               <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-4 mb-6">
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                  <p className="text-green-300 text-sm">
+                  <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'}`}>
                     PDF processed successfully! {pdfData.extracted_data ? 'Data extracted and ready to use.' : ''}
                   </p>
                 </div>
@@ -262,7 +262,7 @@ export default function OnboardingDesktop(props: OnboardingDesktopProps) {
                           </div>
                           {(formData.resumeFile || formData.linkedinPdf) && (
                             <div className="mt-4 p-3 bg-green-500/10 rounded-xl border border-green-500/20">
-                              <p className="text-green-400 text-sm flex items-center justify-center">
+                              <p className={`text-sm flex items-center justify-center ${isDark ? 'text-green-400' : 'text-green-700'}`}>
                                 <CheckCircle className="w-4 h-4 mr-2" />
                                 {formData.resumeFile?.name || formData.linkedinPdf?.name} uploaded successfully
                               </p>
@@ -278,27 +278,25 @@ export default function OnboardingDesktop(props: OnboardingDesktopProps) {
                     </CardContent>
                   </Card>
 
-                  {/* LinkedIn PDF Export Instructions - Compact */}
+                  {/* Resume Upload Instructions - Compact */}
                   <Card className={`${theme.bg.tertiary}/60 ${theme.border.secondary} rounded-2xl backdrop-blur-sm`}>
                     <CardContent className="p-6">
                       <h4 className={`font-semibold mb-4 flex items-center ${theme.text.primary}`}>
                         <FileText className="w-5 h-5 mr-2 text-[#10a37f]" />
-                        How to export your LinkedIn profile as PDF:
+                        Upload Your Resume
                       </h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        {[
-                          "Go to your LinkedIn profile page",
-                          'Click the "More" button near your profile picture',
-                          'Select "Save to PDF" from the dropdown menu',
-                          "Download the PDF and upload it here"
-                        ].map((step, index) => (
-                          <div key={index} className="flex items-start space-x-3">
-                            <div className="w-6 h-6 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 text-white">
-                              {index + 1}
-                            </div>
-                            <p className={`text-sm ${theme.text.secondary}`}>{step}</p>
+                      <div className="space-y-3">
+                        <p className={`text-sm ${theme.text.secondary}`}>
+                          Upload any resume format (PDF, DOC, DOCX). Don't have a resume? Export your LinkedIn profile as PDF:
+                        </p>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 text-white">
+                            1
                           </div>
-                        ))}
+                          <p className={`text-sm ${theme.text.secondary}`}>
+                            Go to your LinkedIn profile → Resources → Export to PDF
+                          </p>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

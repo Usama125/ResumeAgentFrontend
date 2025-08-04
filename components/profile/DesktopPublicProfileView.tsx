@@ -100,7 +100,7 @@ const PortfolioSection = memo<{
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-lg opacity-30"></div>
                 <img
-                  src={getImageUrl(user.profile_picture)}
+                  src={user.profile_picture || "/placeholder-user.jpg"}
                   alt={user.name}
                   className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
                   onError={(e) => {
@@ -108,11 +108,6 @@ const PortfolioSection = memo<{
                     target.src = "/placeholder-user.jpg";
                   }}
                 />
-                {user.is_looking_for_job && (
-                  <div className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs px-3 py-1 rounded-full border-2 border-[#0a0a0a] font-semibold">
-                    Available
-                  </div>
-                )}
               </div>
 
               {/* Name & Title */}

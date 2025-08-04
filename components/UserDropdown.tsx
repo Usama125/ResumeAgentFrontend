@@ -281,7 +281,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
           <div className={`border-t ${themeClasses.border.primary}/30 py-2`}>
             <button
               onClick={handleLogout}
-              className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center space-x-3"
+              className={`w-full px-4 py-2 text-left text-sm hover:bg-red-500/10 transition-colors flex items-center space-x-3 ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'}`}
             >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
