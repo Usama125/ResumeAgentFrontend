@@ -189,7 +189,7 @@ export default function OnboardingPage() {
       if (isOnboardingCompleted) {
         console.log('🔍 ONBOARDING PAGE - User already completed onboarding, redirecting to profile');
         // Use router.replace instead of window.location to avoid hard navigation
-        router.replace("/profile");
+        router.replace("/profile?edit=true");
         return
       }
       
@@ -518,7 +518,7 @@ export default function OnboardingPage() {
         if (response.onboarding_completed) {
           console.log('Onboarding completed, redirecting to profile');
           await refreshUser();
-          router.replace("/profile");
+          router.replace("/profile?edit=true");
           return;
         }
         
@@ -653,7 +653,7 @@ export default function OnboardingPage() {
           onboarding_completed: true
         });
         
-        router.replace("/profile")
+        router.replace("/profile?edit=true")
       }
     } catch (err: any) {
       console.error('Error skipping to profile:', err)
@@ -738,7 +738,7 @@ export default function OnboardingPage() {
             setLoading(false);
             
             // Use replace to avoid back button going to onboarding
-            router.replace("/profile");
+            router.replace("/profile?edit=true");
           }, 1500);
           
         } catch (prefetchError) {
@@ -748,7 +748,7 @@ export default function OnboardingPage() {
             console.log('Navigating to profile page (prefetch failed but continuing)...');
             setIsCompleting(false);
             setLoading(false);
-            router.replace("/profile");
+            router.replace("/profile?edit=true");
           }, 1500);
         }
         

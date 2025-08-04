@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { UserService, deleteProfileSection, updateProfileSection } from "@/services/user"
 import { User as UserType } from "@/types"
 import { useAuth } from "@/context/AuthContext"
@@ -159,6 +159,10 @@ export default function CurrentUserProfilePage() {
   const { isDark } = useTheme()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
   const { toast } = useToast()
+
+  // Get search params to detect onboarding flow
+  const searchParams = useSearchParams()
+  const isFromOnboarding = searchParams.get('edit') === 'true'
 
   // Projects handlers - moved to top level to follow Rules of Hooks
   const handleAddProject = useCallback(() => {
@@ -834,25 +838,22 @@ export default function CurrentUserProfilePage() {
         return;
       }
       
-      console.log('🔄 PROFILE PAGE - Initializing user data from auth context...', {
-        authLoading,
-        authTimeout,
-        userExists: !!authUser,
-        onboardingCompleted: authUser.onboarding_completed
-      });
-      
       // Use auth context data directly since it's already fresh from AuthContext
-      console.log('✅ PROFILE PAGE - Using auth context user data (avoiding duplicate API calls)');
       setUser(authUser)
       setSuggestedQuestions(generateSuggestedQuestions(authUser))
       setProfileLoading(false)
+      
+      // Set edit mode if coming from onboarding
+      if (isFromOnboarding) {
+        setIsEditMode(true)
+      }
     }
 
     // Initialize user data when auth is ready (including timeout scenario)
     if (isAuthenticated && authUser && (!authLoading || authTimeout)) {
       initializeUserData()
     }
-  }, [isAuthenticated, authUser, authLoading, authTimeout])
+  }, [isAuthenticated, authUser, authLoading, authTimeout, isFromOnboarding])
 
   // Optimized loading check - minimize loading states and flicker
   const isOnboardingCompleted = authUser?.onboarding_completed || authUser?.onboarding_progress?.completed;
