@@ -17,8 +17,8 @@ import { RateLimitModal } from "@/components/RateLimitModal"
 import { getImageUrl } from '@/utils/imageUtils'
 
 // Calculate skill matching percentage
-const calculateSkillMatch = (userSkills: { name: string; level: string }[], searchQuery: string): number => {
-  if (!searchQuery.trim()) return 100;
+const calculateSkillMatch = (userSkills: { name: string; level: string }[] | undefined, searchQuery: string): number => {
+  if (!searchQuery.trim() || !userSkills) return 100;
   
   const searchTerms = searchQuery.toLowerCase().split(' ').filter(term => term.length > 0);
   const skillNames = userSkills.map(skill => skill.name.toLowerCase());
@@ -88,7 +88,7 @@ export default function ExplorePage() {
           await performSearch(initialQuery, false)
         } else {
           // Fetch initial users (11 users + check if more exist)
-          const users = await UserService.getFeaturedUsers(12, 0)
+          const users = await UserService.getFeaturedUsers(12, 0, true) // Use listing_only for better performance
           
           if (users.length > 11) {
             // Show first 11 users + load more card
@@ -161,12 +161,12 @@ export default function ExplorePage() {
         setLoadMoreLoading(true)
       }
       
-      // Use the search API for more advanced search with pagination
+      // Perform API search
       const searchResults = await SearchService.searchUsers({
         q: query,
-        limit: isLoadMore ? 6 : 12, // Fetch 12 initially to check if more exist, then 6 for load more
+        limit: isLoadMore ? 6 : 12,
         skip: isLoadMore ? searchTotalFetched : 0
-      })
+      }, true) // Use listing_only for better performance
       
       // If API search returns results, use them with match percentage
       if (searchResults && searchResults.length > 0) {
@@ -192,7 +192,7 @@ export default function ExplorePage() {
               q: query,
               limit: 1,
               skip: searchTotalFetched + usersWithMatch.length
-            })
+            }, true) // Use listing_only for better performance
             setHasMoreUsers(checkMoreResults.length > 0)
           }
         } else {
@@ -214,13 +214,13 @@ export default function ExplorePage() {
             (user) =>
               user.name.toLowerCase().includes(query.toLowerCase()) ||
               (user.designation && user.designation.toLowerCase().includes(query.toLowerCase())) ||
-              user.skills.some((skill) => skill.name.toLowerCase().includes(query.toLowerCase())) ||
+              (user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(query.toLowerCase()))) ||
               (user.location && user.location.toLowerCase().includes(query.toLowerCase()))
           )
           
           const usersWithMatch = filtered.map(user => ({
             ...user,
-            matchPercentage: calculateSkillMatch(user.skills, query)
+            matchPercentage: calculateSkillMatch(user.skills || [], query)
           }))
           
           usersWithMatch.sort((a, b) => (b.matchPercentage || 0) - (a.matchPercentage || 0))
@@ -242,13 +242,13 @@ export default function ExplorePage() {
           (user) =>
             user.name.toLowerCase().includes(query.toLowerCase()) ||
             (user.designation && user.designation.toLowerCase().includes(query.toLowerCase())) ||
-            user.skills.some((skill) => skill.name.toLowerCase().includes(query.toLowerCase())) ||
+            (user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(query.toLowerCase()))) ||
             (user.location && user.location.toLowerCase().includes(query.toLowerCase()))
         )
         
         const usersWithMatch = filtered.map(user => ({
           ...user,
-          matchPercentage: calculateSkillMatch(user.skills, query)
+          matchPercentage: calculateSkillMatch(user.skills || [], query)
         }))
         
         usersWithMatch.sort((a, b) => (b.matchPercentage || 0) - (a.matchPercentage || 0))
@@ -309,7 +309,7 @@ export default function ExplorePage() {
       setLoadMoreLoading(true)
       try {
         // Fetch next 6 users
-        const newUsers = await UserService.getFeaturedUsers(6, totalFetched)
+        const newUsers = await UserService.getFeaturedUsers(6, totalFetched, true) // Use listing_only for better performance
         
         if (newUsers.length > 0) {
           setDisplayedUsers(prev => [
@@ -323,7 +323,7 @@ export default function ExplorePage() {
             setHasMoreUsers(false)
           } else {
             // Check if there are more users by fetching one extra
-            const checkMoreUsers = await UserService.getFeaturedUsers(1, totalFetched + newUsers.length)
+            const checkMoreUsers = await UserService.getFeaturedUsers(1, totalFetched + newUsers.length, true) // Use listing_only for better performance
             setHasMoreUsers(checkMoreUsers.length > 0)
           }
         } else {

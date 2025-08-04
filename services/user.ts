@@ -72,8 +72,13 @@ export class UserService {
   }
 
   // Get featured users (public endpoint)
-  static async getFeaturedUsers(limit: number = 12, skip: number = 0): Promise<PublicUser[]> {
-    return publicAPI.get<PublicUser[]>(`/users/?limit=${limit}&skip=${skip}`);
+  static async getFeaturedUsers(limit: number = 12, skip: number = 0, listing_only: boolean = false): Promise<PublicUser[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('limit', limit.toString());
+    queryParams.append('skip', skip.toString());
+    if (listing_only) queryParams.append('listing_only', 'true');
+    
+    return publicAPI.get<PublicUser[]>(`/users/?${queryParams.toString()}`);
   }
 
   // Update specific profile section

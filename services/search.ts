@@ -5,43 +5,47 @@ import { SearchParams, SearchResponse, PublicUser } from '@/types';
 export class SearchService {
   
   // Search users with filters
-  static async searchUsers(params: SearchParams): Promise<PublicUser[]> {
+  static async searchUsers(params: SearchParams, listing_only: boolean = false): Promise<PublicUser[]> {
+    const endpoint = '/api/v1/search/users';
     const queryParams = new URLSearchParams();
     
-    if (params.q) queryParams.set('q', params.q);
-    if (params.skills) queryParams.set('skills', params.skills);
-    if (params.location) queryParams.set('location', params.location);
-    if (params.looking_for_job !== undefined) {
-      queryParams.set('looking_for_job', params.looking_for_job.toString());
-    }
-    if (params.limit) queryParams.set('limit', params.limit.toString());
-    if (params.skip) queryParams.set('skip', params.skip.toString());
+    if (params.q) queryParams.append('q', params.q);
+    if (params.skills) queryParams.append('skills', params.skills);
+    if (params.location) queryParams.append('location', params.location);
+    if (params.looking_for_job !== undefined) queryParams.append('looking_for_job', params.looking_for_job.toString());
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.skip) queryParams.append('skip', params.skip.toString());
+    if (listing_only) queryParams.append('listing_only', 'true');
     
-    const queryString = queryParams.toString();
-    const endpoint = `/search/users${queryString ? `?${queryString}` : ''}`;
+    const fullEndpoint = queryParams.toString() ? `${endpoint}?${queryParams.toString()}` : endpoint;
     
-    return publicAPI.get<PublicUser[]>(endpoint);
+    return publicAPI.get<PublicUser[]>(fullEndpoint);
   }
 
   // Get all users (for featured section)
-  static async getAllUsers(limit: number = 12, skip: number = 0): Promise<PublicUser[]> {
-    return publicAPI.get<PublicUser[]>(`/users/?limit=${limit}&skip=${skip}`);
+  static async getAllUsers(limit: number = 12, skip: number = 0, listing_only: boolean = false): Promise<PublicUser[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('limit', limit.toString());
+    queryParams.append('skip', skip.toString());
+    if (listing_only) queryParams.append('listing_only', 'true');
+    
+    return publicAPI.get<PublicUser[]>(`/api/v1/users/?${queryParams.toString()}`);
   }
 
   // Search by specific skills
-  static async searchBySkills(skills: string[], limit: number = 20): Promise<PublicUser[]> {
+  static async searchBySkills(skills: string[], limit: number = 20, listing_only: boolean = false): Promise<PublicUser[]> {
     return this.searchUsers({
       skills: skills.join(','),
       limit
-    });
+    }, listing_only);
   }
 
   // Search by location
-  static async searchByLocation(location: string, limit: number = 20): Promise<PublicUser[]> {
+  static async searchByLocation(location: string, limit: number = 20, listing_only: boolean = false): Promise<PublicUser[]> {
     return this.searchUsers({
       location,
       limit
-    });
+    }, listing_only);
   }
 
   // Search only job seekers

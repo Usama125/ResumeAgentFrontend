@@ -133,25 +133,25 @@ export interface PublicUser {
   id: string;
   name: string;
   username?: string;
-  designation: string | null;
+  designation?: string | null;
   location: string | null;
   profile_picture: string | null;
   is_looking_for_job: boolean;
-  experience: string | null;
-  summary: string | null;
-  skills: Skill[];
-  experience_details: ExperienceDetail[];
-  projects: Project[];
+  experience?: string | null;
+  summary?: string | null;
+  skills?: Skill[];
+  experience_details?: ExperienceDetail[];
+  projects?: Project[];
   // Enhanced fields for public view
   contact_info?: ContactInfo;
-  education: Education[];
-  languages: Language[];
-  awards: Award[];
-  publications: Publication[];
-  volunteer_experience: VolunteerExperience[];
-  interests: string[];
+  education?: Education[];
+  languages?: Language[];
+  awards?: Award[];
+  publications?: Publication[];
+  volunteer_experience?: VolunteerExperience[];
+  interests?: string[];
   profession?: string;
-  certifications: string[];
+  certifications?: string[];
   // Additional fields that might be needed
   expected_salary?: string | null;
   email?: string;
