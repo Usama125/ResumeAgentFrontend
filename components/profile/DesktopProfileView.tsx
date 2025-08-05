@@ -39,6 +39,14 @@ interface DesktopProfileViewProps {
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
   isCurrentUser?: boolean
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
   onEditPhoto?: () => void
   isEditMode?: boolean
   onEditAbout?: () => void
@@ -578,6 +586,14 @@ const ChatSection = memo<{
   setMessage: React.Dispatch<React.SetStateAction<string>>
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
 }>(function ChatSection({
   chatHistory,
   setChatHistory,
@@ -585,7 +601,15 @@ const ChatSection = memo<{
   message,
   setMessage,
   isLoading,
-  handleSendMessage
+  handleSendMessage,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }) {
   return (
     <SimpleChatPanel
@@ -597,6 +621,14 @@ const ChatSection = memo<{
       isLoading={isLoading}
       handleSendMessage={handleSendMessage}
       className="h-full"
+      currentStreamingMessage={currentStreamingMessage}
+      isStreaming={isStreaming}
+      messageCount={messageCount}
+      messageLimit={messageLimit}
+      showMessageLimitModal={showMessageLimitModal}
+      handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+      handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+      clearChat={clearChat}
     />
   )
 })
@@ -611,6 +643,10 @@ export default function DesktopProfileView({
   isLoading,
   handleSendMessage,
   isCurrentUser = false,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
   onEditPhoto,
   isEditMode = false,
   onEditAbout,
@@ -653,7 +689,11 @@ export default function DesktopProfileView({
   onEditPreferences,
   onEditModeToggle,
   onSectionOrderChange,
-  onAddSection
+  onAddSection,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }: DesktopProfileViewProps) {
 
   const [isChatVisible, setIsChatVisible] = useState(true)
@@ -756,8 +796,16 @@ export default function DesktopProfileView({
     message,
     setMessage,
     isLoading,
-    handleSendMessage
-  }), [chatHistory, setChatHistory, suggestedQuestions, message, setMessage, isLoading, handleSendMessage])
+    handleSendMessage,
+    currentStreamingMessage,
+    isStreaming,
+    messageCount,
+    messageLimit,
+    showMessageLimitModal,
+    handleMessageLimitModalConfirm,
+    handleMessageLimitModalCancel,
+    clearChat
+  }), [chatHistory, setChatHistory, suggestedQuestions, message, setMessage, isLoading, handleSendMessage, currentStreamingMessage, isStreaming, messageCount, messageLimit, showMessageLimitModal, handleMessageLimitModalConfirm, handleMessageLimitModalCancel, clearChat])
 
   return (
     <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">

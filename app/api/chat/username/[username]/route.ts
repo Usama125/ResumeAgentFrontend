@@ -48,7 +48,12 @@ export async function POST(
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    // Return success - actual AI response is handled by frontend
+    return NextResponse.json({ 
+      status: 'success', 
+      message: 'Rate limit check passed',
+      user_id: data.user_id 
+    });
     
   } catch (error) {
     console.error('Chat API error:', error);

@@ -39,6 +39,14 @@ interface MobileProfileViewProps {
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
   isCurrentUser?: boolean
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
   onEditPhoto?: () => void
   isEditMode?: boolean
   onEditAbout?: () => void
@@ -96,6 +104,10 @@ export default function MobileProfileView({
   isLoading,
   handleSendMessage,
   isCurrentUser = false,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
   onEditPhoto,
   isEditMode = false,
   onEditAbout,
@@ -137,7 +149,11 @@ export default function MobileProfileView({
   onAddInterests,
   onEditModeToggle,
   onSectionOrderChange,
-  onAddSection
+  onAddSection,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }: MobileProfileViewProps) {
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
   const { isDark } = useTheme()
@@ -507,6 +523,14 @@ export default function MobileProfileView({
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
           className="h-full"
+          currentStreamingMessage={currentStreamingMessage}
+          isStreaming={isStreaming}
+          messageCount={messageCount}
+          messageLimit={messageLimit}
+          showMessageLimitModal={showMessageLimitModal}
+          handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+          handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+          clearChat={clearChat}
         />
       </div>
     </div>

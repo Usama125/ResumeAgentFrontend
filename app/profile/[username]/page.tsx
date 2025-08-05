@@ -14,6 +14,7 @@ import DesktopPublicProfileView from "@/components/profile/DesktopPublicProfileV
 import MobilePublicProfileView from "@/components/profile/MobilePublicProfileView"
 import { AuthService } from "@/services/auth"
 import Image from "next/image"
+import { useAIChat } from "@/hooks/useAIChat"
 
 // Generate suggested questions based on user data
 const generateSuggestedQuestions = (user: PublicUser): string[] => {
@@ -30,9 +31,6 @@ const generateSuggestedQuestions = (user: PublicUser): string[] => {
 };
 
 export default function UsernameProfilePage() {
-  const [message, setMessage] = useState("")
-  const [chatHistory, setChatHistory] = useState<Array<{ type: "user" | "ai"; content: string }>>([])
-  const [isLoading, setIsLoading] = useState(false)
   const [chatSuggestionsLoading, setChatSuggestionsLoading] = useState(false)
   const [profileLoading, setProfileLoading] = useState(true)
   const [user, setUser] = useState<PublicUser | null>(null)
@@ -44,6 +42,30 @@ export default function UsernameProfilePage() {
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
+
+  // Initialize AI Chat Hook for recruiter context
+  const {
+    chatHistory,
+    setChatHistory,
+    input: message,
+    setInput: setMessage,
+    isLoading,
+    handleSendMessage,
+    clearChat,
+    messageCount,
+    messageLimit,
+    currentStreamingMessage,
+    isStreaming,
+    showMessageLimitModal,
+    handleMessageLimitModalConfirm,
+    handleMessageLimitModalCancel
+  } = useAIChat({
+    profileData: user,
+    context: 'recruiter',
+    username: username,
+    token: AuthService.getToken(),
+    showRateLimitModal
+  })
 
   // Check if device is mobile and fetch user data
   useEffect(() => {
@@ -119,67 +141,7 @@ export default function UsernameProfilePage() {
     }
   }
 
-  const handleSendMessage = async (messageText?: string) => {
-    const textToSend = messageText || message
-    if (!textToSend.trim() || !user) return
-
-    setIsLoading(true)
-    setChatHistory((prev) => [...prev, { type: "user", content: textToSend }])
-    setMessage("")
-
-    try {
-      // Get auth token for authenticated users
-      const token = AuthService.getToken();
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      
-      // Add authorization header if user is authenticated
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Call the chat API with username instead of user ID
-      const response = await fetch(`/api/chat/username/${username}`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ message: textToSend }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        
-        // Handle rate limit errors
-        if (response.status === 429) {
-          const rateLimitError: APIError = {
-            type: 'RATE_LIMIT',
-            message: errorData.detail?.message || errorData.message || 'Rate limit exceeded',
-            rateLimitData: {
-              remaining: errorData.detail?.remaining || 0,
-              resetInSeconds: errorData.detail?.reset_in_seconds || 3600,
-              isAuthenticated: errorData.detail?.is_authenticated || false,
-              rateLimitType: errorData.detail?.rate_limit_type || 'chat'
-            }
-          };
-          showRateLimitModal(rateLimitError);
-          return; // Don't add error message to chat
-        }
-        
-        throw new Error('Failed to get chat response')
-      }
-
-      const data = await response.json()
-      setChatHistory((prev) => [...prev, { type: "ai", content: data.response }])
-    } catch (error) {
-      console.error('Error sending message:', error)
-      setChatHistory((prev) => [
-        ...prev,
-        { type: "ai", content: "I'm sorry, I'm having trouble responding right now. Please try again later." }
-      ])
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // Chat function is now handled by useAIChat hook
 
   const handleQuestionClick = (question: string) => {
     handleSendMessage(question)
@@ -266,6 +228,14 @@ export default function UsernameProfilePage() {
           setMessage={setMessage}
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
+          currentStreamingMessage={currentStreamingMessage}
+          isStreaming={isStreaming}
+          messageCount={messageCount}
+          messageLimit={messageLimit}
+          showMessageLimitModal={showMessageLimitModal}
+          handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+          handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+          clearChat={clearChat}
         />
       ) : (
         <DesktopPublicProfileView
@@ -277,6 +247,14 @@ export default function UsernameProfilePage() {
           setMessage={setMessage}
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
+          currentStreamingMessage={currentStreamingMessage}
+          isStreaming={isStreaming}
+          messageCount={messageCount}
+          messageLimit={messageLimit}
+          showMessageLimitModal={showMessageLimitModal}
+          handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+          handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+          clearChat={clearChat}
         />
       )}
     </div>
