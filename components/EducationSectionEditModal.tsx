@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import { X, Plus, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,7 @@ interface EducationSectionEditModalProps {
   mode: 'add' | 'edit'
 }
 
-export default function EducationSectionEditModal({
+const EducationSectionEditModal = memo(function EducationSectionEditModal({
   isOpen,
   onClose,
   currentEducation,
@@ -334,4 +334,6 @@ export default function EducationSectionEditModal({
       </div>
     </div>
   )
-} 
+})
+
+export default EducationSectionEditModal

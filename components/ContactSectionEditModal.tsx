@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import { X, Plus, Loader2, Mail, Phone, Linkedin, Github, Globe, Twitter, Instagram, Facebook, Youtube } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,7 @@ interface ContactSectionEditModalProps {
   currentUser?: any // Add user prop for basic info
 }
 
-export default function ContactSectionEditModal({
+const ContactSectionEditModal = memo(function ContactSectionEditModal({
   isOpen,
   onClose,
   currentContactInfo,
@@ -155,7 +155,6 @@ export default function ContactSectionEditModal({
       })
       onClose()
     } catch (error: any) {
-      console.error("Error updating information:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to update information",
@@ -510,4 +509,6 @@ export default function ContactSectionEditModal({
       </div>
     </div>
   )
-} 
+})
+
+export default ContactSectionEditModal

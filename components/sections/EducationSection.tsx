@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { BookOpen, Edit, Trash2 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
@@ -22,7 +23,7 @@ interface EducationSectionProps {
   onAddEducation?: () => void
 }
 
-export default function EducationSection({
+const EducationSection = memo(function EducationSection({
   user,
   isEditMode = false,
   isCollapsible = false,
@@ -147,4 +148,6 @@ export default function EducationSection({
       </div>
     </BaseSection>
   )
-}
+})
+
+export default EducationSection

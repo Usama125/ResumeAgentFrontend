@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, ReactNode } from "react"
+import { useState, ReactNode, memo } from "react"
 import { ChevronDown, ChevronUp, Edit, Trash2, GripVertical, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/context/ThemeContext"
@@ -23,7 +23,7 @@ interface BaseSectionProps {
   dragHandleProps?: any
 }
 
-export default function BaseSection({
+const BaseSection = memo(function BaseSection({
   id,
   title,
   icon,
@@ -79,7 +79,6 @@ export default function BaseSection({
       <div className="flex items-center gap-2 flex-shrink-0">
         {isEditMode && (onEdit || onDelete || onAdd) && (
           <>
-            {console.log('BaseSection: Rendering buttons:', { isEditMode, onEdit: !!onEdit, onDelete: !!onDelete, onAdd: !!onAdd })}
             {onDelete && (
               <Button
                 onClick={handleDeleteClick}
@@ -181,4 +180,6 @@ export default function BaseSection({
       />
     </>
   )
-}
+})
+
+export default BaseSection

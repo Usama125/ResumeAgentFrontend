@@ -89,23 +89,6 @@ export default function ProfileCompletionSection({
   const adjustedCompletedSections = completionData.completedSections
   const adjustedPercentage = Math.round((adjustedCompletedSections / adjustedTotalSections) * 100)
 
-  // Temporary debug logging
-  console.log('Profile Completion Debug:', {
-    userSummary: user.summary,
-    hasAbout,
-    hasWorkPreferences,
-    aboutAlreadyInEmpty,
-    originalPercentage: completionData.percentage,
-    originalTotal: completionData.totalSections,
-    originalCompleted: completionData.completedSections,
-    missingWorkPreferences,
-    missingAbout,
-    missingSections,
-    adjustedTotalSections,
-    adjustedCompletedSections,
-    adjustedPercentage,
-    allEmptySections: allEmptySections.map(s => s.title)
-  })
 
   // Don't show if no empty sections or not in edit mode
   if (allEmptySections.length === 0 || !isEditMode) {

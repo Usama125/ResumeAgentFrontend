@@ -36,14 +36,6 @@ export default function LanguagesSection({
   onDeleteLanguage,
   onAddLanguage
 }: LanguagesSectionProps) {
-  console.log('LanguagesSection: Received handlers:', {
-    isEditMode,
-    onDelete: !!onDelete,
-    onAddLanguage: !!onAddLanguage,
-    onEditLanguage: !!onEditLanguage,
-    onDeleteLanguage: !!onDeleteLanguage,
-    hasData: !!(user.languages && user.languages.length > 0)
-  })
   const { isDark } = useTheme()
 
   // Check if section has data

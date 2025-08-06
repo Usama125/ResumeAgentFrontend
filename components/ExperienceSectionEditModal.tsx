@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import { X, Plus, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,7 @@ interface ExperienceSectionEditModalProps {
   mode: 'add' | 'edit'
 }
 
-export default function ExperienceSectionEditModal({
+const ExperienceSectionEditModal = memo(function ExperienceSectionEditModal({
   isOpen,
   onClose,
   currentExperiences,
@@ -126,7 +126,6 @@ export default function ExperienceSectionEditModal({
       })
       onClose()
     } catch (error: any) {
-      console.error(`Error ${mode === 'add' ? 'adding' : 'updating'} experience:`, error)
       toast({
         title: "Error",
         description: error.message || `Failed to ${mode === 'add' ? 'add' : 'update'} experience`,
@@ -271,4 +270,6 @@ export default function ExperienceSectionEditModal({
       </div>
     </div>
   )
-}
+})
+
+export default ExperienceSectionEditModal

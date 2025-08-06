@@ -127,7 +127,7 @@ function SortableSectionWrapper({ id, children, isEditMode }: SortableSectionWra
   )
 }
 
-const ProfileSections = function ProfileSections({
+const ProfileSections = memo(function ProfileSections({
   user,
   isEditMode = false,
   onEditAbout,
@@ -241,9 +241,6 @@ const ProfileSections = function ProfileSections({
         const hiddenSections = allExpectedSections.filter(section => !reorderedVisibleSections.includes(section))
         const completeOrder = [...reorderedVisibleSections, ...hiddenSections]
         
-        console.log('🔧 Drag end - visible sections:', reorderedVisibleSections)
-        console.log('🔧 Drag end - hidden sections:', hiddenSections)
-        console.log('🔧 Drag end - complete order:', completeOrder)
         
         onSectionOrderChange?.(completeOrder)
         
@@ -274,20 +271,11 @@ const ProfileSections = function ProfileSections({
       return hasData || isEditMode
     })
     
-    console.log('ProfileSections: sectionsToRender:', {
-      sectionOrder,
-      isEditMode,
-      filtered,
-      userLanguages: user.languages,
-      userAwards: user.awards,
-      languagesHasData: hasSectionData(user, 'languages'),
-      awardsHasData: hasSectionData(user, 'awards')
-    })
     
     return filtered
   }, [sectionOrder, user, isEditMode])
 
-  const renderSection = useCallback((sectionId: string) => {
+  const renderSection = (sectionId: string) => {
     const sectionDef = SECTION_REGISTRY[sectionId]
     if (!sectionDef) return null
 
@@ -405,7 +393,7 @@ const ProfileSections = function ProfileSections({
       default:
         return null
     }
-  }, [user, isEditMode, expandedSections, handleToggleExpand, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditPublication, onDeletePublication, onAddPublication, onDeletePublications, onEditVolunteerExperience, onDeleteVolunteerExperience, onAddVolunteerExperience, onDeleteVolunteerExperiences, onEditInterests, onDeleteInterests, onAddInterests])
+  }
 
   if (isEditMode) {
     return (
@@ -461,6 +449,6 @@ const ProfileSections = function ProfileSections({
       ))}
     </div>
   )
-}
+})
 
 export default ProfileSections

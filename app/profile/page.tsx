@@ -891,17 +891,6 @@ export default function CurrentUserProfilePage() {
     (!isAuthenticated && !authTimeout) ||
     (isAuthenticated && authUser && isOnboardingCompleted && profileLoading && !user);
 
-  console.log('🔍 PROFILE PAGE - Loading state calculation:', {
-    isMounted,
-    authLoading,
-    authTimeout,
-    isAuthenticated,
-    profileLoading,
-    hasUser: !!user,
-    hasAuthUser: !!authUser,
-    isOnboardingCompleted,
-    shouldShowLoading
-  });
   
   if (shouldShowLoading) {
     // CSS-based theme-aware loading screen that works immediately

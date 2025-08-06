@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import { X, Plus, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,7 +22,7 @@ interface ProjectsSectionEditModalProps {
   mode: 'add' | 'edit'
 }
 
-export default function ProjectsSectionEditModal({
+const ProjectsSectionEditModal = memo(function ProjectsSectionEditModal({
   isOpen,
   onClose,
   currentProjects,
@@ -132,7 +132,6 @@ export default function ProjectsSectionEditModal({
       })
       onClose()
     } catch (error: any) {
-      console.error(`Error ${mode === 'add' ? 'adding' : 'updating'} project:`, error)
       toast({
         title: "Error",
         description: error.message || `Failed to ${mode === 'add' ? 'add' : 'update'} project`,
@@ -354,4 +353,6 @@ export default function ProjectsSectionEditModal({
       </div>
     </div>
   )
-} 
+})
+
+export default ProjectsSectionEditModal
