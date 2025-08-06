@@ -4,6 +4,8 @@ import { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Send, Sparkles, CheckCircle, Trash2, Copy } from 'lucide-react'
 import { PublicUser } from '@/types'
+import { MessageLimitModal } from '@/components/MessageLimitModal'
+import { ClearChatModal } from '@/components/ClearChatModal'
 
 interface PublicChatPanelProps {
   user: PublicUser
@@ -15,6 +17,14 @@ interface PublicChatPanelProps {
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
   className?: string
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
 }
 
 export const PublicChatPanel = memo(function PublicChatPanel({
@@ -26,11 +36,19 @@ export const PublicChatPanel = memo(function PublicChatPanel({
   setMessage,
   isLoading,
   handleSendMessage,
-  className
+  className,
+  currentStreamingMessage = '',
+  isStreaming = false,
+  messageCount = 0,
+  messageLimit = 20,
+  showMessageLimitModal = false,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }: PublicChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const [localMessage, setLocalMessage] = useState('')
+  const [showClearChatModal, setShowClearChatModal] = useState(false)
   
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -44,10 +62,9 @@ export const PublicChatPanel = memo(function PublicChatPanel({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (localMessage.trim()) {
-      setMessage(localMessage)
-      handleSendMessage(localMessage)
-      setLocalMessage('')
+    if (message.trim()) {
+      handleSendMessage(message)
+      setMessage('')
     }
   }
   
@@ -59,13 +76,24 @@ export const PublicChatPanel = memo(function PublicChatPanel({
   }
   
   const selectSuggestion = useCallback((suggestion: string) => {
-    setLocalMessage(suggestion)
+    setMessage(suggestion)
     inputRef.current?.focus()
-  }, [])
+  }, [setMessage])
   
-  const clearChat = useCallback(() => {
-    setChatHistory([])
-  }, [setChatHistory])
+  const handleClearChatClick = useCallback(() => {
+    setShowClearChatModal(true);
+  }, []);
+
+  const handleClearChatConfirm = useCallback(() => {
+    if (clearChat) {
+      clearChat();
+    }
+    setShowClearChatModal(false);
+  }, [clearChat]);
+
+  const handleClearChatCancel = useCallback(() => {
+    setShowClearChatModal(false);
+  }, []);
   
   const firstName = user.name.split(' ')[0]
   
@@ -100,7 +128,7 @@ export const PublicChatPanel = memo(function PublicChatPanel({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={clearChat}
+                onClick={handleClearChatClick}
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 <Trash2 className="w-4 h-4" />
@@ -173,7 +201,27 @@ export const PublicChatPanel = memo(function PublicChatPanel({
                   )}
                 </div>
               ))}
-              {isLoading && (
+              {/* Show streaming message if available */}
+              {isStreaming && currentStreamingMessage && (
+                <div className="flex justify-start">
+                  <div className="max-w-[85%] space-y-3">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-[#10a37f] to-[#0d8f6f] flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-3">
+                        <p className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">
+                          {currentStreamingMessage}
+                          <span className="animate-pulse">|</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Show loading spinner when starting */}
+              {isLoading && !currentStreamingMessage && (
                 <div className="flex justify-start">
                   <div className="max-w-[85%] space-y-3">
                     <div className="flex items-start space-x-3">
@@ -206,8 +254,8 @@ export const PublicChatPanel = memo(function PublicChatPanel({
             <div className="relative">
               <textarea
                 ref={inputRef}
-                value={localMessage}
-                onChange={(e) => setLocalMessage(e.target.value)}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={`Ask about ${firstName}'s experience, skills, or availability...`}
                 className="w-full resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 pr-12 text-sm placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-[60px] max-h-[120px]"
@@ -217,7 +265,7 @@ export const PublicChatPanel = memo(function PublicChatPanel({
               
               <Button
                 type="submit"
-                disabled={!localMessage.trim() || isLoading}
+                disabled={!message.trim() || isLoading}
                 size="sm"
                 className="absolute bottom-2 right-2 w-8 h-8 p-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white"
               >
@@ -231,10 +279,25 @@ export const PublicChatPanel = memo(function PublicChatPanel({
             
             <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
               <span>Press Enter to send, Shift+Enter for new line</span>
+              <span>{messageCount}/{messageLimit} messages</span>
             </div>
           </form>
         </div>
       </div>
+
+      {/* Modals */}
+      <MessageLimitModal
+        isOpen={showMessageLimitModal}
+        onClose={handleMessageLimitModalCancel}
+        onStartNewConversation={handleMessageLimitModalConfirm}
+        messageLimit={messageLimit}
+      />
+      
+      <ClearChatModal
+        isOpen={showClearChatModal}
+        onClose={handleClearChatCancel}
+        onConfirm={handleClearChatConfirm}
+      />
     </div>
   )
 })

@@ -28,6 +28,14 @@ interface MobilePublicProfileViewProps {
   setMessage: React.Dispatch<React.SetStateAction<string>>
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
@@ -42,7 +50,15 @@ export default function MobilePublicProfileView({
   message,
   setMessage,
   isLoading,
-  handleSendMessage
+  handleSendMessage,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }: MobilePublicProfileViewProps) {
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
   const { isDark } = useTheme()
@@ -326,6 +342,14 @@ export default function MobilePublicProfileView({
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
           className="h-full"
+          currentStreamingMessage={currentStreamingMessage}
+          isStreaming={isStreaming}
+          messageCount={messageCount}
+          messageLimit={messageLimit}
+          showMessageLimitModal={showMessageLimitModal}
+          handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+          handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+          clearChat={clearChat}
         />
       </div>
     </div>

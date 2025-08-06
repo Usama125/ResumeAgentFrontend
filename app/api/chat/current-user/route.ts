@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const userData = await userResponse.json();
     const userId = userData.id;
 
-    // Call the backend chat API with the current user's ID
+    // Call the backend rate limiting check with the current user's ID
     const response = await fetch(`${API_BASE_URL}/chat/${userId}`, {
       method: 'POST',
       headers: {
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(errorData, { status: 429 });
       }
       
-      console.error('Backend chat API error:', {
+      console.error('Backend rate limit check error:', {
         status: response.status,
         statusText: response.statusText,
         error: errorData
@@ -75,7 +75,12 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    // Return success - actual AI response is handled by frontend
+    return NextResponse.json({ 
+      status: 'success', 
+      message: 'Rate limit check passed',
+      user_id: userId 
+    });
     
   } catch (error) {
     console.error('Current user chat API error:', error);

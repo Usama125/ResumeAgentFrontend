@@ -29,6 +29,14 @@ interface DesktopPublicProfileViewProps {
   setMessage: React.Dispatch<React.SetStateAction<string>>
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
@@ -332,6 +340,14 @@ const ChatSection = memo<{
   setMessage: React.Dispatch<React.SetStateAction<string>>
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
 }>(function ChatSection({
   user,
   chatHistory,
@@ -340,7 +356,15 @@ const ChatSection = memo<{
   message,
   setMessage,
   isLoading,
-  handleSendMessage
+  handleSendMessage,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }) {
   return (
     <PublicChatPanel
@@ -353,6 +377,14 @@ const ChatSection = memo<{
       isLoading={isLoading}
       handleSendMessage={handleSendMessage}
       className="h-full"
+      currentStreamingMessage={currentStreamingMessage}
+      isStreaming={isStreaming}
+      messageCount={messageCount}
+      messageLimit={messageLimit}
+      showMessageLimitModal={showMessageLimitModal}
+      handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+      handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+      clearChat={clearChat}
     />
   )
 })
@@ -365,7 +397,15 @@ export default function DesktopPublicProfileView({
   message,
   setMessage,
   isLoading,
-  handleSendMessage
+  handleSendMessage,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }: DesktopPublicProfileViewProps) {
   const [isChatVisible, setIsChatVisible] = useState(true)
   const { isDark } = useTheme()
@@ -391,8 +431,16 @@ export default function DesktopPublicProfileView({
     message,
     setMessage,
     isLoading,
-    handleSendMessage
-  }), [user, chatHistory, setChatHistory, suggestedQuestions, message, setMessage, isLoading, handleSendMessage])
+    handleSendMessage,
+    currentStreamingMessage,
+    isStreaming,
+    messageCount,
+    messageLimit,
+    showMessageLimitModal,
+    handleMessageLimitModalConfirm,
+    handleMessageLimitModalCancel,
+    clearChat
+  }), [user, chatHistory, setChatHistory, suggestedQuestions, message, setMessage, isLoading, handleSendMessage, currentStreamingMessage, isStreaming, messageCount, messageLimit, showMessageLimitModal, handleMessageLimitModalConfirm, handleMessageLimitModalCancel, clearChat])
 
   return (
     <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">

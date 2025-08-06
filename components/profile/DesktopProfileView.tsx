@@ -39,6 +39,14 @@ interface DesktopProfileViewProps {
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
   isCurrentUser?: boolean
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
   onEditPhoto?: () => void
   isEditMode?: boolean
   onEditAbout?: () => void
@@ -91,7 +99,7 @@ import ProfileSections from '@/components/ProfileSections';
 import AddMissingSections from '@/components/AddMissingSections';
 
 // Portfolio Section Component
-const PortfolioSection = function({
+const PortfolioSection = memo(function PortfolioSection({
   user,
   isChatVisible,
   isCurrentUser,
@@ -518,7 +526,6 @@ const PortfolioSection = function({
             {/* Sections Container */}
             <div className="space-y-6">
               <ProfileSections
-                key={`profile-sections-${isEditMode}-${!!onEditProject}-${!!onEditSingleProject}-${!!onDeleteSingleProject}-${!!onDeleteProjects}-${!!onEditEducation}-${!!onEditSingleEducation}-${!!onDeleteSingleEducation}-${!!onDeleteEducation}-${!!onEditContact}-${!!onDeleteContact}-${!!onEditLanguage}-${!!onDeleteLanguage}-${!!onAddLanguage}-${!!onDeleteLanguages}-${!!onEditAward}-${!!onDeleteAward}-${!!onAddAward}-${!!onDeleteAwards}-${!!onEditPublication}-${!!onDeletePublication}-${!!onAddPublication}-${!!onDeletePublications}-${!!onEditVolunteerExperience}-${!!onDeleteVolunteerExperience}-${!!onAddVolunteerExperience}-${!!onDeleteVolunteerExperiences}-${!!onEditInterests}-${!!onDeleteInterests}-${!!onAddInterests}`}
                 user={user}
                 isEditMode={isEditMode}
                 onEditAbout={onEditAbout}
@@ -567,7 +574,7 @@ const PortfolioSection = function({
         </div>
     </div>
   )
-}
+})
 
 // Memoized Chat Section Component
 const ChatSection = memo<{
@@ -578,6 +585,14 @@ const ChatSection = memo<{
   setMessage: React.Dispatch<React.SetStateAction<string>>
   isLoading: boolean
   handleSendMessage: (messageText?: string) => Promise<void>
+  currentStreamingMessage?: string
+  isStreaming?: boolean
+  messageCount?: number
+  messageLimit?: number
+  showMessageLimitModal?: boolean
+  handleMessageLimitModalConfirm?: () => void
+  handleMessageLimitModalCancel?: () => void
+  clearChat?: () => void
 }>(function ChatSection({
   chatHistory,
   setChatHistory,
@@ -585,7 +600,15 @@ const ChatSection = memo<{
   message,
   setMessage,
   isLoading,
-  handleSendMessage
+  handleSendMessage,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }) {
   return (
     <SimpleChatPanel
@@ -597,6 +620,14 @@ const ChatSection = memo<{
       isLoading={isLoading}
       handleSendMessage={handleSendMessage}
       className="h-full"
+      currentStreamingMessage={currentStreamingMessage}
+      isStreaming={isStreaming}
+      messageCount={messageCount}
+      messageLimit={messageLimit}
+      showMessageLimitModal={showMessageLimitModal}
+      handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+      handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+      clearChat={clearChat}
     />
   )
 })
@@ -611,6 +642,10 @@ export default function DesktopProfileView({
   isLoading,
   handleSendMessage,
   isCurrentUser = false,
+  currentStreamingMessage,
+  isStreaming,
+  messageCount,
+  messageLimit,
   onEditPhoto,
   isEditMode = false,
   onEditAbout,
@@ -653,7 +688,11 @@ export default function DesktopProfileView({
   onEditPreferences,
   onEditModeToggle,
   onSectionOrderChange,
-  onAddSection
+  onAddSection,
+  showMessageLimitModal,
+  handleMessageLimitModalConfirm,
+  handleMessageLimitModalCancel,
+  clearChat
 }: DesktopProfileViewProps) {
 
   const [isChatVisible, setIsChatVisible] = useState(true)
@@ -677,26 +716,6 @@ export default function DesktopProfileView({
 
   // Memoized props to prevent unnecessary re-renders
   const portfolioSectionProps = useMemo(() => {
-    console.log('DesktopProfileView: Creating portfolioSectionProps with all handlers:', {
-      onEditProject: !!onEditProject,
-      onEditSingleProject: !!onEditSingleProject,
-      onDeleteSingleProject: !!onDeleteSingleProject,
-      onDeleteProjects: !!onDeleteProjects,
-      onEditEducation: !!onEditEducation,
-      onEditSingleEducation: !!onEditSingleEducation,
-      onDeleteSingleEducation: !!onDeleteSingleEducation,
-      onDeleteEducation: !!onDeleteEducation,
-      onEditContact: !!onEditContact,
-      onDeleteContact: !!onDeleteContact,
-      onEditLanguage: !!onEditLanguage,
-      onDeleteLanguage: !!onDeleteLanguage,
-      onAddLanguage: !!onAddLanguage,
-      onDeleteLanguages: !!onDeleteLanguages,
-      onEditAward: !!onEditAward,
-      onDeleteAward: !!onDeleteAward,
-      onAddAward: !!onAddAward,
-      onDeleteAwards: !!onDeleteAwards
-    })
     return {
       user,
       isChatVisible,
@@ -747,7 +766,7 @@ export default function DesktopProfileView({
       onSectionOrderChange,
       onAddSection
     }
-  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditSingleExperience, onDeleteSingleExperience, onEditProject, onEditSingleProject, onDeleteSingleProject, onDeleteAbout, onDeleteSkills, onDeleteExperience, onDeleteProjects, onEditEducation, onEditSingleEducation, onDeleteSingleEducation, onDeleteEducation, onEditContact, onDeleteContact, onEditLanguage, onDeleteLanguage, onAddLanguage, onDeleteLanguages, onEditAward, onDeleteAward, onAddAward, onDeleteAwards, onEditPublication, onDeletePublication, onAddPublication, onDeletePublications, onEditVolunteerExperience, onDeleteVolunteerExperience, onAddVolunteerExperience, onDeleteVolunteerExperiences, onEditInterests, onDeleteInterests, onAddInterests, onEditPreferences, onEditModeToggle, onSectionOrderChange, onAddSection])
+  }, [user, isChatVisible, isCurrentUser, isEditMode, isDark, handleChatToggle, onEditPhoto, onEditAbout, onEditSkills, onEditExperience, onEditProject, onEditEducation, onEditContact, onEditModeToggle])
 
   const chatSectionProps = useMemo(() => ({
     chatHistory,
@@ -756,8 +775,16 @@ export default function DesktopProfileView({
     message,
     setMessage,
     isLoading,
-    handleSendMessage
-  }), [chatHistory, setChatHistory, suggestedQuestions, message, setMessage, isLoading, handleSendMessage])
+    handleSendMessage,
+    currentStreamingMessage,
+    isStreaming,
+    messageCount,
+    messageLimit,
+    showMessageLimitModal,
+    handleMessageLimitModalConfirm,
+    handleMessageLimitModalCancel,
+    clearChat
+  }), [chatHistory, message, isLoading, currentStreamingMessage, isStreaming, messageCount, messageLimit, showMessageLimitModal])
 
   return (
     <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">

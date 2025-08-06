@@ -32,6 +32,7 @@ import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
 import { useToast } from "@/hooks/use-toast"
 import PreferencesEditModal from "@/components/PreferencesEditModal"
+import { useAIChat } from "@/hooks/useAIChat"
 
 
 // Generate suggested questions based on user data
@@ -49,12 +50,36 @@ const generateSuggestedQuestions = (user: UserType): string[] => {
 };
 
 export default function CurrentUserProfilePage() {
-  const [message, setMessage] = useState("")
-  const [chatHistory, setChatHistory] = useState<Array<{ type: "user" | "ai"; content: string }>>([])
-  const [isLoading, setIsLoading] = useState(false)
   const [profileLoading, setProfileLoading] = useState(true)
   const [user, setUser] = useState<UserType | null>(null)
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([])
+  
+  // Initialize Rate Limit Hook (must be before useAIChat)
+  const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
+  
+  // Initialize AI Chat Hook
+  const {
+    chatHistory,
+    setChatHistory,
+    input: message,
+    setInput: setMessage,
+    isLoading,
+    handleSendMessage,
+    clearChat,
+    messageCount,
+    messageLimit,
+    currentStreamingMessage,
+    isStreaming,
+    showMessageLimitModal,
+    handleMessageLimitModalConfirm,
+    handleMessageLimitModalCancel
+  } = useAIChat({
+    profileData: user,
+    context: 'self-profile',
+    userId: user?.id,
+    token: AuthService.getToken(),
+    showRateLimitModal
+  })
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isEditPhotoModalOpen, setIsEditPhotoModalOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -157,7 +182,6 @@ export default function CurrentUserProfilePage() {
   const router = useRouter()
   const { user: authUser, isAuthenticated, loading: authLoading, refreshUser, updateUser } = useAuth()
   const { isDark } = useTheme()
-  const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
   const { toast } = useToast()
 
   // Get search params to detect onboarding flow
@@ -867,17 +891,6 @@ export default function CurrentUserProfilePage() {
     (!isAuthenticated && !authTimeout) ||
     (isAuthenticated && authUser && isOnboardingCompleted && profileLoading && !user);
 
-  console.log('🔍 PROFILE PAGE - Loading state calculation:', {
-    isMounted,
-    authLoading,
-    authTimeout,
-    isAuthenticated,
-    profileLoading,
-    hasUser: !!user,
-    hasAuthUser: !!authUser,
-    isOnboardingCompleted,
-    shouldShowLoading
-  });
   
   if (shouldShowLoading) {
     // CSS-based theme-aware loading screen that works immediately
@@ -903,63 +916,7 @@ export default function CurrentUserProfilePage() {
   }
 
 
-  const handleSendMessage = async (messageText?: string) => {
-    const textToSend = messageText || message
-    if (!textToSend.trim() || !user) return
-
-    setIsLoading(true)
-    setChatHistory((prev) => [...prev, { type: "user", content: textToSend }])
-    setMessage("")
-
-    try {
-      // Call the current user chat API
-      const token = AuthService.getToken()
-      if (!token) {
-        throw new Error('No authentication token found')
-      }
-
-      const response = await fetch(`/api/chat/current-user`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ message: textToSend }),
-      })
-
-      if (!response.ok) {
-        // Try to parse rate limit error
-        if (response.status === 429) {
-          const errorData = await response.json().catch(() => ({}));
-          const rateLimitError: import('@/types').APIError = {
-            type: 'RATE_LIMIT',
-            message: errorData.detail?.message || errorData.message || 'Rate limit exceeded',
-            rateLimitData: {
-              remaining: errorData.detail?.remaining || 0,
-              resetInSeconds: errorData.detail?.reset_in_seconds || 3600,
-              isAuthenticated: errorData.detail?.is_authenticated || false,
-              rateLimitType: errorData.detail?.rate_limit_type || 'chat'
-            }
-          };
-          showRateLimitModal(rateLimitError);
-          setIsLoading(false);
-          return;
-        }
-        throw new Error('Failed to get chat response')
-      }
-
-      const data = await response.json()
-      setChatHistory((prev) => [...prev, { type: "ai", content: data.response }])
-    } catch (error) {
-      console.error('Error sending message:', error)
-      setChatHistory((prev) => [
-        ...prev,
-        { type: "ai", content: "I'm sorry, I'm having trouble responding right now. Please try again later." }
-      ])
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // Chat function is now handled by useAIChat hook
 
   const handlePhotoUpdate = (newPhotoUrl: string | null) => {
     if (user) {
@@ -1299,6 +1256,14 @@ export default function CurrentUserProfilePage() {
               isLoading={isLoading}
               handleSendMessage={handleSendMessage}
               isCurrentUser={true}
+              currentStreamingMessage={currentStreamingMessage}
+              isStreaming={isStreaming}
+              messageCount={messageCount}
+              messageLimit={messageLimit}
+              showMessageLimitModal={showMessageLimitModal}
+              handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+              handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+              clearChat={clearChat}
               onEditPhoto={() => setIsEditPhotoModalOpen(true)}
               isEditMode={isEditMode}
               onEditAbout={() => setIsAboutEditModalOpen(true)}
@@ -1355,6 +1320,14 @@ export default function CurrentUserProfilePage() {
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
           isCurrentUser={true}
+          currentStreamingMessage={currentStreamingMessage}
+          isStreaming={isStreaming}
+          messageCount={messageCount}
+          messageLimit={messageLimit}
+          showMessageLimitModal={showMessageLimitModal}
+          handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
+          handleMessageLimitModalCancel={handleMessageLimitModalCancel}
+          clearChat={clearChat}
           onEditPhoto={() => setIsEditPhotoModalOpen(true)}
           isEditMode={isEditMode}
           onEditAbout={() => setIsAboutEditModalOpen(true)}

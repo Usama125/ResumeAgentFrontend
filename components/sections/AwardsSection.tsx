@@ -36,14 +36,6 @@ export default function AwardsSection({
   onDeleteAward,
   onAddAward
 }: AwardsSectionProps) {
-  console.log('AwardsSection: Received handlers:', {
-    isEditMode,
-    onDelete: !!onDelete,
-    onAddAward: !!onAddAward,
-    onEditAward: !!onEditAward,
-    onDeleteAward: !!onDeleteAward,
-    hasData: !!(user.awards && user.awards.length > 0)
-  })
   const { isDark } = useTheme()
 
   // Check if section has data
@@ -54,13 +46,6 @@ export default function AwardsSection({
     return null
   }
 
-  console.log('AwardsSection: BaseSection props:', {
-    isEditMode,
-    hasData,
-    onDelete: !!onDelete,
-    onAddAward: !!onAddAward,
-    onAdd: !!(isEditMode ? onAddAward : undefined)
-  })
   
   return (
     <BaseSection
