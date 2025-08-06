@@ -107,35 +107,33 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                     <p className={`text-xs mt-0.5 transition-all duration-300 group-hover:text-[#10a37f] ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Smart Profiles</p>
                   </div>
                   
-                  {/* Navigation Links for authenticated users */}
-                  {isAuthenticated && (
-                    <nav className="hidden md:flex items-center space-x-8" style={{ marginLeft: '6rem' }}>
-                      <button
-                        onClick={() => router.push("/")}
-                        className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                          isHomePage 
-                            ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
-                            : isDark 
-                              ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
-                              : 'bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]'
-                        }`}
-                      >
-                        Home
-                      </button>
-                      <button
-                        onClick={() => router.push("/explore")}
-                        className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                          isDefaultPage 
-                            ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
-                            : isDark 
-                              ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
-                              : 'bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]'
-                        }`}
-                      >
-                        Explore Talent
-                      </button>
-                    </nav>
-                  )}
+                  {/* Navigation Links for all users (authenticated and guest) */}
+                  <nav className="hidden md:flex items-center space-x-8" style={{ marginLeft: '6rem' }}>
+                    <button
+                      onClick={() => router.push("/")}
+                      className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                        isHomePage 
+                          ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
+                          : isDark 
+                            ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
+                            : 'bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]'
+                      }`}
+                    >
+                      Home
+                    </button>
+                    <button
+                      onClick={() => router.push("/explore")}
+                      className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                        isDefaultPage 
+                          ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
+                          : isDark 
+                            ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
+                            : 'bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]'
+                      }`}
+                    >
+                      Explore Talent
+                    </button>
+                  </nav>
                 </>
               )}
 

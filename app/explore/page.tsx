@@ -210,13 +210,21 @@ export default function ExplorePage() {
       } else {
         // Fallback to local filtering if API doesn't return results
         if (!isLoadMore) {
-          const filtered = allUsers.filter(
-            (user) =>
-              user.name.toLowerCase().includes(query.toLowerCase()) ||
-              (user.designation && user.designation.toLowerCase().includes(query.toLowerCase())) ||
-              (user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(query.toLowerCase()))) ||
-              (user.location && user.location.toLowerCase().includes(query.toLowerCase()))
-          )
+          const queryTerms = query.toLowerCase().split(' ').filter(term => term.trim().length > 0)
+          
+          const filtered = allUsers.filter((user) => {
+            // Check if all query terms match at least one field
+            return queryTerms.every(term => {
+              const nameMatch = user.name.toLowerCase().includes(term)
+              const usernameMatch = user.username && user.username.toLowerCase().includes(term)
+              const emailMatch = user.email && user.email.toLowerCase().includes(term)
+              const designationMatch = user.designation && user.designation.toLowerCase().includes(term)
+              const skillsMatch = user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(term))
+              const locationMatch = user.location && user.location.toLowerCase().includes(term)
+              
+              return nameMatch || usernameMatch || emailMatch || designationMatch || skillsMatch || locationMatch
+            })
+          })
           
           const usersWithMatch = filtered.map(user => ({
             ...user,
@@ -238,13 +246,21 @@ export default function ExplorePage() {
       }
       // Fallback to local search on other errors
       if (!isLoadMore) {
-        const filtered = allUsers.filter(
-          (user) =>
-            user.name.toLowerCase().includes(query.toLowerCase()) ||
-            (user.designation && user.designation.toLowerCase().includes(query.toLowerCase())) ||
-            (user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(query.toLowerCase()))) ||
-            (user.location && user.location.toLowerCase().includes(query.toLowerCase()))
-        )
+        const queryTerms = query.toLowerCase().split(' ').filter(term => term.trim().length > 0)
+        
+        const filtered = allUsers.filter((user) => {
+          // Check if all query terms match at least one field
+          return queryTerms.every(term => {
+            const nameMatch = user.name.toLowerCase().includes(term)
+            const usernameMatch = user.username && user.username.toLowerCase().includes(term)
+            const emailMatch = user.email && user.email.toLowerCase().includes(term)
+            const designationMatch = user.designation && user.designation.toLowerCase().includes(term)
+            const skillsMatch = user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(term))
+            const locationMatch = user.location && user.location.toLowerCase().includes(term)
+            
+            return nameMatch || usernameMatch || emailMatch || designationMatch || skillsMatch || locationMatch
+          })
+        })
         
         const usersWithMatch = filtered.map(user => ({
           ...user,
