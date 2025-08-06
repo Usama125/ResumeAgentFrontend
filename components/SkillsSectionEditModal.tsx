@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import { X, Plus, Edit, Trash2, GripVertical } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -188,7 +188,7 @@ function SortableSkillItem({
   )
 }
 
-export default function SkillsSectionEditModal({
+const SkillsSectionEditModal = memo(function SkillsSectionEditModal({
   isOpen,
   onClose,
   currentSkills,
@@ -312,7 +312,6 @@ export default function SkillsSectionEditModal({
         description: "Skills reordered successfully",
       })
     } catch (error: any) {
-      console.error("Error reordering skills:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to reorder skills",
@@ -444,7 +443,6 @@ export default function SkillsSectionEditModal({
       })
       onClose()
     } catch (error: any) {
-      console.error("Error updating skills:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to update skills",
@@ -675,4 +673,6 @@ export default function SkillsSectionEditModal({
       />
     </>
   )
-} 
+})
+
+export default SkillsSectionEditModal

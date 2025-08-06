@@ -6,7 +6,7 @@ export class SearchService {
   
   // Search users with filters
   static async searchUsers(params: SearchParams, listing_only: boolean = false): Promise<PublicUser[]> {
-    const endpoint = '/api/v1/search/users';
+    const endpoint = '/search/users';
     const queryParams = new URLSearchParams();
     
     if (params.q) queryParams.append('q', params.q);
