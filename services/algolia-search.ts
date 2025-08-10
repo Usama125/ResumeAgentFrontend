@@ -74,6 +74,17 @@ export class AlgoliaSearchService {
           'location', 'summary', 'experience', 'is_looking_for_job',
           'profile_picture', 'rating', 'profile_score', 'skills', 'email'
         ],
+        // Use custom ranking to sort by profile_score descending (highest first)
+        ranking: [
+          'typo',
+          'geo',
+          'words',
+          'filters',
+          'proximity',
+          'attribute',
+          'exact',
+          'custom'
+        ],
         typoTolerance: true,
         ignorePlurals: true,
         removeStopWords: true,
@@ -92,6 +103,14 @@ export class AlgoliaSearchService {
         nbPages: results.nbPages,
         searchParams: JSON.stringify(searchParams, null, 2)
       });
+
+      // Debug: Log profile scores of first few results to verify sorting
+      if (results.hits.length > 0) {
+        console.log('🔍 [ALGOLIA_SEARCH] First 5 results profile scores:');
+        results.hits.slice(0, 5).forEach((hit: any, index: number) => {
+          console.log(`   ${index + 1}. ${hit.name || 'Unknown'} - Profile Score: ${hit.profile_score || 'N/A'}`);
+        });
+      }
 
       // Format results to match PublicUser interface
       const formattedHits: PublicUser[] = results.hits.map((hit: any) => ({
@@ -210,10 +229,20 @@ export class AlgoliaSearchService {
       const settings = await this.index.getSettings();
       console.log('🔍 [ALGOLIA_SEARCH] Index settings:', settings);
       
-      // Try a simple search
+      // Try a simple search with proper ranking
       const results = await this.index.search('', {
         hitsPerPage: 5,
-        page: 0
+        page: 0,
+        ranking: [
+          'typo',
+          'geo',
+          'words',
+          'filters',
+          'proximity',
+          'attribute',
+          'exact',
+          'custom'
+        ]
       });
       
       console.log('🔍 [ALGOLIA_SEARCH] Simple search results:', {

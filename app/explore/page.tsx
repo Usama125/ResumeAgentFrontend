@@ -101,8 +101,13 @@ export default function ExplorePage() {
             pages: searchResponse.pages
           })
           
-          setDisplayedUsers(searchResponse.hits.map(user => ({ ...user, matchPercentage: undefined })))
-          setTotalFetched(searchResponse.hits.length)
+          // Sort initial users by profile_score descending (highest first)
+          const sortedUsers = searchResponse.hits
+            .map(user => ({ ...user, matchPercentage: undefined }))
+            .sort((a, b) => (b.profile_score || 0) - (a.profile_score || 0))
+          
+          setDisplayedUsers(sortedUsers)
+          setTotalFetched(sortedUsers.length)
           
           // Check if there are more users available (if we got 11 users and there are more pages)
           setHasMoreUsers(searchResponse.total > 11 && searchResponse.pages > 1)
@@ -139,8 +144,13 @@ export default function ExplorePage() {
         // Fetch initial 11 users
         const searchResponse = await algoliaSearchService.getAllUsers(11, 0)
         
-        setDisplayedUsers(searchResponse.hits.map(user => ({ ...user, matchPercentage: undefined })))
-        setTotalFetched(searchResponse.hits.length)
+        // Sort reset users by profile_score descending (highest first)
+        const sortedUsers = searchResponse.hits
+          .map(user => ({ ...user, matchPercentage: undefined }))
+          .sort((a, b) => (b.profile_score || 0) - (a.profile_score || 0))
+        
+        setDisplayedUsers(sortedUsers)
+        setTotalFetched(sortedUsers.length)
         setHasMoreUsers(searchResponse.total > 11 && searchResponse.pages > 1)
       } catch (error) {
         console.error('Error fetching users:', error)
@@ -183,16 +193,21 @@ export default function ExplorePage() {
         }))
         
         if (isLoadMore) {
-          // Add to existing results
-          setDisplayedUsers(prev => [...prev, ...usersWithMatch])
+          // Add to existing results and maintain global sort order
+          setDisplayedUsers(prev => {
+            const combined = [...prev, ...usersWithMatch]
+            // Sort by profile_score descending (highest first) to maintain global sort order
+            return combined.sort((a, b) => (b.profile_score || 0) - (a.profile_score || 0))
+          })
           setSearchTotalFetched(prev => prev + usersWithMatch.length)
           
           // Check if there are more results
           setHasMoreUsers(currentPage + 1 < searchResponse.pages)
         } else {
-          // Initial search results
-          setDisplayedUsers(usersWithMatch)
-          setSearchTotalFetched(usersWithMatch.length)
+          // Initial search results - sort by profile_score descending
+          const sortedUsers = usersWithMatch.sort((a, b) => (b.profile_score || 0) - (a.profile_score || 0))
+          setDisplayedUsers(sortedUsers)
+          setSearchTotalFetched(sortedUsers.length)
           setHasMoreUsers(searchResponse.pages > 1)
         }
       } else {
@@ -276,10 +291,13 @@ export default function ExplorePage() {
         const searchResponse = await algoliaSearchService.getAllUsers(6, currentPage)
         
         if (searchResponse.hits.length > 0) {
-          setDisplayedUsers(prev => [
-            ...prev,
-            ...searchResponse.hits.map(user => ({ ...user, matchPercentage: undefined }))
-          ])
+          // Combine existing and new users, then sort by profile_score descending
+          const newUsers = searchResponse.hits.map(user => ({ ...user, matchPercentage: undefined }))
+          setDisplayedUsers(prev => {
+            const combined = [...prev, ...newUsers]
+            // Sort by profile_score descending (highest first) to maintain global sort order
+            return combined.sort((a, b) => (b.profile_score || 0) - (a.profile_score || 0))
+          })
           setTotalFetched(prev => prev + searchResponse.hits.length)
           
           // Check if there are more users based on Algolia pagination info
