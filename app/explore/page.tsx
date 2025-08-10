@@ -10,18 +10,27 @@ import { useAuth } from "@/context/AuthContext"
 import { useTheme } from "@/context/ThemeContext"
 import Header from "@/components/Header"
 import { PublicUser, APIError } from "@/types"
-import { SearchService } from "@/services/search"
+import { algoliaSearchService } from "@/services/algolia-search"
 import { UserService } from "@/services/user"
 import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import { getImageUrl } from '@/utils/imageUtils'
 
 // Calculate skill matching percentage
-const calculateSkillMatch = (userSkills: { name: string; level: string }[] | undefined, searchQuery: string): number => {
-  if (!searchQuery.trim() || !userSkills) return 100;
+const calculateSkillMatch = (userSkills: { name: string; level: string }[] | string[] | undefined, searchQuery: string): number => {
+  if (!searchQuery.trim() || !userSkills || userSkills.length === 0) return 100;
   
   const searchTerms = searchQuery.toLowerCase().split(' ').filter(term => term.length > 0);
-  const skillNames = userSkills.map(skill => skill.name.toLowerCase());
+  
+  // Handle both formats: objects with name property or string arrays (from Algolia)
+  const skillNames = userSkills.map(skill => {
+    if (typeof skill === 'string') {
+      return skill.toLowerCase();
+    } else if (skill && typeof skill === 'object' && 'name' in skill) {
+      return skill.name.toLowerCase();
+    }
+    return '';
+  }).filter(name => name.length > 0);
   
   let matchedTerms = 0;
   searchTerms.forEach(term => {
@@ -40,7 +49,6 @@ interface EnhancedPublicUser extends PublicUser {
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [allUsers, setAllUsers] = useState<PublicUser[]>([])
   const [displayedUsers, setDisplayedUsers] = useState<EnhancedPublicUser[]>([])
   const [loading, setLoading] = useState(true)
   const [searchLoading, setSearchLoading] = useState(false)
@@ -56,27 +64,14 @@ export default function ExplorePage() {
   const { isDark } = useTheme()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
 
-  // Get initial search query from URL params
-  useEffect(() => {
-    const queryFromUrl = searchParams.get('q')
-    const filterFromUrl = searchParams.get('filter')
-    
-    if (queryFromUrl) {
-      setSearchQuery(queryFromUrl)
-      setCurrentSearchQuery(queryFromUrl)
-      setIsSearchMode(true)
-    } else if (filterFromUrl) {
-      setSearchQuery(filterFromUrl)
-      setCurrentSearchQuery(filterFromUrl)
-      setIsSearchMode(true)
-    }
-  }, [searchParams])
-
-  // Fetch initial users on page load
+  // Fetch initial users on page load and handle URL params
   useEffect(() => {
     const fetchInitialUsers = async () => {
       try {
         setLoading(true)
+        
+        // Test Algolia connection first (for debugging)
+        await algoliaSearchService.testConnection()
         
         // Check if we have a search query from URL
         const queryFromUrl = searchParams.get('q')
@@ -84,28 +79,40 @@ export default function ExplorePage() {
         const initialQuery = queryFromUrl || filterFromUrl
         
         if (initialQuery) {
-          // Perform search immediately if we have a query
+          // Set search state first
+          setSearchQuery(initialQuery)
+          setCurrentSearchQuery(initialQuery)
+          setIsSearchMode(true)
+          
+          // Perform search with the query from URL
           await performSearch(initialQuery, false)
         } else {
-          // Fetch initial users (11 users + check if more exist)
-          const users = await UserService.getFeaturedUsers(12, 0, true) // Use listing_only for better performance
+          // Reset search state for non-search pages
+          setSearchQuery("")
+          setCurrentSearchQuery("")
+          setIsSearchMode(false)
           
-          if (users.length > 11) {
-            // Show first 11 users + load more card
-            setDisplayedUsers(users.slice(0, 11).map(user => ({ ...user, matchPercentage: undefined })))
-            setHasMoreUsers(true)
-            setTotalFetched(11)
-          } else {
-            // Show all users (11 or less)
-            setDisplayedUsers(users.map(user => ({ ...user, matchPercentage: undefined })))
-            setHasMoreUsers(false)
-            setTotalFetched(users.length)
-          }
+          // Fetch initial 11 users using Algolia
+          console.log('🔍 [EXPLORE] Calling getAllUsers(11, 0)...')
+          const searchResponse = await algoliaSearchService.getAllUsers(11, 0)
+          console.log('🔍 [EXPLORE] getAllUsers response:', {
+            hitsLength: searchResponse.hits.length,
+            total: searchResponse.total,
+            pages: searchResponse.pages
+          })
+          
+          setDisplayedUsers(searchResponse.hits.map(user => ({ ...user, matchPercentage: undefined })))
+          setTotalFetched(searchResponse.hits.length)
+          
+          // Check if there are more users available (if we got 11 users and there are more pages)
+          setHasMoreUsers(searchResponse.total > 11 && searchResponse.pages > 1)
+          
+          console.log('🔍 [EXPLORE] Final state:', {
+            displayedUsersLength: searchResponse.hits.length,
+            totalFetched: searchResponse.hits.length,
+            hasMoreUsers: searchResponse.total > 11 && searchResponse.pages > 1
+          })
         }
-        
-        // Store all users for search functionality
-        const allUsersResponse = await UserService.getFeaturedUsers(100, 0)
-        setAllUsers(allUsersResponse)
       } catch (error) {
         console.error('Error fetching users:', error)
         // Check if it's a rate limit error
@@ -123,28 +130,25 @@ export default function ExplorePage() {
 
   const performSearch = async (query: string, isLoadMore: boolean = false) => {
     if (!query.trim()) {
-      // Reset to initial state - fetch first 11 users
+      // Reset to initial state - fetch first 11 users sorted by profile_score
       setIsSearchMode(false)
       setCurrentSearchQuery("")
       setSearchTotalFetched(0)
       setSearchLoading(true)
       try {
-        const users = await UserService.getFeaturedUsers(12, 0)
-        if (users.length > 11) {
-          setDisplayedUsers(users.slice(0, 11).map(user => ({ ...user, matchPercentage: undefined })))
-          setHasMoreUsers(true)
-          setTotalFetched(11)
-        } else {
-          setDisplayedUsers(users.map(user => ({ ...user, matchPercentage: undefined })))
-          setHasMoreUsers(false)
-          setTotalFetched(users.length)
-        }
+        // Fetch initial 11 users
+        const searchResponse = await algoliaSearchService.getAllUsers(11, 0)
+        
+        setDisplayedUsers(searchResponse.hits.map(user => ({ ...user, matchPercentage: undefined })))
+        setTotalFetched(searchResponse.hits.length)
+        setHasMoreUsers(searchResponse.total > 11 && searchResponse.pages > 1)
       } catch (error) {
         console.error('Error fetching users:', error)
         // Check if it's a rate limit error
         if (error && typeof error === 'object' && 'type' in error && error.type === 'RATE_LIMIT') {
           showRateLimitModal(error as APIError)
         }
+        setDisplayedUsers([])
       } finally {
         setSearchLoading(false)
       }
@@ -161,79 +165,41 @@ export default function ExplorePage() {
         setLoadMoreLoading(true)
       }
       
-      // Perform API search
-      const searchResults = await SearchService.searchUsers({
-        q: query,
-        limit: isLoadMore ? 6 : 12,
-        skip: isLoadMore ? searchTotalFetched : 0
-      }, true) // Use listing_only for better performance
+      // Calculate the page for Algolia
+      const pageSize = isLoadMore ? 6 : 11
+      const currentPage = isLoadMore ? Math.floor(searchTotalFetched / 6) : 0
       
-      // If API search returns results, use them with match percentage
-      if (searchResults && searchResults.length > 0) {
-        const usersWithMatch = searchResults.map(user => ({
+      // Perform Algolia search with pagination
+      const searchResponse = await algoliaSearchService.searchUsers({
+        q: query,
+        limit: pageSize,
+        page: currentPage
+      })
+      
+      if (searchResponse && searchResponse.hits.length > 0) {
+        const usersWithMatch = searchResponse.hits.map(user => ({
           ...user,
           matchPercentage: calculateSkillMatch(user.skills, query)
         }))
         
-        // Sort by match percentage (descending)
-        usersWithMatch.sort((a, b) => (b.matchPercentage || 0) - (a.matchPercentage || 0))
-        
         if (isLoadMore) {
-          // Add to existing results (6 more users)
+          // Add to existing results
           setDisplayedUsers(prev => [...prev, ...usersWithMatch])
           setSearchTotalFetched(prev => prev + usersWithMatch.length)
           
-          // Check if there are more results - if we got less than 6, we've reached the end
-          if (usersWithMatch.length < 6) {
-            setHasMoreUsers(false)
-          } else {
-            // Check if there are more results by trying to fetch one extra
-            const checkMoreResults = await SearchService.searchUsers({
-              q: query,
-              limit: 1,
-              skip: searchTotalFetched + usersWithMatch.length
-            }, true) // Use listing_only for better performance
-            setHasMoreUsers(checkMoreResults.length > 0)
-          }
+          // Check if there are more results
+          setHasMoreUsers(currentPage + 1 < searchResponse.pages)
         } else {
-          // Initial search - show first 11 users if we have more than 11
-          if (usersWithMatch.length > 11) {
-            setDisplayedUsers(usersWithMatch.slice(0, 11))
-            setSearchTotalFetched(11)
-            setHasMoreUsers(true)
-          } else {
-            setDisplayedUsers(usersWithMatch)
-            setSearchTotalFetched(usersWithMatch.length)
-            setHasMoreUsers(false)
-          }
-        }
-      } else {
-        // Fallback to local filtering if API doesn't return results
-        if (!isLoadMore) {
-          const queryTerms = query.toLowerCase().split(' ').filter(term => term.trim().length > 0)
-          
-          const filtered = allUsers.filter((user) => {
-            // Check if all query terms match at least one field
-            return queryTerms.every(term => {
-              const nameMatch = user.name.toLowerCase().includes(term)
-              const usernameMatch = user.username && user.username.toLowerCase().includes(term)
-              const emailMatch = user.email && user.email.toLowerCase().includes(term)
-              const designationMatch = user.designation && user.designation.toLowerCase().includes(term)
-              const skillsMatch = user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(term))
-              const locationMatch = user.location && user.location.toLowerCase().includes(term)
-              
-              return nameMatch || usernameMatch || emailMatch || designationMatch || skillsMatch || locationMatch
-            })
-          })
-          
-          const usersWithMatch = filtered.map(user => ({
-            ...user,
-            matchPercentage: calculateSkillMatch(user.skills || [], query)
-          }))
-          
-          usersWithMatch.sort((a, b) => (b.matchPercentage || 0) - (a.matchPercentage || 0))
+          // Initial search results
           setDisplayedUsers(usersWithMatch)
           setSearchTotalFetched(usersWithMatch.length)
+          setHasMoreUsers(searchResponse.pages > 1)
+        }
+      } else {
+        // No results found
+        if (!isLoadMore) {
+          setDisplayedUsers([])
+          setSearchTotalFetched(0)
           setHasMoreUsers(false)
         }
       }
@@ -242,34 +208,13 @@ export default function ExplorePage() {
       // Check if it's a rate limit error
       if (error && typeof error === 'object' && 'type' in error && error.type === 'RATE_LIMIT') {
         showRateLimitModal(error as APIError)
-        return; // Don't fallback to local search on rate limit
+        return
       }
-      // Fallback to local search on other errors
+      
+      // On error, show empty results for new search
       if (!isLoadMore) {
-        const queryTerms = query.toLowerCase().split(' ').filter(term => term.trim().length > 0)
-        
-        const filtered = allUsers.filter((user) => {
-          // Check if all query terms match at least one field
-          return queryTerms.every(term => {
-            const nameMatch = user.name.toLowerCase().includes(term)
-            const usernameMatch = user.username && user.username.toLowerCase().includes(term)
-            const emailMatch = user.email && user.email.toLowerCase().includes(term)
-            const designationMatch = user.designation && user.designation.toLowerCase().includes(term)
-            const skillsMatch = user.skills && user.skills.some((skill) => skill.name.toLowerCase().includes(term))
-            const locationMatch = user.location && user.location.toLowerCase().includes(term)
-            
-            return nameMatch || usernameMatch || emailMatch || designationMatch || skillsMatch || locationMatch
-          })
-        })
-        
-        const usersWithMatch = filtered.map(user => ({
-          ...user,
-          matchPercentage: calculateSkillMatch(user.skills || [], query)
-        }))
-        
-        usersWithMatch.sort((a, b) => (b.matchPercentage || 0) - (a.matchPercentage || 0))
-        setDisplayedUsers(usersWithMatch)
-        setSearchTotalFetched(usersWithMatch.length)
+        setDisplayedUsers([])
+        setSearchTotalFetched(0)
         setHasMoreUsers(false)
       }
     } finally {
@@ -321,27 +266,24 @@ export default function ExplorePage() {
       // Load more search results
       await performSearch(currentSearchQuery, true)
     } else {
-      // Load more regular users
+      // Load more regular users using Algolia for consistency
       setLoadMoreLoading(true)
       try {
-        // Fetch next 6 users
-        const newUsers = await UserService.getFeaturedUsers(6, totalFetched, true) // Use listing_only for better performance
+        // Calculate the current page for Algolia (6 users per page for load more)
+        const currentPage = Math.floor(totalFetched / 6) + 1
         
-        if (newUsers.length > 0) {
+        // Fetch next 6 users using Algolia
+        const searchResponse = await algoliaSearchService.getAllUsers(6, currentPage)
+        
+        if (searchResponse.hits.length > 0) {
           setDisplayedUsers(prev => [
             ...prev,
-            ...newUsers.map(user => ({ ...user, matchPercentage: undefined }))
+            ...searchResponse.hits.map(user => ({ ...user, matchPercentage: undefined }))
           ])
-          setTotalFetched(prev => prev + newUsers.length)
+          setTotalFetched(prev => prev + searchResponse.hits.length)
           
-          // Check if there are more users - if we got less than 6, we've reached the end
-          if (newUsers.length < 6) {
-            setHasMoreUsers(false)
-          } else {
-            // Check if there are more users by fetching one extra
-            const checkMoreUsers = await UserService.getFeaturedUsers(1, totalFetched + newUsers.length, true) // Use listing_only for better performance
-            setHasMoreUsers(checkMoreUsers.length > 0)
-          }
+          // Check if there are more users based on Algolia pagination info
+          setHasMoreUsers(currentPage < searchResponse.pages - 1)
         } else {
           setHasMoreUsers(false)
         }
@@ -555,12 +497,12 @@ export default function ExplorePage() {
                               <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
                               <span className="truncate">{user.location}</span>
                             </div>
-                            {/* Show match percentage when search is active */}
-                            {searchQuery && user.matchPercentage !== undefined && (
+                            {/* Show profile score */}
+                            {user.profile_score !== undefined && user.profile_score > 0 && (
                               <div className="flex items-center justify-center space-x-1">
-                                <Star className="w-3 h-3 text-[#10a37f]" />
-                                <span className="text-xs text-[#10a37f] font-medium">
-                                  {user.matchPercentage}% match
+                                <div className={`w-2 h-2 rounded-full ${user.profile_score >= 80 ? 'bg-green-500' : user.profile_score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}></div>
+                                <span className={`text-xs font-medium ${user.profile_score >= 80 ? 'text-green-600' : user.profile_score >= 60 ? 'text-yellow-600' : 'text-orange-600'} ${isDark ? 'brightness-125' : ''}`}>
+                                  Profile Score: {user.profile_score}/100
                                 </span>
                               </div>
                             )}

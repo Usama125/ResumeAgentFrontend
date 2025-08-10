@@ -157,6 +157,8 @@ export interface PublicUser {
   email?: string;
   // Section ordering for consistent display
   section_order?: string[];
+  profile_score?: number;
+  rating?: number;
 }
 
 // =============================================================================
@@ -291,6 +293,17 @@ export interface SearchParams {
 export interface SearchResponse {
   users: PublicUser[];
   total: number;
+}
+
+// Algolia Search Response
+export interface AlgoliaSearchResponse {
+  hits: PublicUser[];
+  total: number;
+  page: number;
+  pages: number;
+  hitsPerPage: number;
+  processingTimeMS: number;
+  error?: string;
 }
 
 // =============================================================================

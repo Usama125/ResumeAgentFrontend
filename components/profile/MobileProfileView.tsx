@@ -411,6 +411,36 @@ const MobileProfileSection = memo(function MobileProfileSection({
               </div>
             </div>
 
+            {/* AI Analysis Button */}
+            <div className="flex justify-center mt-4">
+              <div className="relative group">
+                {/* Gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/10 via-transparent to-[#10a37f]/10 rounded-xl"></div>
+                
+                {/* Button content */}
+                <button
+                  onClick={() => {/* TODO: Open AI Analysis Modal */}}
+                  className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                    isDark 
+                      ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
+                      : 'bg-white/60 border-[#10a37f]/30 text-gray-900 hover:bg-white/80 hover:border-[#10a37f]/50'
+                  } shadow-lg hover:shadow-xl transform hover:scale-105`}
+                  title="Get AI analysis of this profile"
+                >
+                  {/* Icon with gradient */}
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-sm opacity-60"></div>
+                    <Sparkles className="relative w-4 h-4 text-[#10a37f]" />
+                  </div>
+                  <span className="font-semibold text-sm">AI Analysis</span>
+                  
+                  {/* Hover effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 via-transparent to-[#10a37f]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </div>
+            </div>
+
             {/* Edit Basic Info Button - Only show for current user in edit mode */}
             {isCurrentUser && isEditMode && onEditContact && (
               <div className="flex justify-center mt-4">
