@@ -9,6 +9,7 @@ import { Sparkles, TrendingUp, TrendingDown, X, CheckCircle, AlertCircle, Star, 
 import { useTheme } from '@/context/ThemeContext'
 import { useAuth } from '@/context/AuthContext'
 import { UserService } from '@/services/user'
+import { AuthService } from '@/services/auth'
 import { useRateLimit } from '@/hooks/useRateLimit'
 import { RateLimitModal } from '@/components/RateLimitModal'
 import { APIError } from '@/types'
@@ -111,7 +112,10 @@ export default function AIAnalysisModal({
       // Determine the endpoint based on whether it's own profile or another user's
       const endpoint = isOwnProfile ? '/users/me/ai-analysis' : `/users/${userId}/ai-analysis`
       
-      const response = await UserService.getAIAnalysis(endpoint)
+      // Get authentication token for own profile analysis
+      const token = isOwnProfile ? AuthService.getToken() : undefined
+      
+      const response = await UserService.getAIAnalysis(endpoint, token)
       setAnalysisData(response)
     } catch (err: any) {
       console.error('Error fetching AI analysis:', err)

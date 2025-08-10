@@ -43,25 +43,39 @@ const getThemeClasses = (isDark: boolean) => ({
   hover: isDark ? 'hover:bg-[#2f2f2f]' : 'hover:bg-white'
 })
 
-const getRecommendationColor = (recommendation: string) => {
+const getRecommendationColor = (recommendation: string, isDark: boolean) => {
   switch (recommendation.toLowerCase()) {
     case 'strong yes':
-      return 'text-green-600 bg-green-100 border-green-300'
+      return isDark 
+        ? 'text-green-400 bg-green-900/30 border-green-500/50' 
+        : 'text-green-700 bg-green-100 border-green-300'
     case 'yes':
-      return 'text-green-600 bg-green-50 border-green-200'
+      return isDark 
+        ? 'text-green-400 bg-green-900/20 border-green-500/40' 
+        : 'text-green-600 bg-green-50 border-green-200'
     case 'maybe':
-      return 'text-yellow-600 bg-yellow-50 border-yellow-200'
+      return isDark 
+        ? 'text-yellow-400 bg-yellow-900/30 border-yellow-500/50' 
+        : 'text-yellow-700 bg-yellow-100 border-yellow-300'
     case 'no':
-      return 'text-red-600 bg-red-50 border-red-200'
+      return isDark 
+        ? 'text-red-400 bg-red-900/30 border-red-500/50' 
+        : 'text-red-700 bg-red-100 border-red-300'
     default:
-      return 'text-gray-600 bg-gray-50 border-gray-200'
+      return isDark 
+        ? 'text-gray-400 bg-gray-900/30 border-gray-500/50' 
+        : 'text-gray-600 bg-gray-50 border-gray-200'
   }
 }
 
-const getScoreColor = (score: number) => {
-  if (score >= 8) return 'text-green-600'
-  if (score >= 6) return 'text-yellow-600'
-  return 'text-red-600'
+const getScoreColor = (score: number, isDark: boolean) => {
+  if (score >= 8) {
+    return isDark ? 'text-green-600' : 'text-green-700'
+  }
+  if (score >= 6) {
+    return isDark ? 'text-yellow-600' : 'text-yellow-700'
+  }
+  return isDark ? 'text-red-600' : 'text-red-700'
 }
 
 const getScoreLabel = (score: number) => {
@@ -69,6 +83,22 @@ const getScoreLabel = (score: number) => {
   if (score >= 6) return 'Good Fit'
   if (score >= 4) return 'Moderate Fit'
   return 'Poor Fit'
+}
+
+const getScoreBadgeClasses = (score: number, isDark: boolean) => {
+  if (score >= 8) {
+    return isDark 
+      ? 'text-green-400 bg-green-900/30 border-green-500/50' 
+      : 'text-green-700 bg-green-100 border-green-300'
+  }
+  if (score >= 6) {
+    return isDark 
+      ? 'text-yellow-400 bg-yellow-900/30 border-yellow-500/50' 
+      : 'text-yellow-700 bg-yellow-100 border-yellow-300'
+  }
+  return isDark 
+    ? 'text-red-400 bg-red-900/30 border-red-500/50' 
+    : 'text-red-700 bg-red-100 border-red-300'
 }
 
 export default function ProfessionalAnalysisModal({
@@ -207,13 +237,13 @@ export default function ProfessionalAnalysisModal({
                           Professional Fit Score
                         </h3>
                       </div>
-                      <Badge className={`${getScoreColor(analysisData.professional_fit_score)} bg-opacity-10 border ${getScoreColor(analysisData.professional_fit_score)}`}>
+                      <Badge className={`${getScoreBadgeClasses(analysisData.professional_fit_score, isDark)}`}>
                         {getScoreLabel(analysisData.professional_fit_score)}
                       </Badge>
                     </div>
                     
                     <div className="flex items-center gap-4 mb-4">
-                      <div className={`text-4xl font-bold ${getScoreColor(analysisData.professional_fit_score)}`}>
+                      <div className={`text-4xl font-bold ${getScoreColor(analysisData.professional_fit_score, isDark)}`}>
                         {analysisData.professional_fit_score}/10
                       </div>
                       <div className="flex-1">
@@ -239,7 +269,7 @@ export default function ProfessionalAnalysisModal({
                     </div>
                     
                     <div className="flex items-center gap-4 mb-4">
-                      <Badge className={`text-lg px-4 py-2 border-2 ${getRecommendationColor(analysisData.hiring_recommendation)}`}>
+                      <Badge className={`text-lg px-4 py-2 border-2 ${getRecommendationColor(analysisData.hiring_recommendation, isDark)}`}>
                         {analysisData.hiring_recommendation}
                       </Badge>
                     </div>

@@ -15,9 +15,13 @@ export class UserService {
   }
 
   // Get AI analysis for a user
-  static async getAIAnalysis(endpoint: string): Promise<any> {
-    // Use publicAPI for AI analysis since it's publicly available
-    return publicAPI.get<any>(endpoint);
+  static async getAIAnalysis(endpoint: string, token?: string): Promise<any> {
+    // Use authAPI for own profile analysis, publicAPI for others
+    if (endpoint.includes('/me/ai-analysis')) {
+      return authAPI.get<any>(endpoint, token);
+    } else {
+      return publicAPI.get<any>(endpoint);
+    }
   }
 
   // Get professional analysis for a user
