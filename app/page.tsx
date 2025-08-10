@@ -456,12 +456,12 @@ export default function HomePage() {
                 </span>
               </div>
               
-              <h1 className={`text-5xl md:text-6xl font-bold mb-2 ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent' : 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent'}`}>
-                AI Profiles That Answer
-              </h1>
-              <h2 className="text-3xl md:text-4xl font-semibold mb-6 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent">
-                Recruiter Questions
-              </h2>
+                              <h1 className={`text-5xl md:text-6xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  <span className="text-[#10a37f]">Discover</span> Top Talent 
+                </h1>
+                <h2 className="text-3xl md:text-4xl font-semibold mb-6">
+                  with <span className="text-[#10a37f]">AI</span> powered <span className="text-[#10a37f]">profiles</span>
+                </h2>
               
               <p className={`text-xl mb-12 max-w-4xl mx-auto leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 Build an AI-powered profile that answers questions about your experience 24/7. Perfect matches find you faster, conversations start easier.
