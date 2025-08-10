@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation"
 import { SimpleChatPanel } from "./SimpleChatPanel"
 import EditModeToggle from "@/components/EditModeToggle"
 import ProfileSections from "@/components/ProfileSections"
+import AIAnalysisModal from '@/components/AIAnalysisModal'
 
 interface MobileProfileViewProps {
   user: UserType
@@ -140,7 +141,8 @@ const MobileProfileSection = memo(function MobileProfileSection({
   onAddInterests,
   onEditModeToggle,
   onSectionOrderChange,
-  onAddSection
+  onAddSection,
+  onOpenAIAnalysis
 }: {
   user: UserType;
   isCurrentUser: boolean;
@@ -187,6 +189,7 @@ const MobileProfileSection = memo(function MobileProfileSection({
   onEditModeToggle?: (editMode: boolean) => void;
   onSectionOrderChange?: (sectionOrder: string[]) => void;
   onAddSection?: (sectionId: string) => void;
+  onOpenAIAnalysis?: () => void;
 }) {
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto scrollbar-hide`}
@@ -421,7 +424,7 @@ const MobileProfileSection = memo(function MobileProfileSection({
                   
                   {/* Button content */}
                   <button
-                    onClick={() => {/* TODO: Open AI Analysis Modal */}}
+                    onClick={onOpenAIAnalysis}
                     className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
                       isDark 
                         ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
@@ -645,6 +648,7 @@ export default function MobileProfileView({
   clearChat
 }: MobileProfileViewProps) {
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
+  const [isAIAnalysisModalOpen, setIsAIAnalysisModalOpen] = useState(false)
   const { isDark } = useTheme()
 
   // Memoized handlers to prevent unnecessary re-renders
@@ -698,7 +702,8 @@ export default function MobileProfileView({
     onAddInterests,
     onEditModeToggle,
     onSectionOrderChange,
-    onAddSection
+    onAddSection,
+    onOpenAIAnalysis: () => setIsAIAnalysisModalOpen(true)
   }), [user, isCurrentUser, isEditMode, isDark, onEditPhoto, onEditContact, onEditAbout, onEditSkills, onEditExperience, onEditProject, onEditEducation, onEditModeToggle])
 
   // Memoized chat section props
@@ -757,6 +762,16 @@ export default function MobileProfileView({
       } h-full`}>
         <MobileChatSection {...chatSectionProps} />
       </div>
+      
+      {/* AI Analysis Modal */}
+      <AIAnalysisModal
+        isOpen={isAIAnalysisModalOpen}
+        onClose={() => setIsAIAnalysisModalOpen(false)}
+        userId={user.id}
+        userName={user.name}
+        isOwnProfile={isCurrentUser}
+        onImproveProfile={() => onEditModeToggle?.(true)}
+      />
     </div>
   )
 }

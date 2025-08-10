@@ -31,12 +31,26 @@ interface AIAnalysisData {
   }
 }
 
+// Section weights from the backend scoring system
+const SECTION_WEIGHTS = {
+  basic_info: 15,
+  contact_info: 10,
+  skills: 12,
+  experience: 20,
+  education: 12,
+  projects: 15,
+  certifications: 6,
+  languages: 5,
+  additional_sections: 5
+}
+
 interface AIAnalysisModalProps {
   isOpen: boolean
   onClose: () => void
   userId: string
   userName: string
   isOwnProfile?: boolean
+  onImproveProfile?: () => void
 }
 
 const getThemeClasses = (isDark: boolean) => ({
@@ -86,7 +100,8 @@ export default function AIAnalysisModal({
   onClose,
   userId,
   userName,
-  isOwnProfile = false
+  isOwnProfile = false,
+  onImproveProfile
 }: AIAnalysisModalProps) {
   const { isDark } = useTheme()
   const { user: currentUser } = useAuth()
@@ -154,7 +169,7 @@ export default function AIAnalysisModal({
     <>
       <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
         <DialogContent 
-          className={`max-w-4xl relative overflow-hidden ${themeClasses.text.primary} h-[85vh] p-0 flex flex-col border-0 [&>button]:hidden`}
+          className={`max-w-4xl relative overflow-hidden ${themeClasses.text.primary} h-[85vh] p-0 flex flex-col border-0 [&>button[data-radix-collection-item]]:hidden [&>button]:!hidden`}
           style={{
             position: 'fixed',
             top: '50%',
@@ -163,6 +178,16 @@ export default function AIAnalysisModal({
             zIndex: 50
           }}
         >
+          {/* Inline style to hide default close button */}
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              [data-radix-dialog-content] > button[aria-label="Close"],
+              [data-radix-dialog-content] > button:first-child,
+              .dialog-close-button {
+                display: none !important;
+              }
+            `
+          }} />
           {/* Background gradients - exactly like EditProfileModal */}
           <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-[#1a1a1a] via-[#212121] to-[#1a1a1a]' : 'bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100'}`}></div>
           <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/10 via-transparent to-[#10a37f]/5"></div>
@@ -220,76 +245,86 @@ export default function AIAnalysisModal({
                 </div>
               ) : analysisData ? (
                 <div className="space-y-6">
-                  {/* Overall Score */}
-                  <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
-                        Overall Profile Score
-                      </h3>
-                      <Badge className={`${getScoreColor(analysisData.score)} bg-opacity-10 border ${getScoreColor(analysisData.score)}`}>
-                        {getScoreLabel(analysisData.score)}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="text-4xl font-bold text-[#10a37f]">
-                        {analysisData.score}/100
-                      </div>
-                      <div className="flex-1">
-                        <Progress 
-                          value={analysisData.score} 
-                          className="h-3"
-                        />
-                      </div>
-                    </div>
-                    
-                    <p className={`text-sm ${themeClasses.text.secondary}`}>
-                      {isOwnProfile 
-                        ? "This score reflects how complete and compelling your profile is to potential employers."
-                        : "This score reflects how complete and compelling this profile is to potential employers."
-                      }
-                    </p>
-                  </div>
+                                           {/* Overall Score */}
+                         <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
+                           <div className="flex items-center justify-between mb-4">
+                             <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
+                               Overall Profile Score
+                             </h3>
+                             <Badge className={`${getScoreColor(analysisData.score)} bg-opacity-10 border ${getScoreColor(analysisData.score)}`}>
+                               {getScoreLabel(analysisData.score)}
+                             </Badge>
+                           </div>
+                           
+                           <div className="flex items-center gap-4 mb-4">
+                             <div className="text-4xl font-bold text-[#10a37f]">
+                               {analysisData.score}/100
+                             </div>
+                             <div className="flex-1">
+                               <Progress 
+                                 value={analysisData.score} 
+                                 className="h-3"
+                               />
+                             </div>
+                           </div>
+                           
+                           <p className={`text-sm ${themeClasses.text.secondary}`}>
+                             {isOwnProfile 
+                               ? "This score reflects how complete and compelling your profile is to potential employers. Each section has a specific weight in the total score."
+                               : "This score reflects how complete and compelling this profile is to potential employers."
+                             }
+                           </p>
+                           
+                           {isOwnProfile && (
+                             <div className={`mt-4 p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]/50' : 'bg-gray-50/50'} border ${themeClasses.border}`}>
+                               <p className={`text-xs ${themeClasses.text.muted}`}>
+                                 <strong>Scoring System:</strong> Experience (20 pts), Basic Info (15 pts), Projects (15 pts), 
+                                 Skills (12 pts), Education (12 pts), Contact Info (10 pts), Certifications (6 pts), 
+                                 Languages (5 pts), Additional Sections (5 pts)
+                               </p>
+                             </div>
+                           )}
+                         </div>
 
-                  {/* Section Scores */}
-                  <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
-                    <h3 className={`text-xl font-semibold mb-4 ${themeClasses.text.primary}`}>
-                      Section Breakdown
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Object.entries(analysisData.section_scores).map(([section, score]) => {
-                        const Icon = getSectionIcon(section)
-                        const sectionName = getSectionName(section)
-                        const maxScore = 100 // Assuming max score is 100 for each section
-                        const percentage = (score / maxScore) * 100
-                        
-                        return (
-                          <div key={section} className={`p-4 rounded-lg border ${themeClasses.border} ${themeClasses.hover} transition-colors`}>
-                            <div className="flex items-center gap-3 mb-3">
-                              <Icon className={`w-5 h-5 ${getScoreColor(percentage)}`} />
-                              <span className={`font-medium ${themeClasses.text.primary}`}>
-                                {sectionName}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className={`text-2xl font-bold ${getScoreColor(percentage)}`}>
-                                {Math.round(percentage)}%
-                              </span>
-                              <div className="flex-1">
-                                <Progress 
-                                  value={percentage} 
-                                  className="h-2"
-                                />
-                              </div>
-                            </div>
-                            <p className={`text-xs ${themeClasses.text.muted}`}>
-                              {score}/{maxScore} points
-                            </p>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
+                                           {/* Section Scores */}
+                         <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
+                           <h3 className={`text-xl font-semibold mb-4 ${themeClasses.text.primary}`}>
+                             Section Breakdown
+                           </h3>
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             {Object.entries(analysisData.section_scores).map(([section, score]) => {
+                               const Icon = getSectionIcon(section)
+                               const sectionName = getSectionName(section)
+                               const maxScore = SECTION_WEIGHTS[section as keyof typeof SECTION_WEIGHTS] || 0
+                               const percentage = maxScore > 0 ? (score / maxScore) * 100 : 0
+                               
+                               return (
+                                 <div key={section} className={`p-4 rounded-lg border ${themeClasses.border} ${themeClasses.hover} transition-colors`}>
+                                   <div className="flex items-center gap-3 mb-3">
+                                     <Icon className={`w-5 h-5 ${getScoreColor(percentage)}`} />
+                                     <span className={`font-medium ${themeClasses.text.primary}`}>
+                                       {sectionName}
+                                     </span>
+                                   </div>
+                                   <div className="flex items-center gap-3 mb-2">
+                                     <span className={`text-2xl font-bold ${getScoreColor(percentage)}`}>
+                                       {Math.round(percentage)}%
+                                     </span>
+                                     <div className="flex-1">
+                                       <Progress 
+                                         value={percentage} 
+                                         className="h-2"
+                                       />
+                                     </div>
+                                   </div>
+                                   <p className={`text-xs ${themeClasses.text.muted}`}>
+                                     {score.toFixed(1)}/{maxScore} points
+                                   </p>
+                                 </div>
+                               )
+                             })}
+                           </div>
+                         </div>
 
                   {/* Strengths */}
                   {analysisData.strengths.length > 0 && (
@@ -343,12 +378,11 @@ export default function AIAnalysisModal({
               >
                 Close
               </Button>
-              {isOwnProfile && (
+              {isOwnProfile && onImproveProfile && (
                 <Button
                   onClick={() => {
                     onClose()
-                    // Navigate to edit profile
-                    window.location.href = '/profile'
+                    onImproveProfile()
                   }}
                   className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white"
                 >

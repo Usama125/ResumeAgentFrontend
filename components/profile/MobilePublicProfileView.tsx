@@ -42,6 +42,7 @@ interface MobilePublicProfileViewProps {
 import { getImageUrl } from '@/utils/imageUtils';
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils';
 import ProfileSections from '@/components/ProfileSections';
+import ProfessionalAnalysisModal from '@/components/ProfessionalAnalysisModal';
 
 export default function MobilePublicProfileView({
   user,
@@ -62,6 +63,7 @@ export default function MobilePublicProfileView({
   clearChat
 }: MobilePublicProfileViewProps) {
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
+  const [isProfessionalAnalysisModalOpen, setIsProfessionalAnalysisModalOpen] = useState(false)
   const { isDark } = useTheme()
 
   return (
@@ -302,7 +304,7 @@ export default function MobilePublicProfileView({
                   
                   {/* Button content */}
                   <button
-                    onClick={() => {/* TODO: Open AI Analysis Modal */}}
+                    onClick={() => setIsProfessionalAnalysisModalOpen(true)}
                     className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
                       isDark 
                         ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
@@ -383,6 +385,15 @@ export default function MobilePublicProfileView({
           clearChat={clearChat}
         />
       </div>
+
+      {/* Professional Analysis Modal */}
+      <ProfessionalAnalysisModal
+        isOpen={isProfessionalAnalysisModalOpen}
+        onClose={() => setIsProfessionalAnalysisModalOpen(false)}
+        userId={user.id}
+        userName={user.name}
+        userDesignation={user.designation || undefined}
+      />
     </div>
   )
 }

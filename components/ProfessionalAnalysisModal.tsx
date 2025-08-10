@@ -149,7 +149,7 @@ export default function ProfessionalAnalysisModal({
     <>
       <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
         <DialogContent 
-          className={`max-w-4xl relative overflow-hidden ${themeClasses.text.primary} h-[85vh] p-0 flex flex-col border-0 [&>button]:hidden`}
+          className={`max-w-4xl relative overflow-hidden ${themeClasses.text.primary} h-[85vh] p-0 flex flex-col border-0 [&>button[data-radix-collection-item]]:hidden [&>button]:!hidden`}
           style={{
             position: 'fixed',
             top: '50%',
@@ -158,6 +158,16 @@ export default function ProfessionalAnalysisModal({
             zIndex: 50
           }}
         >
+          {/* Inline style to hide default close button */}
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              [data-radix-dialog-content] > button[aria-label="Close"],
+              [data-radix-dialog-content] > button:first-child,
+              .dialog-close-button {
+                display: none !important;
+              }
+            `
+          }} />
           {/* Background gradients - exactly like EditProfileModal */}
           <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-[#1a1a1a] via-[#212121] to-[#1a1a1a]' : 'bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100'}`}></div>
           <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/10 via-transparent to-[#10a37f]/5"></div>
@@ -177,7 +187,7 @@ export default function ProfessionalAnalysisModal({
                 </div>
                 <div>
                   <h2 className={`text-2xl font-bold ${themeClasses.text.primary}`}>
-                    Professional Fit Analysis
+                    AI Fit Analysis
                   </h2>
                   <p className={`text-sm ${themeClasses.text.secondary}`}>
                     {userName}'s professional assessment for {userDesignation || 'their role'}

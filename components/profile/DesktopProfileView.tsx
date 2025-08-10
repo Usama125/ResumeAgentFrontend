@@ -842,6 +842,7 @@ export default function DesktopProfileView({
         userId={user.id}
         userName={user.name}
         isOwnProfile={isCurrentUser}
+        onImproveProfile={() => onEditModeToggle?.(true)}
       />
     </div>
   )

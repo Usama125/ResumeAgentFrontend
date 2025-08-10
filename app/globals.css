@@ -444,3 +444,16 @@
 .dark .loading-text {
   color: rgb(156 163 175); /* text-gray-400 */
 }
+
+/* Hide default dialog close button */
+.hide-dialog-close [data-radix-dialog-close] {
+  display: none !important;
+}
+
+.hide-dialog-close button[data-radix-dialog-close] {
+  display: none !important;
+}
+
+.hide-dialog-close [data-radix-collection-item] {
+  display: none !important;
+}
