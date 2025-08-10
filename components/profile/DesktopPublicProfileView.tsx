@@ -43,6 +43,7 @@ interface DesktopPublicProfileViewProps {
 import { getImageUrl } from '@/utils/imageUtils';
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils';
 import ProfileSections from '@/components/ProfileSections';
+import ProfessionalAnalysisModal from '@/components/ProfessionalAnalysisModal';
 
 // Memoized Portfolio Section Component
 const PortfolioSection = memo<{
@@ -50,11 +51,13 @@ const PortfolioSection = memo<{
   isChatVisible: boolean
   isDark: boolean
   onChatToggle: () => void
+  onOpenAIAnalysis: () => void
 }>(function PortfolioSection({
   user,
   isChatVisible,
   isDark,
-  onChatToggle
+  onChatToggle,
+  onOpenAIAnalysis
 }) {
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
@@ -304,7 +307,7 @@ const PortfolioSection = memo<{
                   
                   {/* Button content */}
                   <button
-                    onClick={() => {/* TODO: Open AI Analysis Modal */}}
+                    onClick={onOpenAIAnalysis}
                     className={`relative flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
                       isDark 
                         ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
@@ -439,6 +442,7 @@ export default function DesktopPublicProfileView({
   clearChat
 }: DesktopPublicProfileViewProps) {
   const [isChatVisible, setIsChatVisible] = useState(true)
+  const [isProfessionalAnalysisModalOpen, setIsProfessionalAnalysisModalOpen] = useState(false)
   const { isDark } = useTheme()
 
   // Memoized handlers to prevent unnecessary re-renders
@@ -451,7 +455,8 @@ export default function DesktopPublicProfileView({
     user,
     isChatVisible,
     isDark,
-    onChatToggle: handleChatToggle
+    onChatToggle: handleChatToggle,
+            onOpenAIAnalysis: () => setIsProfessionalAnalysisModalOpen(true)
   }), [user, isChatVisible, isDark, handleChatToggle])
 
   const chatSectionProps = useMemo(() => ({
@@ -484,6 +489,15 @@ export default function DesktopPublicProfileView({
         <PortfolioSection {...portfolioSectionProps} />
         <ChatSection {...chatSectionProps} />
       </ResizableSplitPane>
+      
+      {/* AI Analysis Modal */}
+      <ProfessionalAnalysisModal
+        isOpen={isProfessionalAnalysisModalOpen}
+        onClose={() => setIsProfessionalAnalysisModalOpen(false)}
+        userId={user.id}
+        userName={user.name}
+        userDesignation={user.designation || undefined}
+      />
     </div>
   )
 }

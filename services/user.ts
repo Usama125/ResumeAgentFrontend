@@ -14,6 +14,18 @@ export class UserService {
     return publicAPI.get<PublicUser>(`/users/${userId}`);
   }
 
+  // Get AI analysis for a user
+  static async getAIAnalysis(endpoint: string): Promise<any> {
+    // Use publicAPI for AI analysis since it's publicly available
+    return publicAPI.get<any>(endpoint);
+  }
+
+  // Get professional analysis for a user
+  static async getProfessionalAnalysis(endpoint: string): Promise<any> {
+    // Use publicAPI for professional analysis since it's publicly available
+    return publicAPI.get<any>(endpoint);
+  }
+
   // Update current user profile
   static async updateProfile(updateData: ProfileUpdateData, token?: string): Promise<User> {
     // Handle file upload separately if profile picture is included

@@ -97,6 +97,7 @@ import { formatLinkedInUrl, formatGitHubUrl, formatPortfolioUrl, formatTwitterUr
 import EditModeToggle from '@/components/EditModeToggle';
 import ProfileSections from '@/components/ProfileSections';
 import AddMissingSections from '@/components/AddMissingSections';
+import AIAnalysisModal from '@/components/AIAnalysisModal';
 
 // Portfolio Section Component
 const PortfolioSection = memo(function PortfolioSection({
@@ -106,6 +107,7 @@ const PortfolioSection = memo(function PortfolioSection({
   isEditMode,
   isDark,
   onChatToggle,
+  onOpenAIAnalysis,
   onEditPhoto,
   onEditAbout,
   onEditSkills,
@@ -155,6 +157,7 @@ const PortfolioSection = memo(function PortfolioSection({
   isEditMode: boolean
   isDark: boolean
   onChatToggle: () => void
+  onOpenAIAnalysis: () => void
   onEditPhoto?: () => void
   onEditAbout?: () => void
   onEditSkills?: () => void
@@ -498,7 +501,7 @@ const PortfolioSection = memo(function PortfolioSection({
                   
                   {/* Button content */}
                   <button
-                    onClick={() => {/* TODO: Open AI Analysis Modal */}}
+                    onClick={onOpenAIAnalysis}
                     className={`relative flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
                       isDark 
                         ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
@@ -726,6 +729,7 @@ export default function DesktopProfileView({
 }: DesktopProfileViewProps) {
 
   const [isChatVisible, setIsChatVisible] = useState(true)
+  const [isAIAnalysisModalOpen, setIsAIAnalysisModalOpen] = useState(false)
   const { isDark } = useTheme()
   const router = useRouter()
   
@@ -753,6 +757,7 @@ export default function DesktopProfileView({
       isEditMode,
       isDark,
       onChatToggle: handleChatToggle,
+      onOpenAIAnalysis: () => setIsAIAnalysisModalOpen(true),
       onEditPhoto,
       onEditAbout,
       onEditSkills,
@@ -827,6 +832,15 @@ export default function DesktopProfileView({
         <PortfolioSection {...portfolioSectionProps} />
         <ChatSection {...chatSectionProps} />
       </ResizableSplitPane>
+      
+      {/* AI Analysis Modal */}
+      <AIAnalysisModal
+        isOpen={isAIAnalysisModalOpen}
+        onClose={() => setIsAIAnalysisModalOpen(false)}
+        userId={user.id}
+        userName={user.name}
+        isOwnProfile={isCurrentUser}
+      />
     </div>
   )
 }

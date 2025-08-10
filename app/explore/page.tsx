@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import React from "react"
-import { Search, Users, MapPin, Star, X, Plus, ArrowRight } from "lucide-react"
+import { Search, Users, MapPin, Star, X, Plus, ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -15,6 +15,7 @@ import { UserService } from "@/services/user"
 import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import { getImageUrl } from '@/utils/imageUtils'
+import ProfessionalAnalysisModal from "@/components/ProfessionalAnalysisModal"
 
 // Calculate skill matching percentage
 const calculateSkillMatch = (userSkills: { name: string; level: string }[] | string[] | undefined, searchQuery: string): number => {
@@ -58,6 +59,8 @@ export default function ExplorePage() {
   const [isSearchMode, setIsSearchMode] = useState(false)
   const [searchTotalFetched, setSearchTotalFetched] = useState(0)
   const [currentSearchQuery, setCurrentSearchQuery] = useState("")
+  const [isProfessionalAnalysisModalOpen, setIsProfessionalAnalysisModalOpen] = useState(false)
+  const [selectedUserForAnalysis, setSelectedUserForAnalysis] = useState<{ id: string; name: string; designation?: string } | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
@@ -325,6 +328,11 @@ export default function ExplorePage() {
     performSearch(query)
   }
 
+  const handleOpenProfessionalAnalysis = (userId: string, userName: string, designation?: string) => {
+    setSelectedUserForAnalysis({ id: userId, name: userName, designation })
+    setIsProfessionalAnalysisModalOpen(true)
+  }
+
   const popularSearches = ["React developers", "Product managers", "AWS certified", "UX designers", "Node.js", "Python"]
 
   return (
@@ -524,6 +532,25 @@ export default function ExplorePage() {
                                 </span>
                               </div>
                             )}
+                            
+                            {/* Professional Analysis Button - Show for all profiles */}
+                            <div className="flex items-center justify-center">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleOpenProfessionalAnalysis(user.id, user.name, user.designation || undefined)
+                                }}
+                                className={`flex items-center justify-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
+                                  isDark 
+                                    ? 'bg-[#10a37f]/20 text-[#10a37f] hover:bg-[#10a37f]/30 border border-[#10a37f]/30' 
+                                    : 'bg-[#10a37f]/10 text-[#10a37f] hover:bg-[#10a37f]/20 border border-[#10a37f]/20'
+                                }`}
+                                title="Get professional analysis of this candidate"
+                              >
+                                <Sparkles className="w-3 h-3" />
+                                AI Analysis
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -590,6 +617,20 @@ export default function ExplorePage() {
           </div>
         </div>
       </main>
+      
+      {/* Professional Analysis Modal */}
+      {selectedUserForAnalysis && (
+        <ProfessionalAnalysisModal
+          isOpen={isProfessionalAnalysisModalOpen}
+          onClose={() => {
+            setIsProfessionalAnalysisModalOpen(false)
+            setSelectedUserForAnalysis(null)
+          }}
+          userId={selectedUserForAnalysis.id}
+          userName={selectedUserForAnalysis.name}
+          userDesignation={selectedUserForAnalysis.designation}
+        />
+      )}
     </div>
   )
 }
