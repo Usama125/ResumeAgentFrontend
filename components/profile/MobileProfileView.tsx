@@ -18,6 +18,7 @@ import {
   FileText,
   Star,
   Users,
+  Share2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/types"
@@ -90,6 +91,7 @@ interface MobileProfileViewProps {
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
+  onOpenShare?: () => void
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
@@ -142,7 +144,8 @@ const MobileProfileSection = memo(function MobileProfileSection({
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection,
-  onOpenAIAnalysis
+  onOpenAIAnalysis,
+  onOpenShare
 }: {
   user: UserType;
   isCurrentUser: boolean;
@@ -190,6 +193,7 @@ const MobileProfileSection = memo(function MobileProfileSection({
   onSectionOrderChange?: (sectionOrder: string[]) => void;
   onAddSection?: (sectionId: string) => void;
   onOpenAIAnalysis?: () => void;
+  onOpenShare?: () => void;
 }) {
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto scrollbar-hide`}
@@ -202,15 +206,34 @@ const MobileProfileSection = memo(function MobileProfileSection({
 
       {/* Content Container */}
       <div className="relative z-10">
-        {/* Sticky Edit Mode Toggle for Mobile */}
-        {isCurrentUser && onEditModeToggle && (
+        {/* Sticky Edit Mode Toggle and Share Button for Mobile */}
+        {isCurrentUser && (onEditModeToggle || onOpenShare) && (
           <div className="sticky top-0 z-20 bg-gradient-to-b from-[#212121]/95 to-transparent backdrop-blur-sm py-4 px-4">
-            <div className="flex justify-center">
-              <EditModeToggle
-                isEditMode={isEditMode}
-                onToggle={onEditModeToggle}
-                className="scale-90"
-              />
+            <div className="flex justify-center gap-2">
+              {onEditModeToggle && (
+                <EditModeToggle
+                  isEditMode={isEditMode}
+                  onToggle={onEditModeToggle}
+                  className="scale-90"
+                />
+              )}
+              {onOpenShare && (
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                  <Button
+                    onClick={onOpenShare}
+                    size="sm"
+                    className={`relative flex items-center justify-center px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border h-auto scale-90 ${
+                      isDark 
+                        ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                        : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                    } shadow-lg hover:shadow-xl hover:scale-105`}
+                    title="Share Profile"
+                  >
+                    <Share2 className="w-4 h-4 text-[#10a37f]" />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}

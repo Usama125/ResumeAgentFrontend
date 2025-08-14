@@ -33,6 +33,7 @@ import RateLimitModal from "@/components/RateLimitModal"
 import { useToast } from "@/hooks/use-toast"
 import PreferencesEditModal from "@/components/PreferencesEditModal"
 import ProfileSettingsModal from "@/components/ProfileSettingsModal"
+import ShareProfileModal from "@/components/ShareProfileModal"
 import { updateProfileVariant } from "@/services/user"
 import { ProfileVariant } from "@/types"
 import { useAIChat } from "@/hooks/useAIChat"
@@ -178,6 +179,7 @@ export default function CurrentUserProfilePage() {
   const [interestsEditMode, setInterestsEditMode] = useState<'add' | 'edit'>('add')
   const [isPreferencesEditModalOpen, setIsPreferencesEditModalOpen] = useState(false)
   const [isProfileSettingsModalOpen, setIsProfileSettingsModalOpen] = useState(false)
+  const [isShareProfileModalOpen, setIsShareProfileModalOpen] = useState(false)
 
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
@@ -1338,6 +1340,7 @@ export default function CurrentUserProfilePage() {
               onDeleteInterests={handleInterestsDelete}
               onAddInterests={handleAddInterests}
               onEditModeToggle={handleEditModeToggle}
+            onOpenShare={() => setIsShareProfileModalOpen(true)}
               onSectionOrderChange={handleSectionOrderChange}
               onAddSection={handleAddSection}
             />
@@ -1405,7 +1408,8 @@ export default function CurrentUserProfilePage() {
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
-          onOpenSettings={() => setIsProfileSettingsModalOpen(true)}
+                        onOpenSettings={() => setIsProfileSettingsModalOpen(true)}
+              onOpenShare={() => setIsShareProfileModalOpen(true)}
         />
         </>
       )}
@@ -1654,6 +1658,15 @@ export default function CurrentUserProfilePage() {
           onClose={() => setIsProfileSettingsModalOpen(false)}
           user={user}
           onVariantChange={handleProfileVariantChange}
+        />
+      )}
+
+      {/* Share Profile Modal */}
+      {user && (
+        <ShareProfileModal
+          isOpen={isShareProfileModalOpen}
+          onClose={() => setIsShareProfileModalOpen(false)}
+          user={user}
         />
       )}
 
