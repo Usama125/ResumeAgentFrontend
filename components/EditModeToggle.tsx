@@ -24,7 +24,7 @@ export default function EditModeToggle({
       <Button
         onClick={() => onToggle(!isEditMode)}
         size="sm"
-        className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border h-auto ${
+        className={`relative flex items-center justify-center px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border h-auto ${
           isDark 
             ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
             : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
@@ -32,15 +32,9 @@ export default function EditModeToggle({
         title={isEditMode ? "Switch to View Mode" : "Switch to Edit Mode"}
       >
         {isEditMode ? (
-          <>
-            <Eye className="w-4 h-4 text-[#10a37f]" />
-            <span className="text-sm font-medium">View Mode</span>
-          </>
+          <Eye className="w-4 h-4 text-[#10a37f]" />
         ) : (
-          <>
-            <Edit className="w-4 h-4 text-[#10a37f]" />
-            <span className="text-sm font-medium">Edit Mode</span>
-          </>
+          <Edit className="w-4 h-4 text-[#10a37f]" />
         )}
       </Button>
     </div>
