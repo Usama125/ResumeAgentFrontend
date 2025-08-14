@@ -33,6 +33,7 @@ import RateLimitModal from "@/components/RateLimitModal"
 import { useToast } from "@/hooks/use-toast"
 import PreferencesEditModal from "@/components/PreferencesEditModal"
 import ProfileSettingsModal from "@/components/ProfileSettingsModal"
+import MobileProfileSettingsModal from "@/components/MobileProfileSettingsModal"
 import ShareProfileModal from "@/components/ShareProfileModal"
 import { updateProfileVariant } from "@/services/user"
 import { ProfileVariant } from "@/types"
@@ -1340,7 +1341,8 @@ export default function CurrentUserProfilePage() {
               onDeleteInterests={handleInterestsDelete}
               onAddInterests={handleAddInterests}
               onEditModeToggle={handleEditModeToggle}
-            onOpenShare={() => setIsShareProfileModalOpen(true)}
+              onOpenShare={() => setIsShareProfileModalOpen(true)}
+              onOpenSettings={() => setIsProfileSettingsModalOpen(true)}
               onSectionOrderChange={handleSectionOrderChange}
               onAddSection={handleAddSection}
             />
@@ -1653,12 +1655,27 @@ export default function CurrentUserProfilePage() {
 
       {/* Profile Settings Modal */}
       {user && (
-        <ProfileSettingsModal
-          isOpen={isProfileSettingsModalOpen}
-          onClose={() => setIsProfileSettingsModalOpen(false)}
-          user={user}
-          onVariantChange={handleProfileVariantChange}
-        />
+        <>
+          {/* Desktop Profile Settings Modal */}
+          <div className="hidden md:block">
+            <ProfileSettingsModal
+              isOpen={isProfileSettingsModalOpen}
+              onClose={() => setIsProfileSettingsModalOpen(false)}
+              user={user}
+              onVariantChange={handleProfileVariantChange}
+            />
+          </div>
+          
+          {/* Mobile Profile Settings Modal */}
+          <div className="block md:hidden">
+            <MobileProfileSettingsModal
+              isOpen={isProfileSettingsModalOpen}
+              onClose={() => setIsProfileSettingsModalOpen(false)}
+              currentVariant={user.profile_variant || 'default'}
+              onVariantChange={handleProfileVariantChange}
+            />
+          </div>
+        </>
       )}
 
       {/* Share Profile Modal */}

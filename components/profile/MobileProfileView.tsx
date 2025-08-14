@@ -19,6 +19,7 @@ import {
   Star,
   Users,
   Share2,
+  Settings,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/types"
@@ -92,6 +93,7 @@ interface MobileProfileViewProps {
   onSectionOrderChange?: (sectionOrder: string[]) => void
   onAddSection?: (sectionId: string) => void
   onOpenShare?: () => void
+  onOpenSettings?: () => void
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
@@ -145,7 +147,8 @@ const MobileProfileSection = memo(function MobileProfileSection({
   onSectionOrderChange,
   onAddSection,
   onOpenAIAnalysis,
-  onOpenShare
+  onOpenShare,
+  onOpenSettings
 }: {
   user: UserType;
   isCurrentUser: boolean;
@@ -194,6 +197,7 @@ const MobileProfileSection = memo(function MobileProfileSection({
   onAddSection?: (sectionId: string) => void;
   onOpenAIAnalysis?: () => void;
   onOpenShare?: () => void;
+  onOpenSettings?: () => void;
 }) {
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto scrollbar-hide`}
@@ -206,8 +210,8 @@ const MobileProfileSection = memo(function MobileProfileSection({
 
       {/* Content Container */}
       <div className="relative z-10">
-        {/* Sticky Edit Mode Toggle and Share Button for Mobile */}
-        {isCurrentUser && (onEditModeToggle || onOpenShare) && (
+        {/* Sticky Edit Mode Toggle, Settings, and Share Buttons for Mobile */}
+        {isCurrentUser && (onEditModeToggle || onOpenSettings || onOpenShare) && (
           <div className="sticky top-0 z-20 bg-gradient-to-b from-[#212121]/95 to-transparent backdrop-blur-sm py-4 px-4">
             <div className="flex justify-center gap-2">
               {onEditModeToggle && (
@@ -216,6 +220,23 @@ const MobileProfileSection = memo(function MobileProfileSection({
                   onToggle={onEditModeToggle}
                   className="scale-90"
                 />
+              )}
+              {onOpenSettings && (
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                  <Button
+                    onClick={onOpenSettings}
+                    size="sm"
+                    className={`relative flex items-center justify-center px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border h-auto scale-90 ${
+                      isDark 
+                        ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                        : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                    } shadow-lg hover:shadow-xl hover:scale-105`}
+                    title="Profile Settings"
+                  >
+                    <Settings className="w-4 h-4 text-[#10a37f]" />
+                  </Button>
+                </div>
               )}
               {onOpenShare && (
                 <div className="relative group">
@@ -665,6 +686,8 @@ export default function MobileProfileView({
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection,
+  onOpenShare,
+  onOpenSettings,
   showMessageLimitModal,
   handleMessageLimitModalConfirm,
   handleMessageLimitModalCancel,
@@ -726,7 +749,9 @@ export default function MobileProfileView({
     onEditModeToggle,
     onSectionOrderChange,
     onAddSection,
-    onOpenAIAnalysis: () => setIsAIAnalysisModalOpen(true)
+    onOpenAIAnalysis: () => setIsAIAnalysisModalOpen(true),
+    onOpenShare,
+    onOpenSettings
   }), [user, isCurrentUser, isEditMode, isDark, onEditPhoto, onEditContact, onEditAbout, onEditSkills, onEditExperience, onEditProject, onEditEducation, onEditModeToggle])
 
   // Memoized chat section props
