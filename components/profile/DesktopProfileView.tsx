@@ -28,7 +28,7 @@ import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import ResizableSplitPane from "@/components/ResizableSplitPane"
 import { useRouter } from "next/navigation"
 import { SimpleChatPanel } from "./SimpleChatPanel"
-
+import ProfileVariantWrapper from "./variants/ProfileVariantWrapper"
 interface DesktopProfileViewProps {
   user: UserType
   chatHistory: Array<{ type: "user" | "ai"; content: string }>
@@ -90,6 +90,7 @@ interface DesktopProfileViewProps {
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
+  onOpenSettings?: () => void
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
@@ -724,6 +725,7 @@ export default function DesktopProfileView({
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection,
+  onOpenSettings,
   showMessageLimitModal,
   handleMessageLimitModalConfirm,
   handleMessageLimitModalCancel,
@@ -831,7 +833,137 @@ export default function DesktopProfileView({
         minLeftWidth={30}
         maxLeftWidth={70}
       >
-        <PortfolioSection {...portfolioSectionProps} />
+        <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
+          {/* Toggle Buttons - Inside Portfolio Section */}
+          <div className="absolute top-4 right-4 z-50">
+            {/* Chat Toggle - Only show when chat is visible */}
+            {isChatVisible && (
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <button
+                  onClick={handleChatToggle}
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                    isDark 
+                      ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                      : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                  } shadow-lg hover:shadow-xl hover:scale-105`}
+                  title="View Profile Full Screen"
+                >
+                  <svg className="w-4 h-4 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12V10m0 0l3 3m-3-3l-3 3" />
+                  </svg>
+                  <span className="text-sm font-medium">Public View</span>
+                  <svg className="w-4 h-4 ml-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Edit Mode Toggle and Settings - Left side, only show for current user */}
+          {isCurrentUser && onEditModeToggle && (
+            <div className="absolute top-4 left-4 z-50 flex gap-2">
+              <EditModeToggle
+                isEditMode={isEditMode}
+                onToggle={onEditModeToggle}
+                className="z-50"
+              />
+              {onOpenSettings && (
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                  <button
+                    onClick={onOpenSettings}
+                    className={`relative flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                      isDark 
+                        ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                        : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                    } shadow-lg hover:shadow-xl hover:scale-105`}
+                    title="Profile Settings"
+                  >
+                    <svg className="w-4 h-4 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Show Chat Button - Only show when in full screen mode */}
+          {!isChatVisible && (
+            <div className="absolute top-4 right-4 z-50">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <button
+                  onClick={handleChatToggle}
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                    isDark 
+                      ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                      : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                  } shadow-lg hover:shadow-xl hover:scale-105`}
+                  title="Show Chat"
+                >
+                  <svg className="w-4 h-4 mr-1 transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  <MessageCircle className="w-4 h-4 text-[#10a37f]" />
+                  <span className="text-sm font-medium">Show Chat</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <ProfileVariantWrapper
+            variant={(user.profile_variant as any) || "default"}
+            user={user}
+            isEditMode={isEditMode}
+            isCurrentUser={isCurrentUser}
+            onEditPhoto={onEditPhoto}
+            onEditAbout={onEditAbout}
+            onEditSkills={onEditSkills}
+            onEditExperience={onEditExperience}
+            onEditSingleExperience={onEditSingleExperience}
+            onDeleteSingleExperience={onDeleteSingleExperience}
+            onEditProject={onEditProject}
+            onEditSingleProject={onEditSingleProject}
+            onDeleteSingleProject={onDeleteSingleProject}
+            onDeleteAbout={onDeleteAbout}
+            onDeleteSkills={onDeleteSkills}
+            onDeleteExperience={onDeleteExperience}
+            onDeleteProjects={onDeleteProjects}
+            onEditEducation={onEditEducation}
+            onEditSingleEducation={onEditSingleEducation}
+            onDeleteSingleEducation={onDeleteSingleEducation}
+            onDeleteEducation={onDeleteEducation}
+            onEditContact={onEditContact}
+            onDeleteContact={onDeleteContact}
+            onEditLanguage={onEditLanguage}
+            onDeleteLanguage={onDeleteLanguage}
+            onAddLanguage={onAddLanguage}
+            onDeleteLanguages={onDeleteLanguages}
+            onEditAward={onEditAward}
+            onDeleteAward={onDeleteAward}
+            onAddAward={onAddAward}
+            onDeleteAwards={onDeleteAwards}
+            onEditPublication={onEditPublication}
+            onDeletePublication={onDeletePublication}
+            onAddPublication={onAddPublication}
+            onDeletePublications={onDeletePublications}
+            onEditVolunteerExperience={onEditVolunteerExperience}
+            onDeleteVolunteerExperience={onDeleteVolunteerExperience}
+            onAddVolunteerExperience={onAddVolunteerExperience}
+            onDeleteVolunteerExperiences={onDeleteVolunteerExperiences}
+            onEditInterests={onEditInterests}
+            onDeleteInterests={onDeleteInterests}
+            onAddInterests={onAddInterests}
+            onEditPreferences={onEditPreferences}
+            onSectionOrderChange={onSectionOrderChange}
+            onAddSection={onAddSection}
+            onOpenAIAnalysis={() => setIsAIAnalysisModalOpen(true)}
+          />
+        </div>
         <ChatSection {...chatSectionProps} />
       </ResizableSplitPane>
       

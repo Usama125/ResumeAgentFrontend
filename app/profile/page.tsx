@@ -32,6 +32,9 @@ import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
 import { useToast } from "@/hooks/use-toast"
 import PreferencesEditModal from "@/components/PreferencesEditModal"
+import ProfileSettingsModal from "@/components/ProfileSettingsModal"
+import { updateProfileVariant } from "@/services/user"
+import { ProfileVariant } from "@/types"
 import { useAIChat } from "@/hooks/useAIChat"
 
 
@@ -174,6 +177,7 @@ export default function CurrentUserProfilePage() {
   const [isInterestsEditModalOpen, setIsInterestsEditModalOpen] = useState(false)
   const [interestsEditMode, setInterestsEditMode] = useState<'add' | 'edit'>('add')
   const [isPreferencesEditModalOpen, setIsPreferencesEditModalOpen] = useState(false)
+  const [isProfileSettingsModalOpen, setIsProfileSettingsModalOpen] = useState(false)
 
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
   const [isMounted, setIsMounted] = useState(false)
@@ -758,6 +762,36 @@ export default function CurrentUserProfilePage() {
       toast({
         title: "Error",
         description: error.message || "Failed to delete interests section",
+        variant: "destructive"
+      })
+    }
+  }, [user, updateUser, toast])
+
+  // Handle profile variant change
+  const handleProfileVariantChange = useCallback(async (variant: ProfileVariant) => {
+    if (!user) return
+
+    try {
+      const updatedUser = await updateProfileVariant(variant)
+      
+      // Update local state
+      setUser(updatedUser)
+      
+      // Update global auth context
+      updateUser(updatedUser)
+      
+      toast({
+        title: "Success",
+        description: `Profile variant changed to ${variant}`,
+      })
+      
+      console.log('✅ Profile variant updated successfully')
+    } catch (error: any) {
+      console.error('❌ Error updating profile variant:', error)
+      
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile variant",
         variant: "destructive"
       })
     }
@@ -1371,6 +1405,7 @@ export default function CurrentUserProfilePage() {
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
+          onOpenSettings={() => setIsProfileSettingsModalOpen(true)}
         />
         </>
       )}
@@ -1611,6 +1646,16 @@ export default function CurrentUserProfilePage() {
         cancelText="Cancel"
         type="danger"
       />
+
+      {/* Profile Settings Modal */}
+      {user && (
+        <ProfileSettingsModal
+          isOpen={isProfileSettingsModalOpen}
+          onClose={() => setIsProfileSettingsModalOpen(false)}
+          user={user}
+          onVariantChange={handleProfileVariantChange}
+        />
+      )}
 
       {/* Volunteer Experience Delete Confirmation Modal */}
       <ConfirmationModal

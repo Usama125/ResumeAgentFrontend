@@ -126,6 +126,7 @@ export interface User {
   interests: string[];
   profession?: string;
   section_order?: string[];
+  profile_variant?: string;
 }
 
 // Public User (what other users see)
@@ -159,7 +160,39 @@ export interface PublicUser {
   section_order?: string[];
   profile_score?: number;
   rating?: number;
+  profile_variant?: string;
 }
+
+// =============================================================================
+// PROFILE VARIANT TYPES
+// =============================================================================
+
+export type ProfileVariant = "default" | "compact" | "advanced";
+
+export interface ProfileVariantConfig {
+  id: ProfileVariant;
+  name: string;
+  description: string;
+  preview?: string;
+}
+
+export const PROFILE_VARIANTS: ProfileVariantConfig[] = [
+  {
+    id: "default",
+    name: "Default",
+    description: "Standard portfolio layout with all sections displayed clearly"
+  },
+  {
+    id: "compact",
+    name: "Compact", 
+    description: "Space-efficient layout with condensed sections for quick overview"
+  },
+  {
+    id: "advanced",
+    name: "Advanced",
+    description: "Rich layout with enhanced visual elements and detailed presentation"
+  }
+];
 
 // =============================================================================
 // AUTHENTICATION TYPES

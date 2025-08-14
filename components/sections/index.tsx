@@ -38,6 +38,7 @@ export interface SectionDefinition {
   hasEditModal?: boolean
   defaultOrder: number
   isPrivate?: boolean
+  hasData?: (user: UserType) => boolean
 }
 
 export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
@@ -48,7 +49,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'summary',
     component: 'AboutSection',
     hasEditModal: true,
-    defaultOrder: 1
+    defaultOrder: 1,
+    hasData: (user: UserType) => !!(user.summary && user.summary.trim())
   },
   experience: {
     id: 'experience',
@@ -57,7 +59,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'experience_details',
     component: 'ExperienceSection',
     hasEditModal: false,
-    defaultOrder: 2
+    defaultOrder: 2,
+    hasData: (user: UserType) => !!(user.experience_details && user.experience_details.length > 0)
   },
   skills: {
     id: 'skills',
@@ -66,7 +69,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'skills',
     component: 'SkillsSection',
     hasEditModal: true,
-    defaultOrder: 3
+    defaultOrder: 3,
+    hasData: (user: UserType) => !!(user.skills && user.skills.length > 0)
   },
   projects: {
     id: 'projects',
@@ -75,7 +79,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'projects',
     component: 'ProjectsSection',
     hasEditModal: false,
-    defaultOrder: 4
+    defaultOrder: 4,
+    hasData: (user: UserType) => !!(user.projects && user.projects.length > 0)
   },
   education: {
     id: 'education',
@@ -84,7 +89,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'education',
     component: 'EducationSection',
     hasEditModal: false,
-    defaultOrder: 5
+    defaultOrder: 5,
+    hasData: (user: UserType) => !!(user.education && user.education.length > 0)
   },
   contact: {
     id: 'contact',
@@ -93,7 +99,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'contact_info',
     component: 'ContactSection',
     hasEditModal: false,
-    defaultOrder: 6
+    defaultOrder: 6,
+    hasData: (user: UserType) => !!(user.contact_info && Object.values(user.contact_info).some(value => value))
   },
   languages: {
     id: 'languages',
@@ -102,7 +109,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'languages',
     component: 'LanguagesSection',
     hasEditModal: false,
-    defaultOrder: 7
+    defaultOrder: 7,
+    hasData: (user: UserType) => !!(user.languages && user.languages.length > 0)
   },
   awards: {
     id: 'awards',
@@ -111,7 +119,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'awards',
     component: 'AwardsSection',
     hasEditModal: false,
-    defaultOrder: 8
+    defaultOrder: 8,
+    hasData: (user: UserType) => !!(user.awards && user.awards.length > 0)
   },
   publications: {
     id: 'publications',
@@ -120,7 +129,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'publications',
     component: 'PublicationsSection',
     hasEditModal: false,
-    defaultOrder: 9
+    defaultOrder: 9,
+    hasData: (user: UserType) => !!(user.publications && user.publications.length > 0)
   },
   volunteer: {
     id: 'volunteer',
@@ -129,7 +139,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'volunteer_experience',
     component: 'VolunteerSection',
     hasEditModal: false,
-    defaultOrder: 10
+    defaultOrder: 10,
+    hasData: (user: UserType) => !!(user.volunteer_experience && user.volunteer_experience.length > 0)
   },
   interests: {
     id: 'interests',
@@ -138,7 +149,8 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     field: 'interests',
     component: 'InterestsSection',
     hasEditModal: false,
-    defaultOrder: 11
+    defaultOrder: 11,
+    hasData: (user: UserType) => !!(user.interests && user.interests.length > 0)
   },
   preferences: {
     id: 'preferences',
@@ -148,7 +160,16 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
     component: 'PreferencesSection',
     hasEditModal: false,
     defaultOrder: 12,
-    isPrivate: true
+    isPrivate: true,
+    hasData: (user: UserType) => !!(user.work_preferences && (
+      user.work_preferences.preferred_work_mode?.length > 0 ||
+      user.work_preferences.preferred_employment_type?.length > 0 ||
+      user.work_preferences.preferred_location ||
+      user.work_preferences.notice_period ||
+      user.work_preferences.availability ||
+      user.current_salary ||
+      user.expected_salary
+    ))
   }
 }
 

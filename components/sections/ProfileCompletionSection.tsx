@@ -90,9 +90,96 @@ export default function ProfileCompletionSection({
   const adjustedPercentage = Math.round((adjustedCompletedSections / adjustedTotalSections) * 100)
 
 
-  // Don't show if no empty sections or not in edit mode
-  if (allEmptySections.length === 0 || !isEditMode) {
+  // Don't show if not in edit mode
+  if (!isEditMode) {
     return null
+  }
+
+  // If no empty sections, show a completion message instead of hiding
+  if (allEmptySections.length === 0) {
+    return (
+      <div className={`relative overflow-hidden rounded-2xl border ${
+        isDark 
+          ? 'bg-[#2a2a2a]/80 border-[#10a37f]/60' 
+          : 'bg-white/80 border-[#10a37f]/40'
+      } shadow-lg backdrop-blur-sm`}>
+        
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/10"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#10a37f]/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0d8f6f]/5 rounded-full blur-lg"></div>
+        
+        {/* Content */}
+        <div className="relative z-10 p-6">
+          <div className="flex items-start justify-between gap-6">
+            {/* Left side - Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="text-[#10a37f] flex-shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  Profile Complete!
+                </h3>
+              </div>
+              
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Congratulations! Your profile is complete and ready to impress.
+              </p>
+            </div>
+
+            {/* Right side - Circular Progress */}
+            <div className="flex-shrink-0">
+              <div className="relative w-28 h-28">
+                {/* Background circle */}
+                <svg 
+                  className="w-28 h-28 transform -rotate-90" 
+                  viewBox="0 0 100 100"
+                  style={{ width: '112px', height: '112px' }}
+                >
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    stroke={isDark ? '#374151' : '#e5e7eb'}
+                    strokeWidth="8"
+                    fill="transparent"
+                    strokeLinecap="round"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    stroke="#10a37f"
+                    strokeWidth="8"
+                    fill="transparent"
+                    strokeDasharray={strokeDasharray}
+                    strokeDashoffset="0"
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+                
+                {/* Percentage text */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      100%
+                    </div>
+                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Complete
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const getAddHandler = (sectionId: string) => {

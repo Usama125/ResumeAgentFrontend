@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Award, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/types"
@@ -37,6 +38,19 @@ export default function ProjectsSection({
   onAddProject
 }: ProjectsSectionProps) {
   const { isDark } = useTheme()
+  const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set())
+
+  const toggleProjectExpansion = (index: number) => {
+    setExpandedProjects(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(index)) {
+        newSet.delete(index)
+      } else {
+        newSet.add(index)
+      }
+      return newSet
+    })
+  }
   
 
 
@@ -150,37 +164,46 @@ export default function ProjectsSection({
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {project.technologies.slice(0, 2).map((tech, techIndex) => (
-                    <span 
-                      key={techIndex} 
-                      className="inline-flex items-center px-2 sm:px-3 py-1 bg-[#10a37f]/20 text-[#10a37f] text-xs sm:text-sm rounded-full border border-[#10a37f]/30 max-w-[120px] sm:max-w-[150px] truncate whitespace-nowrap"
-                      title={tech}
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                  {project.technologies.length > 2 && (
-                    <div className="relative inline-block">
-                      <span className="inline-flex items-center px-2 sm:px-3 py-1 bg-[#10a37f]/20 text-[#10a37f] text-xs sm:text-sm rounded-full border border-[#10a37f]/30 cursor-pointer hover:bg-[#10a37f]/30 transition-colors group whitespace-nowrap">
-                        +{project.technologies.length - 2} More
-                        <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[99999] transform-gpu top-full left-0 mt-2">
-                          <div className={`${isDark ? 'bg-[#2a2a2a] border-[#10a37f]/30' : 'bg-white border-gray-200'} border rounded-lg p-3 shadow-2xl min-w-[280px] sm:min-w-[400px] max-w-[90vw] sm:max-w-[500px]`}>
-                            <div className="flex flex-wrap gap-2 justify-center">
-                              {project.technologies.slice(2).map((tech, techIndex) => (
-                                <span 
-                                  key={techIndex + 2} 
-                                  className="inline-flex items-center px-2 sm:px-3 py-1 bg-[#10a37f]/20 text-[#10a37f] text-xs sm:text-sm rounded-full border border-[#10a37f]/30 whitespace-nowrap"
-                                  title={tech}
-                                >
-                                  {tech.length > 12 ? `${tech.substring(0, 12)}...` : tech}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </span>
-                    </div>
-                  )}
+                  {(() => {
+                    const isExpanded = expandedProjects.has(index)
+                    const technologiesToShow = isExpanded ? project.technologies : project.technologies.slice(0, 5)
+                    const hasMoreTechnologies = project.technologies.length > 5
+                    
+                    return (
+                      <>
+                        {technologiesToShow.map((tech, techIndex) => (
+                          <span 
+                            key={techIndex} 
+                            className="inline-flex items-center px-2 sm:px-3 py-1 bg-[#10a37f]/20 text-[#10a37f] text-xs sm:text-sm rounded-full border border-[#10a37f]/30 max-w-[120px] sm:max-w-[150px] truncate whitespace-nowrap"
+                            title={tech}
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                        {hasMoreTechnologies && !isExpanded && (
+                          <>
+                            <span className="inline-flex items-center px-2 sm:px-3 py-1 bg-gray-500/20 text-gray-500 text-xs sm:text-sm rounded-full border border-gray-500/30">
+                              +{project.technologies.length - 5}
+                            </span>
+                            <button
+                              onClick={() => toggleProjectExpansion(index)}
+                              className="inline-flex items-center px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-500 text-xs sm:text-sm rounded-full border border-blue-500/30 hover:bg-blue-500/30 transition-colors cursor-pointer"
+                            >
+                              See All
+                            </button>
+                          </>
+                        )}
+                        {hasMoreTechnologies && isExpanded && (
+                          <button
+                            onClick={() => toggleProjectExpansion(index)}
+                            className="inline-flex items-center px-2 sm:px-3 py-1 bg-orange-500/20 text-orange-500 text-xs sm:text-sm rounded-full border border-orange-500/30 hover:bg-orange-500/30 transition-colors cursor-pointer"
+                          >
+                            See Less
+                          </button>
+                        )}
+                      </>
+                    )
+                  })()}
                 </div>
               </div>
             </div>

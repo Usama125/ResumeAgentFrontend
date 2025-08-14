@@ -44,6 +44,7 @@ import { getImageUrl } from '@/utils/imageUtils';
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils';
 import ProfileSections from '@/components/ProfileSections';
 import ProfessionalAnalysisModal from '@/components/ProfessionalAnalysisModal';
+import ProfileVariantWrapper from './variants/ProfileVariantWrapper';
 
 // Memoized Portfolio Section Component
 const PortfolioSection = memo<{
@@ -486,7 +487,66 @@ export default function DesktopPublicProfileView({
         minLeftWidth={30}
         maxLeftWidth={70}
       >
-        <PortfolioSection {...portfolioSectionProps} />
+        <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
+          {/* Toggle Buttons */}
+          <div className="absolute top-4 right-4 z-50">
+            {/* Chat Toggle - Only show when chat is visible */}
+            {isChatVisible && (
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <button
+                  onClick={handleChatToggle}
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                    isDark 
+                      ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                      : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                  } shadow-lg hover:shadow-xl hover:scale-105`}
+                  title="View Profile Full Screen"
+                >
+                  <svg className="w-4 h-4 text-[#10a37f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12V10m0 0l3 3m-3-3l-3 3" />
+                  </svg>
+                  <span className="text-sm font-medium">Public View</span>
+                  <svg className="w-4 h-4 ml-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Show Chat Button - Only show when in full screen mode */}
+          {!isChatVisible && (
+            <div className="absolute top-4 right-4 z-50">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <button
+                  onClick={handleChatToggle}
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                    isDark 
+                      ? 'bg-[#2f2f2f]/90 border-[#565869]/60 text-white hover:bg-[#40414f]/90 hover:border-[#10a37f]/40' 
+                      : 'bg-white/90 border-gray-300 text-gray-900 hover:bg-gray-50 hover:border-[#10a37f]/40'
+                  } shadow-lg hover:shadow-xl hover:scale-105`}
+                  title="Show Chat"
+                >
+                  <svg className="w-4 h-4 mr-1 transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  <MessageCircle className="w-4 h-4 text-[#10a37f]" />
+                  <span className="text-sm font-medium">Show Chat</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <ProfileVariantWrapper
+            variant={(user.profile_variant as any) || "default"}
+            user={user as any} // Cast PublicUser to User for compatibility
+            isEditMode={false}
+            isCurrentUser={false}
+            onOpenAIAnalysis={() => setIsProfessionalAnalysisModalOpen(true)}
+          />
+        </div>
         <ChatSection {...chatSectionProps} />
       </ResizableSplitPane>
       

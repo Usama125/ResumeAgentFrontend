@@ -1,5 +1,5 @@
 import { authAPI, apiClient, publicAPI } from '@/lib/secure-api-client';
-import { User, PublicUser, ProfileUpdateData } from '@/types';
+import { User, PublicUser, ProfileUpdateData, ProfileVariant } from '@/types';
 
 // User management service
 export class UserService {
@@ -120,6 +120,11 @@ export class UserService {
   static async deleteProfileSection(sectionName: string, token?: string): Promise<User> {
     return authAPI.delete<User>(`/users/me/sections/${sectionName}`, token);
   }
+
+  // Update profile variant
+  static async updateProfileVariant(variant: ProfileVariant, token?: string): Promise<User> {
+    return authAPI.put<User>('/users/me/profile-variant', { profile_variant: variant }, token);
+  }
 }
 
 // Export individual functions for easier imports
@@ -135,5 +140,6 @@ export const uploadProfilePicture = UserService.uploadProfilePicture;
 export const deleteProfilePicture = UserService.deleteProfilePicture;
 export const toggleJobSeeking = UserService.toggleJobSeeking;
 export const getFeaturedUsers = UserService.getFeaturedUsers;
+export const updateProfileVariant = UserService.updateProfileVariant;
 
 export default UserService;
