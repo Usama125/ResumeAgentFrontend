@@ -38,10 +38,23 @@ export default function ProjectsSection({
   onAddProject
 }: ProjectsSectionProps) {
   const { isDark } = useTheme()
-  const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set())
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<number>>(new Set())
+  const [expandedTechnologies, setExpandedTechnologies] = useState<Set<number>>(new Set())
 
-  const toggleProjectExpansion = (index: number) => {
-    setExpandedProjects(prev => {
+  const toggleDescriptionExpansion = (index: number) => {
+    setExpandedDescriptions(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(index)) {
+        newSet.delete(index)
+      } else {
+        newSet.add(index)
+      }
+      return newSet
+    })
+  }
+
+  const toggleTechnologiesExpansion = (index: number) => {
+    setExpandedTechnologies(prev => {
       const newSet = new Set(prev)
       if (newSet.has(index)) {
         newSet.delete(index)
@@ -145,28 +158,22 @@ export default function ProjectsSection({
                   </div>
                 </div>
                 <div className="relative">
-                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden ${project.description && project.description.length > 100 ? 'line-clamp-2' : ''}`}>
+                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden ${project.description && project.description.length > 100 && !expandedDescriptions.has(index) ? 'line-clamp-2' : ''}`}>
                     {project.description}
                   </p>
                   {project.description && project.description.length > 100 && (
-                    <div className="relative inline-block mt-2">
-                      <span className="text-[#10a37f] hover:text-[#0d8f6f] text-sm font-medium transition-colors cursor-pointer group">
-                        See More
-                        <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[99999] transform-gpu top-full left-0 mt-2">
-                          <div className={`${isDark ? 'bg-[#2a2a2a] border-[#10a37f]/30' : 'bg-white border-gray-200'} border rounded-lg p-4 shadow-2xl max-w-[90vw] sm:max-w-md w-auto sm:w-96`}>
-                            <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed text-sm`}>
-                              {project.description}
-                            </p>
-                          </div>
-                        </div>
-                      </span>
-                    </div>
+                    <button
+                      onClick={() => toggleDescriptionExpansion(index)}
+                      className="text-[#10a37f] hover:text-[#0d8f6f] text-sm font-medium transition-colors mt-2"
+                    >
+                      {expandedDescriptions.has(index) ? 'See Less' : 'See More'}
+                    </button>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {(() => {
-                    const isExpanded = expandedProjects.has(index)
-                    const technologiesToShow = isExpanded ? project.technologies : project.technologies.slice(0, 5)
+                    const isTechnologiesExpanded = expandedTechnologies.has(index)
+                    const technologiesToShow = isTechnologiesExpanded ? project.technologies : project.technologies.slice(0, 5)
                     const hasMoreTechnologies = project.technologies.length > 5
                     
                     return (
@@ -180,22 +187,22 @@ export default function ProjectsSection({
                             {tech}
                           </span>
                         ))}
-                        {hasMoreTechnologies && !isExpanded && (
+                        {hasMoreTechnologies && !isTechnologiesExpanded && (
                           <>
                             <span className="inline-flex items-center px-2 sm:px-3 py-1 bg-gray-500/20 text-gray-500 text-xs sm:text-sm rounded-full border border-gray-500/30">
                               +{project.technologies.length - 5}
                             </span>
                             <button
-                              onClick={() => toggleProjectExpansion(index)}
+                              onClick={() => toggleTechnologiesExpansion(index)}
                               className="inline-flex items-center px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-500 text-xs sm:text-sm rounded-full border border-blue-500/30 hover:bg-blue-500/30 transition-colors cursor-pointer"
                             >
                               See All
                             </button>
                           </>
                         )}
-                        {hasMoreTechnologies && isExpanded && (
+                        {hasMoreTechnologies && isTechnologiesExpanded && (
                           <button
-                            onClick={() => toggleProjectExpansion(index)}
+                            onClick={() => toggleTechnologiesExpansion(index)}
                             className="inline-flex items-center px-2 sm:px-3 py-1 bg-orange-500/20 text-orange-500 text-xs sm:text-sm rounded-full border border-orange-500/30 hover:bg-orange-500/30 transition-colors cursor-pointer"
                           >
                             See Less

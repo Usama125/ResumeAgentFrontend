@@ -82,17 +82,15 @@ export default function SkillsSection({
                     <span className={`${getThemeClasses(isDark).text.primary} font-medium text-sm group-hover:text-[#10a37f] transition-colors truncate`}>
                       {skill.name}
                     </span>
-                    <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2 ${
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ml-2 ${
                       skill.level === "Expert" 
-                        ? "bg-[#10a37f] text-white" 
+                        ? "bg-[#10a37f]" 
                         : skill.level === "Advanced"
-                        ? "bg-blue-500 text-white"
+                        ? "bg-blue-500"
                         : skill.level === "Intermediate"
-                        ? "bg-gray-500 text-white"
-                        : "bg-gray-400 text-white"
-                    }`}>
-                      {skill.level}
-                    </span>
+                        ? "bg-gray-500"
+                        : "bg-gray-400"
+                    }`}></div>
                   </div>
                   <div className={`w-full ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-200'} rounded-full h-1.5`}>
                     <div 
@@ -114,22 +112,30 @@ export default function SkillsSection({
           
           {/* Skills Legend */}
           <div className={`mt-4 pt-4 border-t ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-            <div className="flex items-center justify-center gap-4 text-xs">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-3 text-xs">
+              <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-[#10a37f] rounded-full"></div>
-                <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Expert</span>
+                <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-xs`}>
+                  {user.skills.filter(s => s.level === 'Expert').length}
+                </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Advanced</span>
+                <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-xs`}>
+                  {user.skills.filter(s => s.level === 'Advanced').length}
+                </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Intermediate</span>
+                <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-xs`}>
+                  {user.skills.filter(s => s.level === 'Intermediate').length}
+                </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Beginner</span>
+                <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-xs`}>
+                  {user.skills.filter(s => s.level === 'Beginner').length}
+                </span>
               </div>
             </div>
           </div>
