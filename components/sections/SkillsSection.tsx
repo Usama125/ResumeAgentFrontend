@@ -79,7 +79,7 @@ export default function SkillsSection({
               <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-lg p-3 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300 group`}>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className={`${getThemeClasses(isDark).text.primary} font-medium text-sm group-hover:text-[#10a37f] transition-colors truncate`}>
+                    <span className={`${getThemeClasses(isDark).text.primary} font-medium text-xs sm:text-sm group-hover:text-[#10a37f] transition-colors truncate`}>
                       {skill.name}
                     </span>
                     <div className={`w-2 h-2 rounded-full flex-shrink-0 ml-2 ${

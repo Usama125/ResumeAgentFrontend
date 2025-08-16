@@ -71,7 +71,7 @@ const BaseSection = memo(function BaseSection({
           {icon}
         </div>
         
-        <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} flex-1 min-w-0 truncate`}>
+        <h2 className={`text-lg sm:text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} flex-1 min-w-0 truncate`}>
           {title}
         </h2>
       </div>

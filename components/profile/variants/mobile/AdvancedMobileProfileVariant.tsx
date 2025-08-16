@@ -259,7 +259,7 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
                   <Briefcase className="w-4 h-4 text-[#10a37f]" />
                 </div>
                 <div className={`text-xs font-medium ${theme.text.secondary} mb-1`}>Experience</div>
-                <div className={`text-sm font-semibold ${theme.text.primary}`}>
+                <div className={`text-base sm:text-sm font-semibold ${theme.text.primary}`}>
                   {(() => {
                     if (user.experience && user.experience.trim() !== '') {
                       return user.experience;
@@ -279,7 +279,7 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
                   <Zap className="w-4 h-4 text-[#10a37f]" />
                 </div>
                 <div className={`text-xs font-medium ${theme.text.secondary} mb-1`}>Skills</div>
-                <div className={`text-sm font-semibold ${theme.text.primary}`}>{(user.skills || []).length}</div>
+                <div className={`text-base sm:text-sm font-semibold ${theme.text.primary}`}>{(user.skills || []).length}</div>
               </div>
 
               {/* Projects */}
@@ -292,7 +292,7 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
                   <Rocket className="w-4 h-4 text-[#10a37f]" />
                 </div>
                 <div className={`text-xs font-medium ${theme.text.secondary} mb-1`}>Projects</div>
-                <div className={`text-sm font-semibold ${theme.text.primary}`}>{(user.projects || []).length}</div>
+                <div className={`text-base sm:text-sm font-semibold ${theme.text.primary}`}>{(user.projects || []).length}</div>
               </div>
             </div>
 

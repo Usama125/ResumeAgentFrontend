@@ -97,7 +97,7 @@ export default function ProjectsSection({
             <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-xl p-4 sm:p-5 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300`}>
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
-                  <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary} transition-colors`}>
+                  <h3 className={`text-base sm:text-lg font-semibold ${getThemeClasses(isDark).text.primary} transition-colors`}>
                     {project.name}
                   </h3>
                   <div className="flex gap-2">

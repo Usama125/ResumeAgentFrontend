@@ -67,9 +67,9 @@ export default function AwardsSection({
             <div key={index} className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-gray-50/80'} rounded-xl p-5 border ${isDark ? 'border-[#10a37f]/10 hover:border-[#10a37f]/30' : 'border-gray-200 hover:border-[#10a37f]/50'} transition-all duration-300 relative`}>
               <div className="space-y-3">
                 <div>
-                  <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
-                    {award.title}
-                  </h3>
+                                      <h3 className={`text-base sm:text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
+                      {award.title}
+                    </h3>
                   {award.issuer && (
                     <p className="text-[#10a37f] font-medium">{award.issuer}</p>
                   )}

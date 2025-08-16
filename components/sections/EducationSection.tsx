@@ -74,12 +74,12 @@ const EducationSection = memo(function EducationSection({
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
+                    <h3 className={`text-base sm:text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>
                       {edu.degree}
                     </h3>
-                    <p className="text-[#10a37f] font-medium">{edu.institution}</p>
+                    <p className="text-[#10a37f] font-medium text-sm sm:text-base">{edu.institution}</p>
                     {edu.field_of_study && (
-                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <p className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                         {edu.field_of_study}
                       </p>
                     )}

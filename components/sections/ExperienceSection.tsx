@@ -82,9 +82,9 @@ export default function ExperienceSection({
               <div className="space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className={`text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>{exp.position}</h3>
-                    <p className="text-[#10a37f] font-medium">{exp.company}</p>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{exp.duration}</p>
+                    <h3 className={`text-base sm:text-lg font-semibold ${getThemeClasses(isDark).text.primary}`}>{exp.position}</h3>
+                    <p className="text-[#10a37f] font-medium text-sm sm:text-base">{exp.company}</p>
+                    <p className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{exp.duration}</p>
                     <div className="relative">
                       <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed break-all overflow-hidden ${exp.description && exp.description.length > 100 && !expandedDescriptions.has(index) ? 'line-clamp-2' : ''}`}>
                         {exp.description}

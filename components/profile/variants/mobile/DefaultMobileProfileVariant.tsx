@@ -432,7 +432,7 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
           {/* Stats Row - Mobile Grid */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="text-center">
-              <div className={`text-xl font-bold ${theme.text.primary}`}>
+              <div className={`text-lg sm:text-xl font-bold ${theme.text.primary}`}>
                 {(() => {
                   if (user.experience && user.experience.trim() !== '') {
                     return user.experience;
@@ -444,11 +444,11 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
               <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Experience</div>
             </div>
             <div className="text-center">
-              <div className={`text-xl font-bold ${theme.text.primary}`}>{(user.skills || []).length}</div>
+              <div className={`text-lg sm:text-xl font-bold ${theme.text.primary}`}>{(user.skills || []).length}</div>
               <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Skills</div>
             </div>
             <div className="text-center">
-              <div className={`text-xl font-bold ${theme.text.primary}`}>{(user.projects || []).length}</div>
+              <div className={`text-lg sm:text-xl font-bold ${theme.text.primary}`}>{(user.projects || []).length}</div>
               <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Projects</div>
             </div>
           </div>
