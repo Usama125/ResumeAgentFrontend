@@ -146,18 +146,50 @@ export default function AdvancedSkillsSection({
       {/* Premium Border Glow */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#10a37f]/10 via-[#0d8f6f]/5 to-[#10a37f]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
 
-      <div className="relative z-10 p-8">
+      <div className="relative z-10 p-4 sm:p-8">
+        {/* Edit/Delete buttons - Floating on mobile, inline on desktop */}
+        {isEditMode && (
+          <div className="absolute top-2 right-2 sm:relative sm:top-0 sm:right-0 flex items-center gap-1 sm:gap-2 flex-shrink-0 mb-2 sm:mb-0">
+            {onEdit && (
+              <button
+                onClick={onEdit}
+                className={`group/btn p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-[#1a1a1a]/80 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
+                    : 'bg-white/80 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
+                } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
+                title="Edit Skills"
+              >
+                <Edit className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f] group-hover/btn:animate-pulse" />
+              </button>
+            )}
+            {hasData && onDelete && (
+              <button
+                onClick={onDelete}
+                className={`group/btn p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-[#1a1a1a]/80 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40' 
+                    : 'bg-white/80 hover:bg-red-500/10 border border-red-300/20 hover:border-red-400/30'
+                } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
+                title="Delete All Skills"
+              >
+                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 group-hover/btn:animate-pulse" />
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Enhanced Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl opacity-20 animate-pulse"></div>
-              <div className="relative p-3 rounded-xl bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
-                <Code className="w-6 h-6 text-[#10a37f]" />
+              <div className="relative p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
+                <Code className="w-4 h-4 sm:w-6 sm:h-6 text-[#10a37f]" />
               </div>
             </div>
             <div>
-              <h3 className={`text-2xl font-bold bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent`}>
+              <h3 className={`text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent`}>
                 Skills & Expertise
               </h3>
               <div className="flex items-center gap-2 mt-1">
@@ -172,42 +204,11 @@ export default function AdvancedSkillsSection({
               </div>
             </div>
           </div>
-          
-          {isEditMode && (
-            <div className="flex items-center gap-2">
-              {onEdit && (
-                <button
-                  onClick={onEdit}
-                  className={`group/btn p-3 rounded-xl transition-all duration-300 ${
-                    isDark 
-                      ? 'bg-[#1a1a1a]/60 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
-                      : 'bg-white/60 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
-                  } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
-                  title="Edit Skills"
-                >
-                  <Edit className="w-4 h-4 text-[#10a37f] group-hover/btn:animate-pulse" />
-                </button>
-              )}
-              {hasData && onDelete && (
-                <button
-                  onClick={onDelete}
-                  className={`group/btn p-3 rounded-xl transition-all duration-300 ${
-                    isDark 
-                      ? 'bg-[#1a1a1a]/60 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40' 
-                      : 'bg-white/60 hover:bg-red-500/10 border border-red-300/20 hover:border-red-400/30'
-                  } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
-                  title="Delete All Skills"
-                >
-                  <Trash2 className="w-4 h-4 text-red-400 group-hover/btn:animate-pulse" />
-                </button>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Enhanced Content */}
         {hasData ? (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Skills by Level Categories */}
             {Object.entries(skillsByLevel).map(([level, skills]) => {
               const config = getLevelConfig(level)
@@ -228,18 +229,18 @@ export default function AdvancedSkillsSection({
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#10a37f]/5 to-transparent rounded-full blur-xl"></div>
                   </div>
                   
-                  <div className="relative z-10 p-6">
+                  <div className="relative z-10 p-4 sm:p-6">
                     {/* Category Header */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-br ${config.bgGradient} backdrop-blur-sm`}>
-                          <IconComponent className={`w-5 h-5 ${config.textColor}`} />
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className={`p-1.5 sm:p-2 rounded-lg bg-gradient-to-br ${config.bgGradient} backdrop-blur-sm`}>
+                          <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${config.textColor}`} />
                         </div>
                         <div>
-                          <h4 className={`text-lg font-bold ${theme.text.primary}`}>
+                          <h4 className={`text-base sm:text-lg font-bold ${theme.text.primary}`}>
                             {level} Level
                           </h4>
-                          <p className={`text-sm ${theme.text.secondary}`}>
+                          <p className={`text-xs sm:text-sm ${theme.text.secondary}`}>
                             {skills.length} skill{skills.length !== 1 ? 's' : ''}
                           </p>
                         </div>
@@ -247,31 +248,31 @@ export default function AdvancedSkillsSection({
                       
                       <button
                         onClick={() => toggleCategory(level)}
-                        className={`group/toggle flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+                        className={`group/toggle flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-all duration-300 ${
                           isDark 
                             ? 'bg-[#1a1a1a]/50 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
                             : 'bg-white/50 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
                         } backdrop-blur-sm hover:scale-105 hover:shadow-md`}
                       >
-                        <span className={`font-medium text-sm ${config.textColor}`}>
+                        <span className={`font-medium text-xs sm:text-sm ${config.textColor}`}>
                           {isExpanded ? 'Collapse' : 'Expand'}
                         </span>
                         {isExpanded ? (
-                          <ChevronUp className={`w-4 h-4 ${config.textColor} group-hover/toggle:animate-bounce`} />
+                          <ChevronUp className={`w-3 h-3 sm:w-4 sm:h-4 ${config.textColor} group-hover/toggle:animate-bounce`} />
                         ) : (
-                          <ChevronDown className={`w-4 h-4 ${config.textColor} group-hover/toggle:animate-bounce`} />
+                          <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 ${config.textColor} group-hover/toggle:animate-bounce`} />
                         )}
                       </button>
                     </div>
                     
                     {/* Skills Grid */}
-                    <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-500 ${
+                    <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 transition-all duration-500 ${
                       isExpanded ? 'max-h-none opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
                     }`}>
                       {skills.map((skill, index) => (
                         <div 
                           key={index} 
-                          className={`group/skill relative p-4 rounded-xl border transition-all duration-300 ${
+                          className={`group/skill relative p-3 sm:p-4 rounded-xl border transition-all duration-300 ${
                             isDark 
                               ? 'bg-[#1a1a1a]/40 border-[#10a37f]/20 hover:border-[#10a37f]/40' 
                               : 'bg-white/50 border-[#10a37f]/15 hover:border-[#10a37f]/30'
@@ -282,14 +283,14 @@ export default function AdvancedSkillsSection({
                             <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#10a37f]/5 to-transparent rounded-full blur-lg"></div>
                           </div>
                           
-                          <div className="relative z-10 space-y-3">
+                          <div className="relative z-10 space-y-2 sm:space-y-3">
                             {/* Skill Header */}
                             <div className="flex items-center justify-between">
-                              <span className={`${theme.text.primary} font-semibold text-sm group-hover/skill:text-[#10a37f] transition-colors truncate`}>
+                              <span className={`${theme.text.primary} font-semibold text-xs sm:text-sm group-hover/skill:text-[#10a37f] transition-colors truncate`}>
                                 {skill.name}
                               </span>
-                              <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${config.bgGradient} border ${config.borderColor} backdrop-blur-sm`}>
-                                <CheckCircle className={`w-3 h-3 ${config.textColor}`} />
+                              <div className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full ${config.bgGradient} border ${config.borderColor} backdrop-blur-sm`}>
+                                <CheckCircle className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${config.textColor}`} />
                                 <span className={`text-xs font-medium ${config.textColor}`}>
                                   {skill.level}
                                 </span>
@@ -297,22 +298,22 @@ export default function AdvancedSkillsSection({
                             </div>
                             
                             {/* Progress Bar */}
-                            <div className="space-y-2">
+                            <div className="space-y-1.5 sm:space-y-2">
                               <div className="flex items-center justify-between text-xs">
                                 <span className={theme.text.tertiary}>Proficiency</span>
                                 <span className={config.textColor}>Expertise Level</span>
                               </div>
-                              <div className={`w-full ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-200'} rounded-full h-2`}>
+                              <div className={`w-full ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-200'} rounded-full h-1.5 sm:h-2`}>
                                 <div 
-                                  className={`h-2 rounded-full transition-all duration-700 ${config.progressColor} ${config.progressWidth} shadow-lg`}
+                                  className={`h-1.5 sm:h-2 rounded-full transition-all duration-700 ${config.progressColor} ${config.progressWidth} shadow-lg`}
                                 ></div>
                               </div>
                             </div>
                             
                             {/* Years of Experience */}
                             {skill.years && skill.years > 0 && (
-                              <div className="flex items-center gap-2 text-xs">
-                                <TrendingUp className={`w-3 h-3 ${config.textColor}`} />
+                              <div className="flex items-center gap-1.5 sm:gap-2 text-xs">
+                                <TrendingUp className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${config.textColor}`} />
                                 <span className={theme.text.secondary}>
                                   {skill.years} year{skill.years !== 1 ? 's' : ''} of experience
                                 </span>
@@ -328,32 +329,32 @@ export default function AdvancedSkillsSection({
             })}
             
             {/* Skills Summary */}
-            <div className={`flex items-center justify-between p-4 rounded-xl ${
+            <div className={`flex items-center justify-between p-3 sm:p-4 rounded-xl ${
               isDark 
                 ? 'bg-gradient-to-br from-[#1a1a1a]/40 to-[#2a2a2a]/40 border border-[#10a37f]/20' 
                 : 'bg-gradient-to-br from-white/50 to-gray-50/50 border border-[#10a37f]/15'
             } backdrop-blur-sm`}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
-                  <Zap className="w-4 h-4 text-[#10a37f]" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
+                  <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f]" />
                 </div>
                 <div>
-                  <p className={`font-semibold ${theme.text.primary}`}>
+                  <p className={`font-semibold text-sm sm:text-base ${theme.text.primary}`}>
                     Total Skills: {sortedSkills.length}
                   </p>
-                  <p className={`text-sm ${theme.text.secondary}`}>
+                  <p className={`text-xs sm:text-sm ${theme.text.secondary}`}>
                     Comprehensive technical expertise
                   </p>
                 </div>
               </div>
               
               {/* Level Distribution */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 {Object.entries(skillsByLevel).map(([level, skills]) => {
                   const config = getLevelConfig(level)
                   return (
-                    <div key={level} className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${config.progressColor}`}></div>
+                    <div key={level} className="flex items-center gap-1 sm:gap-2">
+                      <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${config.progressColor}`}></div>
                       <span className={`text-xs font-medium ${config.textColor}`}>
                         {skills.length}
                       </span>
@@ -364,31 +365,31 @@ export default function AdvancedSkillsSection({
             </div>
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="relative mb-6">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 flex items-center justify-center backdrop-blur-sm">
-                <Code className="w-10 h-10 text-[#10a37f]" />
+          <div className="text-center py-8 sm:py-12">
+            <div className="relative mb-4 sm:mb-6">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 flex items-center justify-center backdrop-blur-sm">
+                <Code className="w-8 h-8 sm:w-10 sm:h-10 text-[#10a37f]" />
               </div>
-              <div className="absolute -top-1 -right-1 w-8 h-8 bg-[#10a37f] rounded-full flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white animate-pulse" />
+              <div className="absolute -top-1 -right-1 w-6 h-6 sm:w-8 sm:h-8 bg-[#10a37f] rounded-full flex items-center justify-center">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white animate-pulse" />
               </div>
             </div>
             
-            <h4 className={`text-xl font-semibold ${theme.text.primary} mb-3`}>
+            <h4 className={`text-lg sm:text-xl font-semibold ${theme.text.primary} mb-2 sm:mb-3`}>
               Master Your Technical Skills
             </h4>
-            <p className={`${theme.text.secondary} text-sm mb-6 max-w-md mx-auto`}>
+            <p className={`${theme.text.secondary} text-xs sm:text-sm mb-4 sm:mb-6 max-w-md mx-auto`}>
               Add your technical skills to showcase your expertise levels and demonstrate your professional capabilities.
             </p>
             
             {isEditMode && onEdit && (
               <button
                 onClick={onEdit}
-                className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-xl backdrop-blur-sm"
+                className="group inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-xl backdrop-blur-sm text-sm sm:text-base"
               >
-                <Rocket className="w-4 h-4 group-hover:animate-spin" />
+                <Rocket className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-spin" />
                 Add Skills
-                <Award className="w-4 h-4 group-hover:animate-pulse" />
+                <Award className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-pulse" />
               </button>
             )}
           </div>

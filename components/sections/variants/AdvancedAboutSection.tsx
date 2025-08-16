@@ -75,18 +75,18 @@ export default function AdvancedAboutSection({
           </div>
           
           {isEditMode && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {onEdit && (
                 <button
                   onClick={onEdit}
-                  className={`group/btn p-3 rounded-xl transition-all duration-300 ${
+                  className={`group/btn p-1.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 ${
                     isDark 
-                      ? 'bg-[#1a1a1a]/60 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
-                      : 'bg-white/60 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
+                      ? 'bg-[#1a1a1a]/80 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
+                      : 'bg-white/80 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
                   } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
                   title="Edit About Section"
                 >
-                  <svg className="w-4 h-4 text-[#10a37f] group-hover/btn:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f] group-hover/btn:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </button>
@@ -94,14 +94,14 @@ export default function AdvancedAboutSection({
               {hasData && onDelete && (
                 <button
                   onClick={onDelete}
-                  className={`group/btn p-3 rounded-xl transition-all duration-300 ${
+                  className={`group/btn p-1.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 ${
                     isDark 
-                      ? 'bg-[#1a1a1a]/60 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40' 
-                      : 'bg-white/60 hover:bg-red-500/10 border border-red-300/20 hover:border-red-400/30'
+                      ? 'bg-[#1a1a1a]/80 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40' 
+                      : 'bg-white/80 hover:bg-red-500/10 border border-red-300/20 hover:border-red-400/30'
                   } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
                   title="Delete About Section"
                 >
-                  <svg className="w-4 h-4 text-red-400 group-hover/btn:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 group-hover/btn:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
