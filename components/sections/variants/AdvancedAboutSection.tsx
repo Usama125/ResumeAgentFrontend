@@ -31,8 +31,9 @@ export default function AdvancedAboutSection({
     return null
   }
 
-  const shouldTruncate = user.summary && user.summary.length > 300
-  const displayText = shouldTruncate && !isExpanded ? user.summary.substring(0, 300) + "..." : user.summary
+  // Show only 5 lines when collapsed, approximately 50 characters per line = 250 characters
+  const shouldTruncate = user.summary && user.summary.length > 250
+  const displayText = shouldTruncate && !isExpanded && user.summary ? user.summary.substring(0, 250) + "..." : (user.summary || "")
 
   return (
     <div className={`group relative rounded-2xl overflow-hidden ${
@@ -52,18 +53,18 @@ export default function AdvancedAboutSection({
       {/* Premium Border Glow */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#10a37f]/10 via-[#0d8f6f]/5 to-[#10a37f]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
 
-      <div className="relative z-10 p-8">
+      <div className="relative z-10 p-4 sm:p-8">
         {/* Enhanced Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl opacity-20 animate-pulse"></div>
-              <div className="relative p-3 rounded-xl bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
-                <User className="w-6 h-6 text-[#10a37f]" />
+              <div className="relative p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
+                <User className="w-4 h-4 sm:w-6 sm:h-6 text-[#10a37f]" />
               </div>
             </div>
             <div>
-              <h3 className={`text-2xl font-bold bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent`}>
+              <h3 className={`text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent`}>
                 About Me
               </h3>
               <div className="flex items-center gap-2 mt-1">
@@ -114,39 +115,39 @@ export default function AdvancedAboutSection({
           <div className="space-y-4">
             {/* Quote with enhanced styling */}
             <div className="relative">
-              <Quote className="z-10 w-8 h-8 text-[#10a37f]/20 absolute -top-2 -left-2 transform rotate-12" />
-              <div className={`relative pl-6 pr-4 py-4 rounded-xl ${
+              <Quote className="z-10 w-6 h-6 sm:w-8 sm:h-8 text-[#10a37f]/20 absolute -top-1 -left-1 sm:-top-2 sm:-left-2 transform rotate-12" />
+              <div className={`relative pl-4 sm:pl-6 pr-2 sm:pr-4 py-3 sm:py-4 rounded-xl ${
                 isDark 
                   ? 'bg-[#1a1a1a]/30 border-l-4 border-[#10a37f]/50' 
                   : 'bg-white/40 border-l-4 border-[#10a37f]/60'
               } backdrop-blur-sm`}>
-                <p className={`${theme.text.primary} text-lg leading-relaxed font-medium`}>
+                <p className={`${theme.text.primary} text-sm sm:text-lg leading-relaxed font-medium`}>
                   {displayText}
                 </p>
               </div>
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
               {shouldTruncate && (
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className={`group flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+                  className={`group flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 ${
                     isDark 
                       ? 'bg-[#1a1a1a]/50 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
                       : 'bg-white/50 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
                   } backdrop-blur-sm hover:scale-105 hover:shadow-md`}
                 >
-                  <span className="text-[#10a37f] font-medium text-sm">
+                  <span className="text-[#10a37f] font-medium text-xs sm:text-sm">
                     {isExpanded ? 'Show Less' : 'Read More'}
                   </span>
-                  <Sparkles className="w-4 h-4 text-[#10a37f] group-hover:animate-spin" />
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f] group-hover:animate-spin" />
                 </button>
               )}
 
               {/* Professional indicators */}
-              <div className="flex items-center gap-3">
-                <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full ${
                   isDark 
                     ? 'bg-[#10a37f]/10 border border-[#10a37f]/20' 
                     : 'bg-[#10a37f]/5 border border-[#10a37f]/15'
@@ -155,7 +156,7 @@ export default function AdvancedAboutSection({
                   <span className="text-[#10a37f] text-xs font-medium">Professional</span>
                 </div>
                 
-                <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+                <div className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full ${
                   isDark 
                     ? 'bg-[#0d8f6f]/10 border border-[#0d8f6f]/20' 
                     : 'bg-[#0d8f6f]/5 border border-[#0d8f6f]/15'
@@ -167,31 +168,31 @@ export default function AdvancedAboutSection({
             </div>
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="relative mb-6">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 flex items-center justify-center backdrop-blur-sm">
-                <BookOpen className="w-8 h-8 text-[#10a37f]" />
+          <div className="text-center py-8 sm:py-12">
+            <div className="relative mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-full bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 flex items-center justify-center backdrop-blur-sm">
+                <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-[#10a37f]" />
               </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#10a37f] rounded-full flex items-center justify-center">
-                <Sparkles className="w-3 h-3 text-white animate-pulse" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-6 sm:h-6 bg-[#10a37f] rounded-full flex items-center justify-center">
+                <Sparkles className="w-2 h-2 sm:w-3 sm:h-3 text-white animate-pulse" />
               </div>
             </div>
             
-            <h4 className={`text-lg font-semibold ${theme.text.primary} mb-2`}>
+            <h4 className={`text-base sm:text-lg font-semibold ${theme.text.primary} mb-2`}>
               Tell Your Story
             </h4>
-            <p className={`${theme.text.secondary} text-sm mb-6 max-w-md mx-auto`}>
+            <p className={`${theme.text.secondary} text-xs sm:text-sm mb-4 sm:mb-6 max-w-md mx-auto`}>
               Share your professional journey, goals, and what makes you unique. A compelling about section helps you stand out.
             </p>
             
             {isEditMode && onEdit && (
               <button
                 onClick={onEdit}
-                className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-xl backdrop-blur-sm"
+                className="group inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-xl backdrop-blur-sm text-sm sm:text-base"
               >
-                <Star className="w-4 h-4 group-hover:animate-spin" />
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-spin" />
                 Create About Section
-                <Sparkles className="w-4 h-4 group-hover:animate-pulse" />
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-pulse" />
               </button>
             )}
           </div>
