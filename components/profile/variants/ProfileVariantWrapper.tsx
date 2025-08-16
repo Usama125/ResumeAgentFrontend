@@ -1,10 +1,13 @@
 "use client"
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { ProfileVariant, User as UserType } from '@/types'
 import DefaultProfileVariant from './DefaultProfileVariant'
 import CompactProfileVariant from './CompactProfileVariant'
 import AdvancedProfileVariant from './AdvancedProfileVariant'
+import DefaultMobileProfileVariant from './mobile/DefaultMobileProfileVariant'
+import CompactMobileProfileVariant from './mobile/CompactMobileProfileVariant'
+import AdvancedMobileProfileVariant from './mobile/AdvancedMobileProfileVariant'
 
 interface ProfileVariantWrapperProps {
   variant: ProfileVariant
@@ -54,6 +57,9 @@ interface ProfileVariantWrapperProps {
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
   onOpenAIAnalysis?: () => void
+  onOpenSettings?: () => void
+  onEditModeToggle?: (editMode: boolean) => void
+  onOpenShare?: () => void
 }
 
 export default function ProfileVariantWrapper({
@@ -63,6 +69,24 @@ export default function ProfileVariantWrapper({
   isCurrentUser = false,
   ...props
 }: ProfileVariantWrapperProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+      const isMobileAgent = mobileRegex.test(userAgent)
+      const isSmallScreen = window.innerWidth <= 768
+      setIsMobile(isMobileAgent || isSmallScreen)
+    }
+
+    checkIsMobile()
+    window.addEventListener('resize', checkIsMobile)
+    
+    return () => window.removeEventListener('resize', checkIsMobile)
+  }, [])
+
   // Get the variant from user data, fallback to prop, then fallback to default
   const effectiveVariant = (user.profile_variant as ProfileVariant) || variant || 'default'
   
@@ -73,13 +97,27 @@ export default function ProfileVariantWrapper({
     ...props
   }
 
-  switch (effectiveVariant) {
-    case 'compact':
-      return <CompactProfileVariant {...commonProps} />
-    case 'advanced':
-      return <AdvancedProfileVariant {...commonProps} />
-    case 'default':
-    default:
-      return <DefaultProfileVariant {...commonProps} />
+  // Route to mobile or desktop variants
+  if (isMobile) {
+    switch (effectiveVariant) {
+      case 'compact':
+        return <CompactMobileProfileVariant {...commonProps} />
+      case 'advanced':
+        return <AdvancedMobileProfileVariant {...commonProps} />
+      case 'default':
+      default:
+        return <DefaultMobileProfileVariant {...commonProps} />
+    }
+  } else {
+    // Desktop variants
+    switch (effectiveVariant) {
+      case 'compact':
+        return <CompactProfileVariant {...commonProps} />
+      case 'advanced':
+        return <AdvancedProfileVariant {...commonProps} />
+      case 'default':
+      default:
+        return <DefaultProfileVariant {...commonProps} />
+    }
   }
 }

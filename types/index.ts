@@ -127,6 +127,7 @@ export interface User {
   profession?: string;
   section_order?: string[];
   profile_variant?: string;
+  profile_score?: number;
 }
 
 // Public User (what other users see)
