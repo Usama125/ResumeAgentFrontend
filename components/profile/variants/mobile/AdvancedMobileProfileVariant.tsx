@@ -31,7 +31,7 @@ import { getImageUrl } from '@/utils/imageUtils'
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import VariantAwareProfileSections from "@/components/sections/variants/VariantAwareProfileSections"
-import ProfileCompletionSection from "@/components/sections/ProfileCompletionSection"
+import MobileProfileCompletionSection from "@/components/sections/MobileProfileCompletionSection"
 import EditModeToggle from "@/components/EditModeToggle"
 import { Button } from "@/components/ui/button"
 
@@ -222,11 +222,6 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
                   <h2 className={`text-2xl font-bold bg-gradient-to-r from-[#10a37f] via-[#0d8f6f] to-[#10a37f] bg-clip-text text-transparent`}>
                     {user.name}
                   </h2>
-                  {user.profile_score && user.profile_score >= 80 && (
-                    <div className="flex items-center">
-                      <Trophy className="w-5 h-5 text-yellow-500 animate-bounce" />
-                    </div>
-                  )}
                 </div>
                 
                 {user.designation && (
@@ -301,15 +296,7 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
               </div>
             </div>
 
-            {/* Profile Score - Mobile without stars */}
-            {user.profile_score && user.profile_score > 0 && (
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <div className="p-2 rounded-lg bg-[#10a37f]/20">
-                  <TrendingUp className="w-4 h-4 text-[#10a37f]" />
-                </div>
-                <span className={`text-sm font-medium ${theme.text.primary}`}>Profile Score: {user.profile_score}%</span>
-              </div>
-            )}
+
 
             {/* Enhanced Contact Info - Mobile Optimized */}
             {user.contact_info && Object.keys(user.contact_info).length > 0 && (
@@ -597,7 +584,7 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
       <div className="relative z-10 px-4 pb-6 space-y-4">
         {/* Profile Completion Section */}
         {isEditMode && (
-          <ProfileCompletionSection
+          <MobileProfileCompletionSection
             user={user}
             isEditMode={isEditMode}
             onEditAbout={otherProps.onEditAbout}

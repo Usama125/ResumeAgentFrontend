@@ -17,7 +17,7 @@ import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import { getImageUrl } from '@/utils/imageUtils'
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import VariantAwareProfileSections from '@/components/sections/variants/VariantAwareProfileSections'
-import ProfileCompletionSection from '@/components/sections/ProfileCompletionSection'
+import MobileProfileCompletionSection from '@/components/sections/MobileProfileCompletionSection'
 import EditModeToggle from '@/components/EditModeToggle'
 import { Button } from "@/components/ui/button"
 
@@ -184,6 +184,7 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
                 <span className="text-sm">{user.location}</span>
               </div>
             )}
+
           </div>
 
           {/* Contact Information & Social Links - Wrapped for mobile */}
@@ -494,7 +495,7 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
       <div className="relative z-10 px-4 pb-6 space-y-4">
         {/* Profile Completion Section */}
         {isEditMode && (
-          <ProfileCompletionSection
+          <MobileProfileCompletionSection
             user={user}
             isEditMode={isEditMode}
             onEditAbout={otherProps.onEditAbout}

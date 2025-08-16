@@ -190,12 +190,6 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
                       <h1 className={`text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#10a37f] via-[#0d8f6f] to-[#10a37f] bg-clip-text text-transparent animate-gradient-x leading-tight`}>
                         {user.name}
                       </h1>
-                      {user.profile_score >= 80 && (
-                        <div className="flex items-center gap-1">
-                          <Trophy className="w-6 h-6 text-yellow-500 animate-bounce" />
-                          <span className="text-sm font-medium text-yellow-500">Elite</span>
-                        </div>
-                      )}
                     </div>
                     
                     {user.designation && (
@@ -210,74 +204,62 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
                         </div>
                       </div>
                     )}
+
+                    {/* Location - Moved below designation */}
+                    {user.location && (
+                      <div className={`flex items-center gap-3 mt-4`}>
+                        <MapPin className="w-5 h-5 text-[#10a37f]" />
+                        <span className={`text-lg ${theme.text.primary} opacity-90`}>{user.location}</span>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Enhanced Meta Info Grid */}
+                  {/* Three Boxes: Experience, Skills, Projects */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Location */}
-                    {user.location && (
-                      <div className={`flex items-center gap-3 p-4 rounded-2xl ${
-                        isDark 
-                          ? 'bg-gradient-to-br from-[#2a2a2a]/50 to-[#1a1a1a]/50 border border-[#10a37f]/20' 
-                          : 'bg-gradient-to-br from-white/50 to-gray-50/50 border border-[#10a37f]/15'
-                      } backdrop-blur-sm hover:scale-105 transition-transform duration-300`}>
-                        <div className="p-2 rounded-lg bg-[#10a37f]/20">
-                          <MapPin className="w-5 h-5 text-[#10a37f]" />
-                        </div>
-                        <div>
-                          <p className={`text-sm font-medium ${theme.text.secondary}`}>Location</p>
-                          <p className={`font-semibold ${theme.text.primary}`}>{user.location}</p>
-                        </div>
-                      </div>
-                    )}
-
                     {/* Experience */}
-                    {totalExperience && (
-                      <div className={`flex items-center gap-3 p-4 rounded-2xl ${
-                        isDark 
-                          ? 'bg-gradient-to-br from-[#2a2a2a]/50 to-[#1a1a1a]/50 border border-[#0d8f6f]/20' 
-                          : 'bg-gradient-to-br from-white/50 to-gray-50/50 border border-[#10a37f]/15'
-                      } backdrop-blur-sm hover:scale-105 transition-transform duration-300`}>
-                        <div className="p-2 rounded-lg bg-[#10a37f]/20">
-                          <Briefcase className="w-5 h-5 text-[#10a37f]" />
-                        </div>
-                        <div>
-                          <p className={`text-sm font-medium ${theme.text.secondary}`}>Experience</p>
-                          <p className={`font-semibold ${theme.text.primary}`}>{totalExperience}</p>
-                        </div>
+                    <div className={`flex items-center gap-3 p-4 rounded-2xl ${
+                      isDark 
+                        ? 'bg-gradient-to-br from-[#2a2a2a]/50 to-[#1a1a1a]/50 border border-[#0d8f6f]/20' 
+                        : 'bg-gradient-to-br from-white/50 to-gray-50/50 border border-[#10a37f]/15'
+                    } backdrop-blur-sm hover:scale-105 transition-transform duration-300`}>
+                      <div className="p-2 rounded-lg bg-[#10a37f]/20">
+                        <Briefcase className="w-5 h-5 text-[#10a37f]" />
                       </div>
-                    )}
+                      <div>
+                        <p className={`text-sm font-medium ${theme.text.secondary}`}>Experience</p>
+                        <p className={`font-semibold ${theme.text.primary}`}>{totalExperience || 'N/A'}</p>
+                      </div>
+                    </div>
 
-                    {/* Profile Score */}
-                    {user.profile_score > 0 && (
-                      <div className={`flex items-center gap-3 p-4 rounded-2xl ${
-                        isDark 
-                          ? 'bg-gradient-to-br from-[#2a2a2a]/50 to-[#1a1a1a]/50 border border-[#10a37f]/20' 
-                          : 'bg-gradient-to-br from-white/50 to-gray-50/50 border border-[#10a37f]/15'
-                      } backdrop-blur-sm hover:scale-105 transition-transform duration-300`}>
-                        <div className="p-2 rounded-lg bg-[#10a37f]/20">
-                          <TrendingUp className="w-5 h-5 text-[#10a37f]" />
-                        </div>
-                        <div>
-                          <p className={`text-sm font-medium ${theme.text.secondary}`}>Profile Score</p>
-                          <div className="flex items-center gap-2">
-                            <p className={`font-semibold ${theme.text.primary}`}>{user.profile_score}%</p>
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star 
-                                  key={i} 
-                                  className={`w-3 h-3 ${
-                                    i < Math.floor(user.profile_score / 20) 
-                                      ? 'text-[#10a37f] fill-current' 
-                                      : 'text-gray-300'
-                                  }`} 
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
+                    {/* Skills */}
+                    <div className={`flex items-center gap-3 p-4 rounded-2xl ${
+                      isDark 
+                        ? 'bg-gradient-to-br from-[#2a2a2a]/50 to-[#1a1a1a]/50 border border-[#10a37f]/20' 
+                        : 'bg-gradient-to-br from-white/50 to-gray-50/50 border border-[#10a37f]/15'
+                    } backdrop-blur-sm hover:scale-105 transition-transform duration-300`}>
+                      <div className="p-2 rounded-lg bg-[#10a37f]/20">
+                        <Zap className="w-5 h-5 text-[#10a37f]" />
                       </div>
-                    )}
+                      <div>
+                        <p className={`text-sm font-medium ${theme.text.secondary}`}>Skills</p>
+                        <p className={`font-semibold ${theme.text.primary}`}>{(user.skills || []).length}</p>
+                      </div>
+                    </div>
+
+                    {/* Projects */}
+                    <div className={`flex items-center gap-3 p-4 rounded-2xl ${
+                      isDark 
+                        ? 'bg-gradient-to-br from-[#2a2a2a]/50 to-[#1a1a1a]/50 border border-[#10a37f]/20' 
+                        : 'bg-gradient-to-br from-white/50 to-gray-50/50 border border-[#10a37f]/15'
+                    } backdrop-blur-sm hover:scale-105 transition-transform duration-300`}>
+                      <div className="p-2 rounded-lg bg-[#10a37f]/20">
+                        <Rocket className="w-5 h-5 text-[#10a37f]" />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium ${theme.text.secondary}`}>Projects</p>
+                        <p className={`font-semibold ${theme.text.primary}`}>{(user.projects || []).length}</p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Enhanced Contact Info */}

@@ -7,7 +7,7 @@ import { calculateProfileCompletion } from "@/utils/profileCompletion"
 import { Plus, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-interface ProfileCompletionSectionProps {
+interface MobileProfileCompletionSectionProps {
   user: UserType
   isEditMode?: boolean
   onEditAbout?: () => void
@@ -24,7 +24,7 @@ interface ProfileCompletionSectionProps {
   onEditPreferences?: () => void
 }
 
-export default function ProfileCompletionSection({
+export default function MobileProfileCompletionSection({
   user,
   isEditMode = false,
   onEditAbout,
@@ -39,7 +39,7 @@ export default function ProfileCompletionSection({
   onAddVolunteerExperience,
   onAddInterests,
   onEditPreferences
-}: ProfileCompletionSectionProps) {
+}: MobileProfileCompletionSectionProps) {
   const { isDark } = useTheme()
   const completionData = calculateProfileCompletion(user)
 
@@ -80,15 +80,12 @@ export default function ProfileCompletionSection({
   }
 
   // Calculate adjusted percentage including work preferences and about
-  // If about is missing and not already counted, it should be added to total but not to completed
-  // If work preferences is missing, it should be added to total but not to completed
   const missingWorkPreferences = hasWorkPreferences ? 0 : 1
   const missingAbout = hasAbout ? 0 : (aboutAlreadyInEmpty ? 0 : 1)
   const missingSections = missingWorkPreferences + missingAbout
   const adjustedTotalSections = completionData.totalSections + missingSections
   const adjustedCompletedSections = completionData.completedSections
   const adjustedPercentage = Math.round((adjustedCompletedSections / adjustedTotalSections) * 100)
-
 
   // Don't show if not in edit mode
   if (!isEditMode) {
@@ -110,41 +107,41 @@ export default function ProfileCompletionSection({
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0d8f6f]/5 rounded-full blur-lg"></div>
         
         {/* Content */}
-        <div className="relative z-10 p-6">
-          <div className="flex items-start justify-between gap-6">
+        <div className="relative z-10 p-4">
+          <div className="flex items-center justify-between gap-4">
             {/* Left side - Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-2 mb-2">
                 <div className="text-[#10a37f] flex-shrink-0">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   Profile Complete!
                 </h3>
               </div>
               
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                 Congratulations! Your profile is complete and ready to impress.
               </p>
             </div>
 
             {/* Right side - Circular Progress */}
             <div className="flex-shrink-0">
-              <div className="relative w-28 h-28">
+              <div className="relative w-20 h-20">
                 {/* Background circle */}
                 <svg 
-                  className="w-28 h-28 transform -rotate-90" 
+                  className="w-20 h-20 transform -rotate-90" 
                   viewBox="0 0 100 100"
-                  style={{ width: '112px', height: '112px' }}
+                  style={{ width: '80px', height: '80px' }}
                 >
                   <circle
                     cx="50"
                     cy="50"
-                    r={radius}
+                    r="35"
                     stroke={isDark ? '#374151' : '#e5e7eb'}
-                    strokeWidth="8"
+                    strokeWidth="6"
                     fill="transparent"
                     strokeLinecap="round"
                   />
@@ -152,11 +149,11 @@ export default function ProfileCompletionSection({
                   <circle
                     cx="50"
                     cy="50"
-                    r={radius}
+                    r="35"
                     stroke="#10a37f"
-                    strokeWidth="8"
+                    strokeWidth="6"
                     fill="transparent"
-                    strokeDasharray={strokeDasharray}
+                    strokeDasharray="220"
                     strokeDashoffset="0"
                     strokeLinecap="round"
                     className="transition-all duration-1000 ease-out"
@@ -166,7 +163,7 @@ export default function ProfileCompletionSection({
                 {/* Percentage text */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                       100%
                     </div>
                     <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -213,7 +210,7 @@ export default function ProfileCompletionSection({
     }
   }
 
-  const radius = 40
+  const radius = 35
   const circumference = 2 * Math.PI * radius
   const strokeDasharray = circumference
   const strokeDashoffset = circumference - (adjustedPercentage / 100) * circumference
@@ -231,145 +228,81 @@ export default function ProfileCompletionSection({
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0d8f6f]/5 rounded-full blur-lg"></div>
       
       {/* Content */}
-      <div className="relative z-10 p-6">
-        <div className="flex items-start justify-between gap-6">
-          {/* Left side - Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="text-[#10a37f] flex-shrink-0">
-                <AlertCircle className="w-5 h-5" />
-              </div>
-              <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                Complete Your Profile
-              </h3>
+      <div className="relative z-10 p-4">
+        {/* Heading */}
+        <div className="flex items-center gap-2 mb-4">
+          <div className="text-[#10a37f] flex-shrink-0">
+            <AlertCircle className="w-4 h-4" />
+          </div>
+          <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Complete Profile
+          </h3>
+        </div>
+
+        {/* Progress Bars */}
+        <div className="space-y-3 mb-4">
+          {/* Profile Progress Bar */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                Profile Progress: {adjustedPercentage}%
+              </span>
             </div>
-            
-            <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Add information to these sections to make your profile more complete and professional.
-            </p>
-            
-            <div className="flex flex-wrap gap-3">
-              {allEmptySections.map((section) => {
-                const addHandler = getAddHandler(section.id)
-                
-                return (
-                  <Button
-                    key={section.id}
-                    onClick={addHandler}
-                    variant="outline"
-                    size="sm"
-                    className={`flex items-center gap-2 ${
-                      isDark 
-                        ? 'bg-[#2f2f2f]/60 border-[#565869]/40 text-white hover:bg-[#40414f]/60 hover:border-[#10a37f]/40' 
-                        : 'bg-gray-50/60 border-gray-200 text-gray-700 hover:bg-gray-100/60 hover:border-[#10a37f]/40'
-                    } transition-colors`}
-                  >
-                    <Plus className="w-4 h-4 text-[#10a37f]" />
-                    <span>Add {section.title}</span>
-                  </Button>
-                )
-              })}
+            <div className={`w-full h-2 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
+              <div 
+                className="h-2 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${adjustedPercentage}%` }}
+              ></div>
             </div>
           </div>
 
-          {/* Right side - Two circles side by side */}
-          <div className="flex-shrink-0">
-            <div className="flex items-center gap-4">
-              {/* Profile Completeness Circle */}
-              <div className="relative w-28 h-28">
-                {/* Background circle */}
-                <svg 
-                  className="w-28 h-28 transform -rotate-90" 
-                  viewBox="0 0 100 100"
-                  style={{ width: '112px', height: '112px' }}
-                >
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    stroke={isDark ? '#374151' : '#e5e7eb'}
-                    strokeWidth="8"
-                    fill="transparent"
-                    strokeLinecap="round"
-                  />
-                  {/* Progress circle */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    stroke="#10a37f"
-                    strokeWidth="8"
-                    fill="transparent"
-                    strokeDasharray={strokeDasharray}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                </svg>
-                
-                {/* Percentage text */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      {adjustedPercentage}%
-                    </div>
-                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Complete
-                    </div>
-                  </div>
-                </div>
+          {/* Profile Score Bar */}
+          {user.profile_score && user.profile_score > 0 && (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Profile Score: {user.profile_score}
+                </span>
               </div>
-
-              {/* Profile Score Circle */}
-              {user.profile_score && user.profile_score > 0 && (
-                <div className="relative w-28 h-28">
-                  {/* Background circle */}
-                  <svg 
-                    className="w-28 h-28 transform -rotate-90" 
-                    viewBox="0 0 100 100"
-                    style={{ width: '112px', height: '112px' }}
-                  >
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={radius}
-                      stroke={isDark ? '#374151' : '#e5e7eb'}
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeLinecap="round"
-                    />
-                    {/* Progress circle - Full circle for score */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={radius}
-                      stroke="#10a37f"
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeDasharray={strokeDasharray}
-                      strokeDashoffset="0"
-                      strokeLinecap="round"
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                  
-                  {/* Score text */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        {user.profile_score}
-                      </div>
-                      <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Score
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className={`w-full h-2 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                <div 
+                  className="h-2 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${user.profile_score}%` }}
+                ></div>
+              </div>
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* Description paragraph - full width */}
+        <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          Add information to these sections to make your profile more complete and professional.
+        </p>
+        
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-2">
+          {allEmptySections.map((section) => {
+            const addHandler = getAddHandler(section.id)
+            
+            return (
+              <Button
+                key={section.id}
+                onClick={addHandler}
+                variant="outline"
+                size="sm"
+                className={`flex items-center gap-2 text-xs ${
+                  isDark 
+                    ? 'bg-[#2f2f2f]/60 border-[#565869]/40 text-white hover:bg-[#40414f]/60 hover:border-[#10a37f]/40' 
+                    : 'bg-gray-50/60 border-gray-200 text-gray-700 hover:bg-gray-100/60 hover:border-[#10a37f]/40'
+                } transition-colors`}
+              >
+                <Plus className="w-3 h-3 text-[#10a37f]" />
+                <span>Add {section.title}</span>
+              </Button>
+            )
+          })}
         </div>
       </div>
     </div>
   )
-} 
+}

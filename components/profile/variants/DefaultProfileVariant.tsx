@@ -159,6 +159,8 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
               </div>
             </div>
 
+
+
             {/* Contact Information & Social Links */}
             {user.contact_info && Object.values(user.contact_info).some(value => value) && (
               <div className="flex flex-wrap justify-center gap-3 mt-6">

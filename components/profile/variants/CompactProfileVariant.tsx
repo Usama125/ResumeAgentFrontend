@@ -158,6 +158,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
                   <MapPin className="w-3 h-3 mr-1" />
                   <span className="text-sm truncate">{user.location}</span>
                 </div>
+
               </div>
 
               {/* Compact Stats */}
