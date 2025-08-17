@@ -25,6 +25,10 @@ import AdvancedAwardsSection from "./AdvancedAwardsSection"
 import PublicationsSection from "../PublicationsSection"
 import CompactPublicationsSection from "./CompactPublicationsSection"
 import AdvancedPublicationsSection from "./AdvancedPublicationsSection"
+import VolunteerSection from "../VolunteerSection"
+import InterestsSection from "../InterestsSection"
+import AdvancedVolunteerSection from "./AdvancedVolunteerSection"
+import AdvancedInterestsSection from "./AdvancedInterestsSection"
 
 interface SectionVariantWrapperProps {
   sectionId: string
@@ -386,6 +390,68 @@ export default function SectionVariantWrapper({
           )
       }
     
+    case 'volunteer':
+      switch (variant) {
+        case 'advanced':
+          return (
+            <AdvancedVolunteerSection 
+              user={user} 
+              isEditMode={isEditMode}
+              onEditVolunteerExperience={otherProps.onEditVolunteerExperience}
+              onDeleteVolunteerExperience={otherProps.onDeleteVolunteerExperience}
+              onAddVolunteerExperience={otherProps.onAddVolunteerExperience}
+              onDelete={otherProps.onDeleteVolunteerExperiences}
+            />
+          )
+        default:
+          return (
+            <VolunteerSection 
+              user={user} 
+              isEditMode={isEditMode}
+              isCollapsible={otherProps.isCollapsible}
+              isExpanded={otherProps.isExpanded}
+              onEdit={otherProps.onEditVolunteerExperience}
+              onDelete={otherProps.onDeleteVolunteerExperiences}
+              onEditVolunteerExperience={otherProps.onEditVolunteerExperience}
+              onDeleteVolunteerExperience={otherProps.onDeleteVolunteerExperience}
+              onAddVolunteerExperience={otherProps.onAddVolunteerExperience}
+              onToggleExpand={otherProps.onToggleExpand}
+              showDragHandle={otherProps.showDragHandle}
+              dragHandleProps={otherProps.dragHandleProps}
+            />
+          )
+      }
+
+    case 'interests':
+      switch (variant) {
+        case 'advanced':
+          return (
+            <AdvancedInterestsSection 
+              user={user} 
+              isEditMode={isEditMode}
+              onEditInterests={otherProps.onEditInterests}
+              onDeleteInterests={otherProps.onDeleteInterests}
+              onAddInterests={otherProps.onAddInterests}
+              onDelete={otherProps.onDeleteInterests}
+            />
+          )
+        default:
+          return (
+            <InterestsSection 
+              user={user} 
+              isEditMode={isEditMode}
+              isCollapsible={otherProps.isCollapsible}
+              isExpanded={otherProps.isExpanded}
+              onEdit={otherProps.onEditInterests}
+              onDelete={otherProps.onDeleteInterests}
+              onAddInterests={otherProps.onAddInterests}
+              onToggleExpand={otherProps.onToggleExpand}
+              showDragHandle={otherProps.showDragHandle}
+              dragHandleProps={otherProps.dragHandleProps}
+            />
+          )
+      }
+
     // For other sections, return default behavior for now
     default:
       return null

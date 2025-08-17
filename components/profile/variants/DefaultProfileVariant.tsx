@@ -13,6 +13,7 @@ import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import { getImageUrl } from '@/utils/imageUtils'
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import ProfileSections from '@/components/ProfileSections'
+import PreferencesSection from '@/components/sections/PreferencesSection'
 
 interface DefaultProfileVariantProps {
   user: UserType
@@ -543,6 +544,14 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />
+            
+            {/* Work Preferences Section - Always at bottom in edit mode, not draggable */}
+            {isEditMode && (
+              <PreferencesSection
+                user={user}
+                isEditMode={isEditMode}
+              />
+            )}
           </div>
         </div>
       </div>

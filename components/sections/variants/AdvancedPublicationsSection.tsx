@@ -38,6 +38,15 @@ export default function AdvancedPublicationsSection({
     return null
   }
 
+  // Debug: Check if functions are being passed
+  console.log('AdvancedPublicationsSection props:', { 
+    isEditMode, 
+    hasData, 
+    onAddPublication: !!onAddPublication, 
+    onEditPublication: !!onEditPublication,
+    onDelete: !!onDelete 
+  })
+
   return (
     <BaseSection
       id="publications"
@@ -45,7 +54,10 @@ export default function AdvancedPublicationsSection({
       icon={<FileText className="w-5 h-5 text-[#10a37f]" />}
       isEditMode={isEditMode}
       onDelete={hasData ? onDelete : undefined}
-      onAdd={isEditMode ? onAddPublication : undefined}
+      onAdd={isEditMode ? () => {
+        console.log('Add publication clicked')
+        onAddPublication?.()
+      } : undefined}
     >
       <div className="space-y-4 sm:space-y-6">
         {hasData ? (
@@ -70,7 +82,10 @@ export default function AdvancedPublicationsSection({
                   <div className="absolute top-2 right-2 sm:relative sm:top-0 sm:right-0 flex items-center gap-1 sm:gap-2 flex-shrink-0 mb-2 sm:mb-0">
                     {onEditPublication && (
                       <button
-                        onClick={() => onEditPublication(index)}
+                        onClick={() => {
+                          console.log('Edit publication clicked:', index)
+                          onEditPublication(index)
+                        }}
                         className={`group/btn p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
                           isDark 
                             ? 'bg-[#1a1a1a]/80 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 

@@ -174,6 +174,7 @@ export const SECTION_REGISTRY: Record<string, SectionDefinition> = {
 }
 
 export const DEFAULT_SECTION_ORDER = Object.values(SECTION_REGISTRY)
+  .filter(section => section.id !== 'preferences') // Exclude preferences as it's not draggable
   .sort((a, b) => a.defaultOrder - b.defaultOrder)
   .map(section => section.id)
 

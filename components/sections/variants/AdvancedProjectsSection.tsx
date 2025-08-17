@@ -103,31 +103,31 @@ export default function AdvancedProjectsSection({
       <div className="relative z-10 p-4 sm:p-8">
         {/* Edit/Delete buttons - Floating on mobile, inline on desktop */}
         {isEditMode && (
-          <div className="absolute top-2 right-2 sm:relative sm:top-0 sm:right-0 flex items-center gap-1 sm:gap-2 flex-shrink-0 mb-2 sm:mb-0">
+          <div className="absolute top-2 right-2 sm:hidden flex items-center gap-1">
             {onAddProject && (
               <button
                 onClick={onAddProject}
-                className={`group/btn p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
+                className={`group/btn p-1.5 rounded-lg transition-all duration-300 ${
                   isDark 
                     ? 'bg-[#1a1a1a]/80 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
                     : 'bg-white/80 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
                 } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
                 title="Add Project"
               >
-                <Rocket className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f] group-hover/btn:animate-pulse" />
+                <Rocket className="w-3 h-3 text-[#10a37f] group-hover/btn:animate-pulse" />
               </button>
             )}
             {hasData && onDelete && (
               <button
                 onClick={onDelete}
-                className={`group/btn p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
+                className={`group/btn p-1.5 rounded-lg transition-all duration-300 ${
                   isDark 
                     ? 'bg-[#1a1a1a]/80 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40' 
                     : 'bg-white/80 hover:bg-red-500/10 border border-red-300/20 hover:border-red-400/30'
                 } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
                 title="Delete All Projects"
               >
-                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 group-hover/btn:animate-pulse" />
+                <Trash2 className="w-3 h-3 text-red-400 group-hover/btn:animate-pulse" />
               </button>
             )}
           </div>
@@ -135,28 +135,62 @@ export default function AdvancedProjectsSection({
 
         {/* Enhanced Header */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl opacity-20 animate-pulse"></div>
-              <div className="relative p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
-                <Award className="w-4 h-4 sm:w-6 sm:h-6 text-[#10a37f]" />
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl opacity-20 animate-pulse"></div>
+                <div className="relative p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
+                  <Award className="w-4 h-4 sm:w-6 sm:h-6 text-[#10a37f]" />
+                </div>
+              </div>
+              <div>
+                <h3 className={`text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent`}>
+                  Featured Projects
+                </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <Trophy className="w-3 h-3 text-[#10a37f]/60" />
+                  <span className={`text-xs ${theme.text.tertiary}`}>Portfolio Showcase</span>
+                  {hasData && (
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#10a37f]/10 border border-[#10a37f]/20">
+                      <Star className="w-2.5 h-2.5 text-[#10a37f]" />
+                      <span className="text-[#10a37f] text-xs font-medium">{user.projects.length} Project{user.projects.length !== 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            <div>
-              <h3 className={`text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent`}>
-                Featured Projects
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <Trophy className="w-3 h-3 text-[#10a37f]/60" />
-                <span className={`text-xs ${theme.text.tertiary}`}>Portfolio Showcase</span>
-                {hasData && (
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#10a37f]/10 border border-[#10a37f]/20">
-                    <Star className="w-2.5 h-2.5 text-[#10a37f]" />
-                    <span className="text-[#10a37f] text-xs font-medium">{user.projects.length} Project{user.projects.length !== 1 ? 's' : ''}</span>
-                  </div>
+            
+            {/* Desktop Edit/Delete buttons - Inline with header */}
+            {isEditMode && (
+              <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+                {onAddProject && (
+                  <button
+                    onClick={onAddProject}
+                    className={`group/btn p-2 rounded-xl transition-all duration-300 ${
+                      isDark 
+                        ? 'bg-[#1a1a1a]/80 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
+                        : 'bg-white/80 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
+                    } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
+                    title="Add Project"
+                  >
+                    <Rocket className="w-4 h-4 text-[#10a37f] group-hover/btn:animate-pulse" />
+                  </button>
+                )}
+                {hasData && onDelete && (
+                  <button
+                    onClick={onDelete}
+                    className={`group/btn p-2 rounded-xl transition-all duration-300 ${
+                      isDark 
+                        ? 'bg-[#1a1a1a]/80 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40' 
+                        : 'bg-white/80 hover:bg-red-500/10 border border-red-300/20 hover:border-red-400/30'
+                    } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
+                    title="Delete All Projects"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-400 group-hover/btn:animate-pulse" />
+                  </button>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -185,18 +219,18 @@ export default function AdvancedProjectsSection({
                   <div className="relative z-10 p-4 sm:p-6">
                     {/* Edit/Delete buttons - Floating on mobile, inline on desktop */}
                     {isEditMode && (onEditProject || onDeleteProject) && (
-                      <div className="absolute top-2 right-2 sm:relative sm:top-0 sm:right-0 flex items-center gap-1 sm:gap-2 flex-shrink-0 mb-2 sm:mb-0">
+                      <div className="absolute top-2 right-2 sm:hidden flex items-center gap-1">
                         {onEditProject && (
                           <button
                             onClick={() => onEditProject(index)}
-                            className={`group/btn p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all duration-300 ${
+                            className={`group/btn p-1.5 rounded-lg transition-all duration-300 ${
                               isDark 
                                 ? 'bg-[#1a1a1a]/80 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
                                 : 'bg-white/80 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
                             } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
                             title="Edit Project"
                           >
-                            <Edit className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f] group-hover/btn:animate-pulse" />
+                            <Edit className="w-3 h-3 text-[#10a37f] group-hover/btn:animate-pulse" />
                           </button>
                         )}
                         {onDeleteProject && (
@@ -217,23 +251,57 @@ export default function AdvancedProjectsSection({
 
                     {/* Project Header */}
                     <div className="mb-3 sm:mb-4">
-                      <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                        <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
-                          <Code className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f]" />
+                      <div className="flex items-center justify-between gap-2 sm:gap-3 mb-2">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#10a37f]/20 to-[#0d8f6f]/20 backdrop-blur-sm">
+                            <Code className="w-3 h-3 sm:w-4 sm:h-4 text-[#10a37f]" />
+                          </div>
+                          <div>
+                            <h4 className={`text-base sm:text-xl font-bold ${theme.text.primary} group-hover/project:text-[#10a37f] transition-colors`}>
+                              {project.name}
+                            </h4>
+                            {project.duration && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <Calendar className="w-3 h-3 text-[#10a37f]" />
+                                <span className={`text-xs sm:text-sm ${theme.text.secondary}`}>
+                                  {project.duration}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <h4 className={`text-base sm:text-xl font-bold ${theme.text.primary} group-hover/project:text-[#10a37f] transition-colors`}>
-                            {project.name}
-                          </h4>
-                          {project.duration && (
-                            <div className="flex items-center gap-2 mt-1">
-                              <Calendar className="w-3 h-3 text-[#10a37f]" />
-                              <span className={`text-xs sm:text-sm ${theme.text.secondary}`}>
-                                {project.duration}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                        
+                        {/* Desktop Edit/Delete buttons - Inline with project header */}
+                        {isEditMode && (onEditProject || onDeleteProject) && (
+                          <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+                            {onEditProject && (
+                              <button
+                                onClick={() => onEditProject(index)}
+                                className={`group/btn p-2 rounded-xl transition-all duration-300 ${
+                                  isDark 
+                                    ? 'bg-[#1a1a1a]/80 hover:bg-[#10a37f]/20 border border-[#10a37f]/20 hover:border-[#10a37f]/40' 
+                                    : 'bg-white/80 hover:bg-[#10a37f]/10 border border-[#10a37f]/15 hover:border-[#10a37f]/30'
+                                } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
+                                title="Edit Project"
+                              >
+                                <Edit className="w-4 h-4 text-[#10a37f] group-hover/btn:animate-pulse" />
+                              </button>
+                            )}
+                            {onDeleteProject && (
+                              <button
+                                onClick={() => onDeleteProject(index)}
+                                className={`group/btn p-2 rounded-xl transition-all duration-300 ${
+                                  isDark 
+                                    ? 'bg-[#1a1a1a]/80 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40' 
+                                    : 'bg-white/80 hover:bg-red-500/10 border border-red-300/20 hover:border-red-400/30'
+                                } backdrop-blur-sm hover:scale-105 hover:shadow-lg`}
+                                title="Delete Project"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-400 group-hover/btn:animate-pulse" />
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                     

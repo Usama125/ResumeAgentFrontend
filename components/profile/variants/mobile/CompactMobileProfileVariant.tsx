@@ -21,6 +21,7 @@ import { getImageUrl } from '@/utils/imageUtils'
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import VariantAwareProfileSections from '@/components/sections/variants/VariantAwareProfileSections'
 import MobileProfileCompletionSection from '@/components/sections/MobileProfileCompletionSection'
+import PreferencesSection from '@/components/sections/PreferencesSection'
 import EditModeToggle from '@/components/EditModeToggle'
 import { Button } from "@/components/ui/button"
 
@@ -499,6 +500,14 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
           isEditMode={isEditMode}
           {...otherProps}
         />
+        
+        {/* Work Preferences Section - Always at bottom in edit mode, not draggable */}
+        {isEditMode && (
+          <PreferencesSection
+            user={user}
+            isEditMode={isEditMode}
+          />
+        )}
       </div>
     </div>
   )

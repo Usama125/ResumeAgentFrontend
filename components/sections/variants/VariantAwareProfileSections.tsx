@@ -8,6 +8,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -104,19 +105,32 @@ function SortableSectionWrapper({ id, children, isEditMode }: SortableSectionWra
     transform,
     transition,
     isDragging
-  } = useSortable({ id, disabled: !isEditMode })
+  } = useSortable({ 
+    id, 
+    disabled: !isEditMode,
+    transition: {
+      duration: 150,
+      easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+    },
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1000 : 'auto',
   }
 
   return (
     <div ref={setNodeRef} style={style}>
       {React.cloneElement(children as React.ReactElement, {
         showDragHandle: isEditMode,
-        dragHandleProps: isEditMode ? { ...attributes, ...listeners } : {}
+        dragHandleProps: isEditMode ? { 
+          ...attributes, 
+          ...listeners,
+          // Only apply touch restrictions to the drag handle itself
+          style: { touchAction: 'none' }
+        } : {}
       })}
     </div>
   )
@@ -138,13 +152,27 @@ export default function VariantAwareProfileSections({
     ? user.section_order 
     : DEFAULT_SECTION_ORDER
 
-  // Initialize local section order
+  // Initialize local section order (filter out preferences as it's not draggable)
   useEffect(() => {
-    setLocalSectionOrder(userSectionOrder)
+    const filteredOrder = userSectionOrder.filter(sectionId => sectionId !== 'preferences')
+    setLocalSectionOrder(filteredOrder)
   }, [userSectionOrder])
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      // Only activate on drag handles, not on general touch
+      activationConstraint: {
+        delay: 200,
+        tolerance: 10,
+      },
+    }),
+    useSensor(PointerSensor, {
+      // Immediate activation for desktop
+      activationConstraint: {
+        delay: 0,
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -162,6 +190,8 @@ export default function VariantAwareProfileSections({
     })
   }, [])
 
+
+
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
     
@@ -172,19 +202,163 @@ export default function VariantAwareProfileSections({
       const newOrder = arrayMove(localSectionOrder, oldIndex, newIndex)
       setLocalSectionOrder(newOrder)
       
-      // Call the parent handler with the new order
+      // Filter out 'preferences' section before sending to API
+      const filteredOrder = newOrder.filter(sectionId => sectionId !== 'preferences')
+      
+      // Call the parent handler with the filtered order
       if (onSectionOrderChange) {
-        onSectionOrderChange(newOrder)
+        onSectionOrderChange(filteredOrder)
       }
     }
   }, [localSectionOrder, onSectionOrderChange])
+
+
 
   // Create section components with variant support
   const renderSection = useCallback((sectionId: string, index: number) => {
     const isExpanded = expandedSections.has(sectionId)
     
-    // Check if this section has variant support
-    if (sectionId === 'about' || sectionId === 'experience' || sectionId === 'skills' || sectionId === 'projects' || sectionId === 'education' || sectionId === 'languages' || sectionId === 'awards' || sectionId === 'publications') {
+    // If in edit mode, use default variant components for all sections
+    if (isEditMode) {
+      // Use default variant components for edit mode
+      const sectionConfig = SECTION_REGISTRY[sectionId as keyof typeof SECTION_REGISTRY]
+      if (!sectionConfig) return null
+
+      const { component: Component, hasData } = sectionConfig
+      
+      const commonSectionProps = {
+        user,
+        isEditMode,
+        isCollapsible: isEditMode,
+        isExpanded,
+        onToggleExpand: () => handleToggleExpand(sectionId),
+        showDragHandle: isEditMode,
+      }
+
+      let sectionElement
+
+      switch (sectionId) {
+        case 'about':
+          sectionElement = (
+            <AboutSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditAbout}
+              onDelete={sectionHandlers.onDeleteAbout}
+            />
+          )
+          break
+        case 'experience':
+          sectionElement = (
+            <ExperienceSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditExperience}
+              onEditExperience={sectionHandlers.onEditSingleExperience}
+              onDeleteExperience={sectionHandlers.onDeleteSingleExperience}
+              onDelete={sectionHandlers.onDeleteExperience}
+            />
+          )
+          break
+        case 'skills':
+          sectionElement = (
+            <SkillsSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditSkills}
+              onDelete={sectionHandlers.onDeleteSkills}
+            />
+          )
+          break
+        case 'projects':
+          sectionElement = (
+            <ProjectsSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditProject}
+              onEditProject={sectionHandlers.onEditSingleProject}
+              onDeleteProject={sectionHandlers.onDeleteSingleProject}
+              onDelete={sectionHandlers.onDeleteProjects}
+            />
+          )
+          break
+        case 'education':
+          sectionElement = (
+            <EducationSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditEducation}
+              onEditEducation={sectionHandlers.onEditSingleEducation}
+              onDeleteEducation={sectionHandlers.onDeleteSingleEducation}
+              onDelete={sectionHandlers.onDeleteEducation}
+            />
+          )
+          break
+        case 'languages':
+          sectionElement = (
+            <LanguagesSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditLanguage}
+              onDelete={sectionHandlers.onDeleteLanguage}
+              onAdd={sectionHandlers.onAddLanguage}
+              onDeleteAll={sectionHandlers.onDeleteLanguages}
+            />
+          )
+          break
+        case 'awards':
+          sectionElement = (
+            <AwardsSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditAward}
+              onDelete={sectionHandlers.onDeleteAwards}
+              onEditAward={sectionHandlers.onEditAward}
+              onDeleteAward={sectionHandlers.onDeleteAward}
+              onAddAward={sectionHandlers.onAddAward}
+            />
+          )
+          break
+        case 'publications':
+          sectionElement = (
+            <PublicationsSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditPublication}
+              onDelete={sectionHandlers.onDeletePublications}
+              onEditPublication={sectionHandlers.onEditPublication}
+              onDeletePublication={sectionHandlers.onDeletePublication}
+              onAddPublication={sectionHandlers.onAddPublication}
+            />
+          )
+          break
+        case 'volunteer':
+          sectionElement = (
+            <VolunteerSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditVolunteerExperience}
+              onDelete={sectionHandlers.onDeleteVolunteerExperiences}
+              onEditVolunteerExperience={sectionHandlers.onEditVolunteerExperience}
+              onDeleteVolunteerExperience={sectionHandlers.onDeleteVolunteerExperience}
+              onAddVolunteerExperience={sectionHandlers.onAddVolunteerExperience}
+            />
+          )
+          break
+        case 'interests':
+          sectionElement = (
+            <InterestsSection
+              {...commonSectionProps}
+              onEdit={sectionHandlers.onEditInterests}
+              onDelete={sectionHandlers.onDeleteInterests}
+              onAddInterests={sectionHandlers.onAddInterests}
+            />
+          )
+          break
+        default:
+          return null
+      }
+
+      return (
+        <SortableSectionWrapper key={sectionId} id={sectionId} isEditMode={isEditMode}>
+          {sectionElement}
+        </SortableSectionWrapper>
+      )
+    }
+    
+    // Check if this section has variant support (for view mode only)
+    if (sectionId === 'experience' || sectionId === 'skills' || sectionId === 'projects' || sectionId === 'education' || sectionId === 'languages' || sectionId === 'awards' || sectionId === 'publications') {
       return (
         <SortableSectionWrapper key={sectionId} id={sectionId} isEditMode={isEditMode}>
           <SectionVariantWrapper
@@ -223,6 +397,22 @@ export default function VariantAwareProfileSections({
     let sectionElement
 
     switch (sectionId) {
+      case 'about':
+        // For view mode, use variant-specific about section
+        return (
+          <SortableSectionWrapper key={sectionId} id={sectionId} isEditMode={isEditMode}>
+            <SectionVariantWrapper
+              sectionId={sectionId}
+              variant={variant}
+              user={user}
+              isEditMode={isEditMode}
+              isCollapsible={isEditMode}
+              isExpanded={isExpanded}
+              onToggleExpand={() => handleToggleExpand(sectionId)}
+              {...sectionHandlers}
+            />
+          </SortableSectionWrapper>
+        )
       case 'experience':
         sectionElement = (
           <ExperienceSection
@@ -250,22 +440,38 @@ export default function VariantAwareProfileSections({
 
       case 'volunteer':
         sectionElement = (
-          <VolunteerSection
-            {...commonSectionProps}
-            onEdit={sectionHandlers.onEditVolunteerExperience}
-            onDelete={sectionHandlers.onDeleteVolunteerExperience}
-            onAdd={sectionHandlers.onAddVolunteerExperience}
-            onDeleteAll={sectionHandlers.onDeleteVolunteerExperiences}
+          <SectionVariantWrapper
+            sectionId="volunteer"
+            variant={variant}
+            user={user}
+            isEditMode={isEditMode}
+            isCollapsible={expandedSections.has('volunteer')}
+            isExpanded={expandedSections.has('volunteer')}
+            onToggleExpand={() => handleToggleExpand('volunteer')}
+            showDragHandle={isEditMode}
+            dragHandleProps={{}}
+            onEditVolunteerExperience={sectionHandlers.onEditVolunteerExperience}
+            onDeleteVolunteerExperience={sectionHandlers.onDeleteVolunteerExperience}
+            onAddVolunteerExperience={sectionHandlers.onAddVolunteerExperience}
+            onDeleteVolunteerExperiences={sectionHandlers.onDeleteVolunteerExperiences}
           />
         )
         break
       case 'interests':
         sectionElement = (
-          <InterestsSection
-            {...commonSectionProps}
-            onEdit={sectionHandlers.onEditInterests}
-            onDelete={sectionHandlers.onDeleteInterests}
-            onAdd={sectionHandlers.onAddInterests}
+          <SectionVariantWrapper
+            sectionId="interests"
+            variant={variant}
+            user={user}
+            isEditMode={isEditMode}
+            isCollapsible={expandedSections.has('interests')}
+            isExpanded={expandedSections.has('interests')}
+            onToggleExpand={() => handleToggleExpand('interests')}
+            showDragHandle={isEditMode}
+            dragHandleProps={{}}
+            onEditInterests={sectionHandlers.onEditInterests}
+            onDeleteInterests={sectionHandlers.onDeleteInterests}
+            onAddInterests={sectionHandlers.onAddInterests}
           />
         )
         break

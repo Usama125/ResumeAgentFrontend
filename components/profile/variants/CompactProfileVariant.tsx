@@ -16,6 +16,7 @@ import { getImageUrl } from '@/utils/imageUtils'
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import VariantAwareProfileSections from '@/components/sections/variants/VariantAwareProfileSections'
 import ProfileCompletionSection from '@/components/sections/ProfileCompletionSection'
+import PreferencesSection from '@/components/sections/PreferencesSection'
 
 interface CompactProfileVariantProps {
   user: UserType
@@ -515,6 +516,14 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
               onSectionOrderChange={onSectionOrderChange}
               onAddSection={onAddSection}
             />
+            
+            {/* Work Preferences Section - Always at bottom in edit mode, not draggable */}
+            {isEditMode && (
+              <PreferencesSection
+                user={user}
+                isEditMode={isEditMode}
+              />
+            )}
           </div>
         </div>
       </div>

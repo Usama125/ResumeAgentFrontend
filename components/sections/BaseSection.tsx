@@ -21,6 +21,7 @@ interface BaseSectionProps {
   className?: string
   showDragHandle?: boolean
   dragHandleProps?: any
+  hideEditIconsOnMobile?: boolean
 }
 
 const BaseSection = memo(function BaseSection({
@@ -37,7 +38,8 @@ const BaseSection = memo(function BaseSection({
   onAdd,
   className = "",
   showDragHandle = false,
-  dragHandleProps = {}
+  dragHandleProps = {},
+  hideEditIconsOnMobile = false
 }: BaseSectionProps) {
   const { isDark } = useTheme()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -84,7 +86,7 @@ const BaseSection = memo(function BaseSection({
                 onClick={handleDeleteClick}
                 size="sm"
                 variant="ghost"
-                className="text-red-500 hover:text-red-600 hover:bg-red-500/10 p-2"
+                className={`text-red-500 hover:text-red-600 hover:bg-red-500/10 p-2 ${hideEditIconsOnMobile ? 'hidden sm:flex' : ''}`}
                 title="Delete this section"
               >
                 <Trash2 className="w-4 h-4" />
@@ -95,7 +97,7 @@ const BaseSection = memo(function BaseSection({
                 onClick={onAdd}
                 size="sm"
                 variant="ghost"
-                className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-2"
+                className={`text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-2 ${hideEditIconsOnMobile ? 'hidden sm:flex' : ''}`}
                 title="Add new item"
               >
                 <Plus className="w-4 h-4" />
@@ -106,7 +108,7 @@ const BaseSection = memo(function BaseSection({
                 onClick={onEdit}
                 size="sm"
                 variant="ghost"
-                className="text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-2"
+                className={`text-[#10a37f] hover:text-[#0d8f6f] hover:bg-[#10a37f]/10 p-2 ${hideEditIconsOnMobile ? 'hidden sm:flex' : ''}`}
                 title="Edit this section"
               >
                 <Edit className="w-4 h-4" />

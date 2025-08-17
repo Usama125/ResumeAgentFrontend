@@ -58,12 +58,13 @@ export default function InterestsSection({
       isEditMode={isEditMode}
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
-      onEdit={onEdit}
+      onEdit={undefined}
       onDelete={hasData ? onDelete : undefined}
       onAdd={isEditMode ? onAddInterests : undefined}
       onToggleExpand={onToggleExpand}
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
+      hideEditIconsOnMobile={true}
     >
       <div className="flex flex-wrap gap-3">
         {hasData ? (

@@ -9,6 +9,7 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import VariantAwareProfileSections from "@/components/sections/variants/VariantAwareProfileSections"
 import ProfileCompletionSection from "@/components/sections/ProfileCompletionSection"
+import PreferencesSection from "@/components/sections/PreferencesSection"
 import {
   MapPin,
   Briefcase,
@@ -550,6 +551,14 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
               isEditMode={isEditMode}
               {...otherProps}
             />
+            
+            {/* Work Preferences Section - Always at bottom in edit mode, not draggable */}
+            {isEditMode && (
+              <PreferencesSection
+                user={user}
+                isEditMode={isEditMode}
+              />
+            )}
           </div>
         </div>
       </div>

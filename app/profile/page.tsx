@@ -186,6 +186,10 @@ export default function CurrentUserProfilePage() {
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [authTimeout, setAuthTimeout] = useState(false)
+  
+  // Section order change handler state
+  const [pendingSectionOrder, setPendingSectionOrder] = useState<string[] | null>(null)
+  const [isUpdatingSectionOrder, setIsUpdatingSectionOrder] = useState(false)
   const router = useRouter()
   const { user: authUser, isAuthenticated, loading: authLoading, refreshUser, updateUser } = useAuth()
   const { isDark } = useTheme()
@@ -800,6 +804,78 @@ export default function CurrentUserProfilePage() {
     }
   }, [user, updateUser, toast])
 
+  // Use ref to track updating state to prevent dependency issues
+  const isUpdatingRef = useRef(false)
+
+  // Handle section order change
+  const handleSectionOrderChange = useCallback(async (newSectionOrder: string[]) => {
+    console.log('🎯 handleSectionOrderChange called with:', newSectionOrder)
+    console.log('🎯 Current isUpdatingRef.current:', isUpdatingRef.current)
+    console.log('🎯 Current isMobile:', isMobile)
+    
+    if (!user) return
+    
+    // Set pending order immediately for UI responsiveness
+    setPendingSectionOrder(newSectionOrder)
+    
+    // If already updating, don't start another update
+    if (isUpdatingRef.current) {
+      console.log('🔄 Already updating section order, skipping duplicate call')
+      return
+    }
+    
+    isUpdatingRef.current = true
+    setIsUpdatingSectionOrder(true)
+    
+    console.log('🔧 Attempting to update section order:', newSectionOrder)
+    
+    try {
+      // Save to backend first, then update local state
+      await UserService.reorderSections(newSectionOrder)
+      
+      // Update both local state and auth context
+      setSectionOrder(newSectionOrder)
+      updateUser({ section_order: newSectionOrder })
+      setPendingSectionOrder(null)
+      
+      console.log('✅ Section order updated successfully:', newSectionOrder)
+      
+      // Show success toast
+      toast({
+        title: "Success",
+        description: "Section order updated successfully",
+      })
+    } catch (error: any) {
+      console.error('❌ Error updating section order:', error)
+      console.error('❌ Full error details:', error)
+      
+      // Log the exact request and response for debugging
+      if (error.detail) {
+        console.error('❌ Backend error detail:', error.detail)
+      }
+      if (error.responseData) {
+        console.error('❌ Backend response:', error.responseData)
+      }
+      
+      // Let's try to inspect the exact array we're sending
+      console.error('❌ Exact array sent:', JSON.stringify(newSectionOrder))
+      console.error('❌ Array length:', newSectionOrder.length)
+      newSectionOrder.forEach((section, index) => {
+        console.error(`❌ Section ${index}: "${section}" (length: ${section.length})`)
+      })
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: error.detail || "Failed to update section order",
+        variant: "destructive"
+      })
+    } finally {
+      isUpdatingRef.current = false
+      setIsUpdatingSectionOrder(false)
+    }
+  }, [user, setSectionOrder, updateUser, toast])
+
   // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
     setIsMounted(true)
@@ -1210,41 +1286,6 @@ export default function CurrentUserProfilePage() {
   const handleEditModeToggle = (newEditMode: boolean, shouldShowChat?: boolean) => {
     setIsEditMode(newEditMode)
     // Pass chat visibility control to child components
-  }
-
-  const handleSectionOrderChange = async (newSectionOrder: string[]) => {
-    if (!user) return
-    
-    console.log('🔧 Attempting to update section order:', newSectionOrder)
-    
-    try {
-      // Save to backend first, then update local state
-      await UserService.reorderSections(newSectionOrder)
-      
-      // Update both local state and auth context
-      setSectionOrder(newSectionOrder)
-      updateUser({ section_order: newSectionOrder })
-      
-      console.log('✅ Section order updated successfully:', newSectionOrder)
-    } catch (error: any) {
-      console.error('❌ Error updating section order:', error)
-      console.error('❌ Full error details:', error)
-      
-      // Log the exact request and response for debugging
-      if (error.detail) {
-        console.error('❌ Backend error detail:', error.detail)
-      }
-      if (error.responseData) {
-        console.error('❌ Backend response:', error.responseData)
-      }
-      
-      // Let's try to inspect the exact array we're sending
-      console.error('❌ Exact array sent:', JSON.stringify(newSectionOrder))
-      console.error('❌ Array length:', newSectionOrder.length)
-      newSectionOrder.forEach((section, index) => {
-        console.error(`❌ Section ${index}: "${section}" (length: ${section.length})`)
-      })
-    }
   }
 
   const handleAddSection = (sectionId: string) => {
