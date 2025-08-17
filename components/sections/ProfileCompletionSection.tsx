@@ -89,6 +89,11 @@ export default function ProfileCompletionSection({
   const adjustedCompletedSections = completionData.completedSections
   const adjustedPercentage = Math.round((adjustedCompletedSections / adjustedTotalSections) * 100)
 
+  // Calculate circle properties
+  const radius = 40
+  const circumference = 2 * Math.PI * radius
+  const strokeDasharray = circumference
+  const strokeDashoffset = circumference - (adjustedPercentage / 100) * circumference
 
   // Don't show if not in edit mode
   if (!isEditMode) {
@@ -212,11 +217,6 @@ export default function ProfileCompletionSection({
         return undefined
     }
   }
-
-  const radius = 40
-  const circumference = 2 * Math.PI * radius
-  const strokeDasharray = circumference
-  const strokeDashoffset = circumference - (adjustedPercentage / 100) * circumference
 
   return (
     <div className={`relative overflow-hidden rounded-2xl border ${

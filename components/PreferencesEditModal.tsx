@@ -240,14 +240,19 @@ export default function PreferencesEditModal({
 
                 <div className="space-y-4">
                   <Label className={`${themeClasses.text.primary} text-lg font-semibold`}>
-                    Current Salary
+                    Current Salary <span className="text-sm font-normal text-gray-500">(Optional)</span>
                   </Label>
-                  <Input
-                    value={formData.current_salary}
-                    onChange={(e) => setFormData(prev => ({ ...prev, current_salary: e.target.value }))}
-                    className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input}`}
-                    placeholder="e.g. $75,000"
-                  />
+                  <div className="space-y-2">
+                    <Input
+                      value={formData.current_salary}
+                      onChange={(e) => setFormData(prev => ({ ...prev, current_salary: e.target.value }))}
+                      className={`pl-4 pr-4 py-3 ${themeClasses.bg.input} backdrop-blur-sm ${themeClasses.text.primary} ${themeClasses.placeholder} focus:ring-[#10a37f] rounded-xl transition-all duration-300 ${themeClasses.border.hover} focus:${themeClasses.bg.input}`}
+                      placeholder="e.g. $75,000"
+                    />
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} italic`}>
+                      Sharing your current salary helps recruiters provide more accurate opportunities, but it's completely optional.
+                    </p>
+                  </div>
                 </div>
               </div>
 
