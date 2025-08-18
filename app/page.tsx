@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Users, Briefcase, X, Star, ChevronLeft, ChevronRight, MessageCircle, ArrowRight, MapPin, Plus } from "lucide-react"
+import { Search, Users, Briefcase, X, Star, ChevronLeft, ChevronRight, MessageCircle, ArrowRight, MapPin, Plus, Palette, FileText, Download, Share2, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
@@ -383,6 +383,274 @@ const TopProfilesSection = ({ isDark }: { isDark: boolean }) => {
   )
 }
 
+// Profile Variants Showcase Component
+const ProfileVariantsSection = ({ isDark }: { isDark: boolean }) => {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const router = useRouter()
+  
+  const variantSlides = [
+    "/placeholder-user.jpg", // Classic theme
+    "/placeholder-user.jpg", // Modern theme
+    "/placeholder-user.jpg", // Creative theme
+    "/placeholder-user.jpg", // Minimalist theme
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % variantSlides.length)
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [variantSlides.length])
+
+  return (
+    <div className={`relative ${isDark ? 'bg-gradient-to-b from-[#10a37f]/5 via-[#10a37f]/3 to-transparent' : 'bg-gradient-to-b from-[#10a37f]/3 via-[#10a37f]/2 to-transparent'}`}>
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Content */}
+          <div className="space-y-8">
+            <div>
+              <h2 className={`text-4xl font-bold mb-6 ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent' : 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent'}`}>
+                Multiple Portfolio Variants
+              </h2>
+              <p className={`text-xl leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Share your professional story in different styles. Create multiple portfolio themes that showcase your skills for different opportunities and audiences.
+              </p>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold text-sm">
+                  <Palette className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Professional Themes
+                  </h3>
+                  <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Choose from modern, classic, creative, or minimalist designs that match your industry and personal brand.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold text-sm">
+                  <Share2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Easy Sharing & Export
+                  </h3>
+                  <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Share different portfolio versions with clients, employers, or colleagues. Export as PDF or share unique links.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold text-sm">
+                  <Eye className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Targeted Presentations
+                  </h3>
+                  <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Customize what you show to different audiences. Highlight relevant projects and skills for each opportunity.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-start">
+              <Button
+                onClick={() => router.push("/profile")}
+                className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-8 py-3 text-lg rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/25 hover:scale-105"
+              >
+                <Palette className="w-5 h-5 mr-2" />
+                Explore Themes
+              </Button>
+            </div>
+          </div>
+
+          {/* Right side - Slider */}
+          <div className="relative">
+            <div className={`relative rounded-2xl p-8 border overflow-hidden ${isDark ? 'bg-[#2f2f2f]/30 border-[#565869]/50' : 'bg-white/30 border-gray-300/50'} backdrop-blur-sm`}>
+              {/* Slider Container */}
+              <div className="aspect-[4/3] rounded-xl overflow-hidden relative">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out h-full"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {variantSlides.map((slide, index) => (
+                    <div key={index} className="w-full h-full flex-shrink-0">
+                      <img 
+                        src={slide} 
+                        alt={`Portfolio variant ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Slider Navigation */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                  {variantSlides.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentSlide ? 'bg-[#10a37f] w-8' : 'bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute top-4 right-4 w-2 h-2 bg-[#10a37f] rounded-full"></div>
+              <div className="absolute bottom-4 left-4 w-3 h-3 bg-[#10a37f]/50 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// AI Writer Showcase Component
+const AIWriterSection = ({ isDark }: { isDark: boolean }) => {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const router = useRouter()
+  
+  const writerSlides = [
+    "/placeholder-user.jpg", // Cover letter interface
+    "/placeholder-user.jpg", // AI generation process
+    "/placeholder-user.jpg", // Generated content
+    "/placeholder-user.jpg", // Export options
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % writerSlides.length)
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [writerSlides.length])
+
+  return (
+    <div className={`relative ${isDark ? 'bg-gradient-to-b from-[#1a1a1a] via-[#2f2f2f]/50 to-[#1a1a1a]' : 'bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100'}`}>
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Slider */}
+          <div className="relative">
+            <div className={`relative rounded-2xl p-8 border overflow-hidden ${isDark ? 'bg-[#2f2f2f]/30 border-[#565869]/50' : 'bg-white/30 border-gray-300/50'} backdrop-blur-sm`}>
+              {/* Slider Container */}
+              <div className="aspect-[4/3] rounded-xl overflow-hidden relative">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out h-full"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {writerSlides.map((slide, index) => (
+                    <div key={index} className="w-full h-full flex-shrink-0">
+                      <img 
+                        src={slide} 
+                        alt={`AI Writer step ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Slider Navigation */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                  {writerSlides.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentSlide ? 'bg-[#10a37f] w-8' : 'bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute top-4 right-4 w-2 h-2 bg-[#10a37f] rounded-full"></div>
+              <div className="absolute bottom-4 left-4 w-3 h-3 bg-[#10a37f]/50 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Right side - Content */}
+          <div className="space-y-8">
+            <div>
+              <h2 className={`text-4xl font-bold mb-6 ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent' : 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent'}`}>
+                AI-Powered Content Writer
+              </h2>
+              <p className={`text-xl leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Transform your profile into winning cover letters and proposals. Our AI analyzes your skills and experience to create personalized content that gets results.
+              </p>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold text-sm">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Smart Cover Letters
+                  </h3>
+                  <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Generate personalized cover letters that highlight your relevant experience and skills for each specific job application.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold text-sm">
+                  <Star className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Profile-Powered AI
+                  </h3>
+                  <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Unlike generic tools, our AI uses your complete professional profile to create truly personalized content that showcases your expertise.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold text-sm">
+                  <Download className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Multiple Formats
+                  </h3>
+                  <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Create cover letters, freelance proposals, and other professional content. Export to any format or copy to clipboard.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-start">
+              <Button
+                onClick={() => router.push("/ai-writer")}
+                className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-8 py-3 text-lg rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/25 hover:scale-105"
+              >
+                <FileText className="w-5 h-5 mr-2" />
+                Try AI Writer
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
@@ -601,7 +869,7 @@ export default function HomePage() {
                 Why CVChatter Works Better
               </h2>
               <p className={`text-xl max-w-3xl mx-auto leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                Traditional profiles just sit there. CVChatter profiles actively engage, answer questions, and create meaningful connections between talent and opportunities.
+                Traditional profiles just sit there. CVChatter profiles actively engage, answer questions, create AI-powered content, and offer multiple presentation styles for every opportunity.
               </p>
             </div>
 
@@ -633,7 +901,7 @@ export default function HomePage() {
               </div>
 
               {/* Benefit 3 */}
-              <div className={`relative p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/10 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50 hover:border-[#10a37f]/50' : 'bg-white/50 border-gray-300/50 hover:border-[#10a37f]/50'} backdrop-blur-sm md:col-span-2 lg:col-span-1`}>
+              <div className={`relative p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/10 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50 hover:border-[#10a37f]/50' : 'bg-white/50 border-gray-300/50 hover:border-[#10a37f]/50'} backdrop-blur-sm`}>
                 <div className="w-12 h-12 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl flex items-center justify-center mb-6">
                   <Search className="w-6 h-6 text-white" />
                 </div>
@@ -642,6 +910,45 @@ export default function HomePage() {
                 </h3>
                 <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                   Show your personality and expertise through natural conversations. Let your experience speak for itself, literally.
+                </p>
+              </div>
+
+              {/* Benefit 4 - Profile Variants */}
+              <div className={`relative p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/10 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50 hover:border-[#10a37f]/50' : 'bg-white/50 border-gray-300/50 hover:border-[#10a37f]/50'} backdrop-blur-sm`}>
+                <div className="w-12 h-12 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl flex items-center justify-center mb-6">
+                  <Palette className="w-6 h-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  Multiple Portfolios
+                </h3>
+                <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Create different portfolio themes for different audiences. Share targeted presentations that highlight relevant skills for each opportunity.
+                </p>
+              </div>
+
+              {/* Benefit 5 - AI Writer */}
+              <div className={`relative p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/10 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50 hover:border-[#10a37f]/50' : 'bg-white/50 border-gray-300/50 hover:border-[#10a37f]/50'} backdrop-blur-sm`}>
+                <div className="w-12 h-12 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl flex items-center justify-center mb-6">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  AI Content Creation
+                </h3>
+                <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Generate personalized cover letters and proposals using your complete profile data. No more generic templates or starting from scratch.
+                </p>
+              </div>
+
+              {/* Benefit 6 - Professional Growth */}
+              <div className={`relative p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/10 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50 hover:border-[#10a37f]/50' : 'bg-white/50 border-gray-300/50 hover:border-[#10a37f]/50'} backdrop-blur-sm`}>
+                <div className="w-12 h-12 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl flex items-center justify-center mb-6">
+                  <ArrowRight className="w-6 h-6 text-white" />
+                </div>
+                <h3 className={`text-xl font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  Accelerated Growth
+                </h3>
+                <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Get discovered faster and connect with the right opportunities. Your intelligent profile works continuously to advance your career goals.
                 </p>
               </div>
             </div>
@@ -653,6 +960,12 @@ export default function HomePage() {
         
         {/* Recruiter Showcase Section - Alternating Background */}
         <RecruiterShowcaseSection isDark={isDark} />
+
+        {/* Profile Variants Section - Default Background */}
+        <ProfileVariantsSection isDark={isDark} />
+
+        {/* AI Writer Section - Alternating Background */}
+        <AIWriterSection isDark={isDark} />
 
         {/* Features Section - Alternating Background */}
         <div className={`relative ${isDark ? 'bg-gradient-to-b from-[#1a1a1a] via-[#2f2f2f]/50 to-[#1a1a1a]' : 'bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100'}`}>
@@ -666,7 +979,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Feature 1 */}
               <div className={`p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-[#2f2f2f]/30 border-[#565869]/50' : 'bg-white/30 border-gray-300/50'} backdrop-blur-sm`}>
                 <div className="flex items-center space-x-4 mb-4">
@@ -724,6 +1037,36 @@ export default function HomePage() {
                 </div>
                 <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                   Connect with people who truly understand your value. Skip surface-level interactions and build meaningful professional relationships.
+                </p>
+              </div>
+
+              {/* Feature 5 - Portfolio Variants */}
+              <div className={`p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-[#2f2f2f]/30 border-[#565869]/50' : 'bg-white/30 border-gray-300/50'} backdrop-blur-sm`}>
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg flex items-center justify-center">
+                    <Palette className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Adaptive Portfolio Presentation
+                  </h3>
+                </div>
+                <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Create multiple portfolio variants for different industries and audiences. Show the right skills to the right people at the right time.
+                </p>
+              </div>
+
+              {/* Feature 6 - AI Content Writer */}
+              <div className={`p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-[#2f2f2f]/30 border-[#565869]/50' : 'bg-white/30 border-gray-300/50'} backdrop-blur-sm`}>
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Intelligent Content Generation
+                  </h3>
+                </div>
+                <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Transform your profile into personalized cover letters and proposals instantly. AI-powered content that highlights your unique expertise for each opportunity.
                 </p>
               </div>
             </div>
