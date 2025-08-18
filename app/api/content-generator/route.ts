@@ -63,7 +63,7 @@ function getContentGenerationPrompt(
   length: string = 'brief',
   additionalInstructions?: string
 ): string {
-  return `Create a compelling cover letter using the candidate's profile and job description.
+  return `Create a compelling, ready-to-use cover letter using the candidate's profile and job description.
 
 CANDIDATE DATA:
 ${JSON.stringify(profileData, null, 2)}
@@ -73,50 +73,38 @@ Company: ${companyName}
 Position: ${positionTitle}  
 Job Description: ${jobDescription}
 
-EXACT FORMAT TO FOLLOW:
-
-SUBJECT: Application for ${positionTitle} Position at ${companyName}
-
-Hi ${companyName} Team, 👋
-
-[PARAGRAPH 1: Job Pain Point + Solution - 1-2 sentences max]
-- Identify the specific challenge/need from the job description
-- Position yourself as the solution
-- Be direct and compelling
-
-[CORE SKILLS SECTION: 3-4 bullet points with emojis]
-⚡ [Most relevant skill with specific achievement/metric]
-🚀 [Second most relevant skill with achievement]  
-💡 [Third relevant skill with achievement]
-🎯 [Fourth skill if needed]
-
-[RELEVANT PROJECTS SECTION:]
-Attaching Some Previous Projects:
-✅ [project-domain1.com]
-✅ [project-domain2.com] 
-✅ [project-domain3.com]
-
-[PARAGRAPH 2: About You - 1 sentence max]
-Brief compelling statement about your background and fit.
-
-Best regards,
-[Candidate Name]
-
-P.S. [Compelling hook related to the specific role/company]
-
 ${additionalInstructions ? `🚨 PRIORITY INSTRUCTIONS (MUST FOLLOW): ${additionalInstructions}
 
-` : ''}CRITICAL RULES:
+` : ''}Generate a complete cover letter with this structure:
+
+1. SUBJECT LINE: Application for ${positionTitle} Position at ${companyName}
+
+2. OPENING: Start with "Hi ${companyName} Team, 👋"
+
+3. PAIN POINT PARAGRAPH: 1-2 sentences identifying a specific challenge from the job description and positioning yourself as the solution.
+
+4. CORE SKILLS: 3-4 bullet points with emojis showing your most relevant skills with specific achievements/metrics that match the job requirements.
+
+5. PROJECTS SECTION: Include "Attaching Some Previous Projects:" followed by 2-3 actual project URLs from the candidate data with checkmarks.
+
+6. CLOSING PARAGRAPH: 1 sentence about your background and fit for the role.
+
+7. SIGNATURE: "Best regards, [Candidate Name]"
+
+8. P.S.: Add a compelling hook related to the specific role/company.
+
+CRITICAL REQUIREMENTS:
+- DO NOT include any bracketed instructions, headings, or template notes in the output
+- Generate clean, ready-to-copy content that can be used immediately
 - Keep paragraphs SHORT (1-2 sentences max)
 - Use relevant emojis for visual appeal
 - Extract actual project URLs from candidate data if available
-- Match skills to job requirements specifically
-- Make it ${tone} tone with ${length} length (${length === 'brief' ? '150-200 words' : length === 'standard' ? '200-300 words' : '300-400 words'})
+- Make it ${tone} tone with ${length} length (${length === 'brief' ? '200-250 words' : length === 'standard' ? '300-350 words' : '400-450 words'})
 - Focus on value and results
 - MUST COMPLETE the entire cover letter including P.S. statement
 - DO NOT stop mid-sentence or mid-section
 
-Generate the COMPLETE cover letter following this EXACT structure and PRIORITIZE the special instructions above. Ensure you include ALL sections from SUBJECT to P.S.`;
+Generate the COMPLETE cover letter now:`;
 }
 
 
@@ -161,10 +149,10 @@ function getStructureRequirements(contentType: string): string {
 
 function getMaxTokensForLength(length: string): number {
   switch (length) {
-    case 'brief': return 300;
-    case 'standard': return 450;
-    case 'detailed': return 600;
-    default: return 350;
+    case 'brief': return 400;
+    case 'standard': return 550;
+    case 'detailed': return 700;
+    default: return 450;
   }
 }
 

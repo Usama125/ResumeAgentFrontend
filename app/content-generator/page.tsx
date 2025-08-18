@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/types"
 import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
-import { Building2, User, FileText, Briefcase, Sparkles, Settings, Palette, BarChart3, Mail, FileEdit, Users, Zap, MessageCircle, Plus, AlertCircle, CheckCircle, Copy, Send, Clock, Type, BookOpen } from "lucide-react"
+import { Building2, User, FileText, Briefcase, Sparkles, Settings, Palette, BarChart3, Mail, FileEdit, Users, Zap, MessageCircle, Plus, AlertCircle, CheckCircle, Copy, Send, Clock, Type, BookOpen, RotateCcw, Download, File, Clipboard } from "lucide-react"
 import { calculateProfileCompletion } from "@/utils/profileCompletion"
 import { useChat } from 'ai/react'
+import ResizableSplitPane from "@/components/ResizableSplitPane"
 
 // Content generation types
 type ContentType = 'cover_letter' | 'proposal'
@@ -37,45 +38,13 @@ function CoverLetterDisplay({ content, isStreaming, onCopy }: { content: string,
   if (!content) return null
   
   return (
-    <div className="relative">
-      {/* Top right copy button */}
-      {!isStreaming && (
-        <button
-          onClick={onCopy}
-          className={`absolute top-2 right-2 z-10 p-2 rounded-lg transition-all duration-200 ${
-            isDark 
-              ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white' 
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900'
-          } opacity-70 hover:opacity-100`}
-          title="Copy to clipboard"
-        >
-          <Copy className="w-4 h-4" />
-        </button>
-      )}
-      
-      <div className={`p-4 text-base leading-relaxed ${isDark ? 'text-white' : 'text-gray-900'}`}>
-        <div style={{ whiteSpace: 'pre-line' }}>
-          {content}
-          {isStreaming && (
-            <span className="inline-block w-0.5 h-5 bg-[#10a37f] ml-1 animate-pulse"></span>
-          )}
-        </div>
+    <div className={`p-4 text-base leading-relaxed ${isDark ? 'text-white' : 'text-gray-900'}`}>
+      <div style={{ whiteSpace: 'pre-line' }}>
+        {content}
+        {isStreaming && (
+          <span className="inline-block w-0.5 h-5 bg-[#10a37f] ml-1 animate-pulse"></span>
+        )}
       </div>
-      
-      {/* Bottom right copy button */}
-      {!isStreaming && (
-        <button
-          onClick={onCopy}
-          className={`absolute bottom-2 right-2 z-10 p-2 rounded-lg transition-all duration-200 ${
-            isDark 
-              ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white' 
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900'
-          } opacity-70 hover:opacity-100`}
-          title="Copy to clipboard"
-        >
-          <Copy className="w-4 h-4" />
-        </button>
-      )}
     </div>
   )
 }
@@ -829,59 +798,33 @@ Please generate the content now.`
 
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a]' : 'bg-gradient-to-br from-white via-gray-50 to-white'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#212121] text-white' : 'bg-gray-50 text-gray-900'} overflow-x-hidden`}>
       <Header variant="default" />
       
-      {/* Hero Section */}
-      <div className={`relative ${isDark ? 'bg-gradient-to-b from-[#10a37f]/5 via-[#10a37f]/3 to-transparent' : 'bg-gradient-to-b from-[#10a37f]/3 via-[#10a37f]/2 to-transparent'}`}>
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
-          <div className="text-center space-y-6">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-30"></div>
-                <div className={`relative p-3 rounded-xl ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
-                  <Sparkles className="w-6 h-6 text-[#10a37f]" />
-                </div>
-              </div>
-              <div>
-                <h1 className={`text-4xl font-bold ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent' : 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent'}`}>
-                  AI Content Generator
-                </h1>
-                <p className={`text-xl mt-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Create personalized cover letters and proposals using your profile data
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Profile Completion Section */}
-      {user && (
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
-          <ProfileCompletionSection user={user} router={router} isDark={isDark} />
-        </div>
-      )}
-
-      {/* Main Content Area - Profile Page Style Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex h-[calc(100vh-200px)] gap-8">
-          {/* Left Side - Generation Options (50%) */}
-          <div className={`w-1/2 ${isDark ? 'bg-[#212121]' : 'bg-white'} rounded-2xl border ${isDark ? 'border-[#565869]' : 'border-gray-200'} shadow-lg overflow-y-auto`}>
-            <div className="p-8">
-              {/* Header */}
-              <div className="mb-8">
-                <div className="flex items-center gap-4 mb-6">
+      {/* Main Content - Full Height Split Layout */}
+      <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">
+        <ResizableSplitPane
+          isVisible={true}
+          defaultLeftWidth={50}
+          minLeftWidth={30}
+          maxLeftWidth={70}
+        >
+          {/* Left Side - Form and Options */}
+          <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
+            <div className="p-6">
+              {/* Small Page Header */}
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-4">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-30"></div>
-                    <div className={`relative p-3 rounded-xl ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
-                      <Sparkles className="w-6 h-6 text-[#10a37f]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg blur opacity-30"></div>
+                    <div className={`relative p-2 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
+                      <Sparkles className="w-5 h-5 text-[#10a37f]" />
                     </div>
                   </div>
                   <div>
-                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      Cover Letter Generator
-                    </h2>
+                    <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      AI Content Generator
+                    </h1>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                       Create personalized cover letters using your profile data
                     </p>
@@ -889,6 +832,34 @@ Please generate the content now.`
                 </div>
               </div>
 
+              {/* Profile Completion Section */}
+              {user && (
+                <div className="mb-8">
+                  <ProfileCompletionSection user={user} router={router} isDark={isDark} />
+                </div>
+              )}
+
+              {/* Form Section Header */}
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg blur opacity-30"></div>
+                    <div className={`relative p-2 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
+                      <FileEdit className="w-5 h-5 text-[#10a37f]" />
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      Cover Letter Generator
+                    </h2>
+                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Configure your cover letter options below
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Fields */}
               <div className="space-y-6">
                 {/* Company Name */}
                 <div>
@@ -971,23 +942,32 @@ Please generate the content now.`
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { value: 'professional', label: 'Professional', icon: '👔' },
-                      { value: 'enthusiastic', label: 'Enthusiastic', icon: '⚡' },
-                      { value: 'conversational', label: 'Conversational', icon: '💬' }
-                    ].map((tone) => (
-                      <button
-                        key={tone.value}
-                        onClick={() => setOptions(prev => ({ ...prev, tone: tone.value }))}
-                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 ${
-                          options.tone === tone.value
-                            ? 'border-[#10a37f] bg-[#10a37f]/10 text-[#10a37f]'
-                            : `${isDark ? 'border-[#565869] bg-[#2a2a2a] text-white hover:border-[#10a37f]/50' : 'border-gray-200 bg-white text-gray-900 hover:border-[#10a37f]/50'}`
-                        }`}
-                      >
-                        <span className="text-2xl">{tone.icon}</span>
-                        <span className="text-sm font-medium">{tone.label}</span>
-                      </button>
-                    ))}
+                      { value: 'professional', label: 'Professional', icon: Briefcase, gradient: 'from-blue-500/20 to-blue-600/20', borderColor: 'border-blue-500/30', iconColor: 'text-blue-500' },
+                      { value: 'enthusiastic', label: 'Enthusiastic', icon: Zap, gradient: 'from-yellow-500/20 to-orange-600/20', borderColor: 'border-yellow-500/30', iconColor: 'text-yellow-500' },
+                      { value: 'conversational', label: 'Conversational', icon: MessageCircle, gradient: 'from-purple-500/20 to-purple-600/20', borderColor: 'border-purple-500/30', iconColor: 'text-purple-500' }
+                    ].map((tone) => {
+                      const IconComponent = tone.icon;
+                      return (
+                        <button
+                          key={tone.value}
+                          onClick={() => setOptions(prev => ({ ...prev, tone: tone.value }))}
+                          className={`flex flex-col items-center gap-3 p-4 rounded-xl border transition-all duration-200 ${
+                            options.tone === tone.value
+                              ? 'border-[#10a37f] bg-[#10a37f]/10'
+                              : `${isDark ? 'border-[#565869] bg-[#2a2a2a] hover:border-[#10a37f]/50' : 'border-gray-200 bg-white hover:border-[#10a37f]/50'}`
+                          }`}
+                        >
+                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${tone.gradient} flex items-center justify-center border ${tone.borderColor}`}>
+                            <IconComponent className={`w-5 h-5 ${tone.iconColor}`} />
+                          </div>
+                          <span className={`text-sm font-medium ${
+                            options.tone === tone.value 
+                              ? 'text-[#10a37f]' 
+                              : isDark ? 'text-white' : 'text-gray-900'
+                          }`}>{tone.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1003,23 +983,32 @@ Please generate the content now.`
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { value: 'brief', label: 'Brief', icon: '📝' },
-                      { value: 'standard', label: 'Standard', icon: '📄' },
-                      { value: 'detailed', label: 'Detailed', icon: '📋' }
-                    ].map((length) => (
-                      <button
-                        key={length.value}
-                        onClick={() => setOptions(prev => ({ ...prev, length: length.value }))}
-                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 ${
-                          options.length === length.value
-                            ? 'border-[#10a37f] bg-[#10a37f]/10 text-[#10a37f]'
-                            : `${isDark ? 'border-[#565869] bg-[#2a2a2a] text-white hover:border-[#10a37f]/50' : 'border-gray-200 bg-white text-gray-900 hover:border-[#10a37f]/50'}`
-                        }`}
-                      >
-                        <span className="text-2xl">{length.icon}</span>
-                        <span className="text-sm font-medium">{length.label}</span>
-                      </button>
-                    ))}
+                      { value: 'brief', label: 'Brief', icon: FileText, gradient: 'from-green-500/20 to-green-600/20', borderColor: 'border-green-500/30', iconColor: 'text-green-500' },
+                      { value: 'standard', label: 'Standard', icon: File, gradient: 'from-gray-500/20 to-gray-600/20', borderColor: 'border-gray-500/30', iconColor: 'text-gray-500' },
+                      { value: 'detailed', label: 'Detailed', icon: Clipboard, gradient: 'from-orange-500/20 to-orange-600/20', borderColor: 'border-orange-500/30', iconColor: 'text-orange-500' }
+                    ].map((length) => {
+                      const IconComponent = length.icon;
+                      return (
+                        <button
+                          key={length.value}
+                          onClick={() => setOptions(prev => ({ ...prev, length: length.value }))}
+                          className={`flex flex-col items-center gap-3 p-4 rounded-xl border transition-all duration-200 ${
+                            options.length === length.value
+                              ? 'border-[#10a37f] bg-[#10a37f]/10'
+                              : `${isDark ? 'border-[#565869] bg-[#2a2a2a] hover:border-[#10a37f]/50' : 'border-gray-200 bg-white hover:border-[#10a37f]/50'}`
+                          }`}
+                        >
+                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${length.gradient} flex items-center justify-center border ${length.borderColor}`}>
+                            <IconComponent className={`w-5 h-5 ${length.iconColor}`} />
+                          </div>
+                          <span className={`text-sm font-medium ${
+                            options.length === length.value 
+                              ? 'text-[#10a37f]' 
+                              : isDark ? 'text-white' : 'text-gray-900'
+                          }`}>{length.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1037,7 +1026,7 @@ Please generate the content now.`
                     ref={additionalInstructionsRef}
                     value={options.additionalInstructions}
                     onChange={(e) => setOptions(prev => ({ ...prev, additionalInstructions: e.target.value }))}
-                    placeholder="Example: 'Make it more technical and mention specific AWS services like Lambda, DynamoDB. Focus on scalability achievements with metrics.'"
+                    placeholder="Customize your cover letter: 'Focus on leadership experience', 'Include specific metrics', 'Make it more technical', 'Emphasize remote work skills', etc."
                     rows={3}
                     className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
                       isDark 
@@ -1070,30 +1059,42 @@ Please generate the content now.`
             </div>
           </div>
 
-          {/* Right Side - Generated Content (50%) */}
-          <div className={`w-1/2 ${isDark ? 'bg-[#212121]' : 'bg-white'} rounded-2xl border ${isDark ? 'border-[#565869]' : 'border-gray-200'} shadow-lg overflow-y-auto`}>
-            <div className="p-8">
-              {/* Header */}
-              <div className="mb-8">
-                <div className="flex items-center gap-4 mb-6">
+          {/* Right Side - Generated Content */}
+          <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-hidden relative flex flex-col`}>
+            {/* Header */}
+            <div className="flex-shrink-0 p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-30"></div>
-                    <div className={`relative p-3 rounded-xl ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
-                      <FileEdit className="w-6 h-6 text-[#10a37f]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg blur opacity-30"></div>
+                    <div className={`relative p-2 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
+                      <FileEdit className="w-5 h-5 text-[#10a37f]" />
                     </div>
                   </div>
                   <div>
-                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      Generated Content
+                    <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      {generatedContent ? 'Cover Letter Generated' : 'Generated Content'}
                     </h2>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Your personalized cover letter will appear here
+                      {generatedContent ? `${options.tone} tone • ${options.length} length` : 'Your personalized cover letter will appear here'}
                     </p>
                   </div>
                 </div>
+                
+                {/* Copy Button - Only show when content is generated */}
+                {!isGenerating && generatedContent && (
+                  <button
+                    onClick={handleCopyToClipboard}
+                    className="p-2 rounded-lg bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                )}
               </div>
+            </div>
 
-              <div className={`min-h-[400px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'} rounded-xl border ${isDark ? 'border-[#565869]' : 'border-gray-200'} p-6`}>
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto p-6">
                 {/* Show loading state with better UI/UX */}
                 {isGenerating && !streamingContent && (
                   <div className="flex flex-col items-center justify-center h-64 space-y-6">
@@ -1124,47 +1125,14 @@ Please generate the content now.`
 
                 {/* Show streaming message if available */}
                 {isGenerating && streamingContent && (
-                  <div className="space-y-6">
-                    {/* Content Header */}
-                    <div className={`flex items-center gap-3 pb-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <div className="p-2 rounded-lg bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border border-[#10a37f]/30">
-                        <span className="text-lg">📧</span>
-                      </div>
-                      <div>
-                        <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          Cover Letter Generating...
-                        </h3>
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {options.tone} tone • {options.length} length
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Streaming Content */}
-                    <div className={`${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      <CoverLetterDisplay content={streamingContent} isStreaming={true} onCopy={handleCopyToClipboard} />
-                    </div>
+                  <div className={`${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <CoverLetterDisplay content={streamingContent} isStreaming={true} onCopy={handleCopyToClipboard} />
                   </div>
                 )}
 
                 {/* Show final generated content */}
                 {!isGenerating && generatedContent && (
                   <div className="space-y-6">
-                    {/* Content Header */}
-                    <div className={`flex items-center gap-3 pb-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <div className="p-2 rounded-lg bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border border-[#10a37f]/30">
-                        <span className="text-lg">📧</span>
-                      </div>
-                      <div>
-                        <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          Cover Letter Generated
-                        </h3>
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {options.tone} tone • {options.length} length
-                        </p>
-                      </div>
-                    </div>
-                    
                     {/* Formatted Content */}
                     <div className={`${isDark ? 'text-white' : 'text-gray-900'}`}>
                       <CoverLetterDisplay content={generatedContent} isStreaming={false} onCopy={handleCopyToClipboard} />
@@ -1201,31 +1169,22 @@ Please generate the content now.`
                           </span>
                         </div>
                       </div>
-                      
+
                       {/* Regeneration Tip */}
-                      <div className={`p-4 rounded-xl ${isDark ? 'bg-[#10a37f]/5' : 'bg-[#10a37f]/5'} border-l-4 border-[#10a37f]`}>
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 mt-1">
-                            <div className="w-6 h-6 rounded-full bg-[#10a37f]/20 flex items-center justify-center">
-                              <span className="text-[#10a37f] text-sm">💡</span>
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <p className={`text-sm ${isDark ? 'text-white' : 'text-gray-900'} mb-3`}>
-                              Want to improve this cover letter? Add specific instructions below and regenerate!
-                            </p>
-                            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-3`}>
-                              Try: "Make it more technical", "Add specific metrics", "Focus on leadership experience", etc.
-                            </p>
-                            <button
-                              onClick={handleRegenerate}
-                              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#10a37f] bg-[#10a37f]/10 hover:bg-[#10a37f]/20 rounded-lg transition-all duration-200"
-                            >
-                              <span>🔄</span>
-                              Add Instructions & Regenerate
-                            </button>
-                          </div>
+                      <div className={`p-3 rounded-lg ${isDark ? 'bg-[#10a37f]/5' : 'bg-[#10a37f]/5'} border-l-4 border-[#10a37f]`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-[#10a37f] text-sm">💡</span>
+                          <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            Want to improve this cover letter? Add specific instructions below and regenerate!
+                          </p>
                         </div>
+                        <button
+                          onClick={handleRegenerate}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#10a37f] bg-[#10a37f]/10 hover:bg-[#10a37f]/20 rounded-lg transition-all duration-200"
+                        >
+                          <span>🔄</span>
+                          Add Instructions & Regenerate
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1314,9 +1273,9 @@ Please generate the content now.`
                   </div>
                 )}
               </div>
-            </div>
+
           </div>
-        </div>
+        </ResizableSplitPane>
       </div>
       
       {/* Rate Limit Modal */}
