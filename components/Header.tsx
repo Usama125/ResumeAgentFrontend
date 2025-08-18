@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Edit } from "lucide-react"
+import { ArrowLeft, Edit, Menu, X, Home, Search, Sparkles, Key, Rocket, Moon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { useTheme } from "@/context/ThemeContext"
@@ -28,6 +28,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const { isDark } = useTheme()
   const [isMobile, setIsMobile] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   // Mobile detection
   useEffect(() => {
@@ -160,11 +161,6 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                     >
                       <span>✨</span>
                       AI Writer
-                      {!isAuthenticated && (
-                        <span className="absolute -top-1 -right-2 px-1.5 py-0.5 text-xs bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] text-white rounded-full font-medium">
-                          NEW
-                        </span>
-                      )}
                     </button>
                   </nav>
                 </>
@@ -213,11 +209,28 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               )}
             </div>
 
-            {/* Right side content */}
+                        {/* Right side content */}
             <div className="flex items-center space-x-1 sm:space-x-3 flex-shrink-0">
               
-              {/* Theme toggle - always visible */}
-              <ThemeToggle />
+              {/* Mobile hamburger menu for guest users */}
+              {isMobile && !isAuthenticated && (
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                  <button
+                    onClick={() => setIsDrawerOpen(true)}
+                    className={`relative p-3 rounded-xl transition-all duration-300 ${
+                      isDark 
+                        ? 'bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a] text-gray-300 hover:text-white border border-[#10a37f]/30 hover:border-[#10a37f]/50 shadow-lg shadow-[#10a37f]/20 hover:shadow-[#10a37f]/40' 
+                        : 'bg-gradient-to-br from-white to-gray-50 text-gray-600 hover:text-gray-900 border border-[#10a37f]/20 hover:border-[#10a37f]/40 shadow-lg shadow-[#10a37f]/10 hover:shadow-[#10a37f]/30'
+                    }`}
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Theme toggle - hidden on mobile for guest users, visible for others */}
+              {(!isMobile || isAuthenticated) && <ThemeToggle />}
               
               {/* Profile page specific buttons */}
               {/* {isProfilePage && onEditProfile && (
@@ -240,19 +253,22 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               ) : (
                 !isAuthPage && (
                   <>
-                    <Button
-                      variant="ghost"
-                      className={`transition-all !px-4 duration-300 backdrop-blur-sm ${isDark ? 'text-gray-300 hover:text-white hover:bg-[#10a37f]/20 border border-transparent hover:border-[#10a37f]/30' : 'text-gray-600 hover:text-gray-900 hover:bg-[#10a37f]/10 border border-transparent hover:border-[#10a37f]/20'}`}
-                      onClick={() => router.push("/auth")}
-                    >
-                      Sign In
-                    </Button>
-                    <Button 
-                      className="bg-gradient-to-r !px-4 from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-6 py-2.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/25 hover:scale-105 border border-[#10a37f]/20" 
-                      onClick={() => router.push("/auth")}
-                    >
-                      <span className="font-medium">Get Started</span>
-                    </Button>
+                    {/* Desktop auth buttons */}
+                    <div className="hidden sm:flex items-center space-x-3">
+                      <Button
+                        variant="ghost"
+                        className={`transition-all !px-4 duration-300 backdrop-blur-sm ${isDark ? 'text-gray-300 hover:text-white hover:bg-[#10a37f]/20 border border-transparent hover:border-[#10a37f]/30' : 'text-gray-600 hover:text-gray-900 hover:bg-[#10a37f]/10 border border-transparent hover:border-[#10a37f]/20'}`}
+                        onClick={() => router.push("/auth")}
+                      >
+                        Sign In
+                      </Button>
+                      <Button 
+                        className="bg-gradient-to-r !px-4 from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-6 py-2.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/25 hover:scale-105 border border-[#10a37f]/20" 
+                        onClick={() => router.push("/auth")}
+                      >
+                        <span className="font-medium">Get Started</span>
+                      </Button>
+                    </div>
                   </>
                 )
               )}
@@ -260,6 +276,184 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
           </div>
         </div>
       </div>
+
+      {/* Mobile Side Drawer */}
+      {isMobile && !isAuthenticated && (
+        <>
+          {/* Backdrop */}
+          {isDrawerOpen && (
+            <div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              onClick={() => setIsDrawerOpen(false)}
+            />
+          )}
+          
+          {/* Simple Drawer */}
+          <div className={`fixed top-0 right-0 h-full w-72 z-50 transform transition-transform duration-300 ease-out ${
+            isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+          } ${isDark ? 'bg-[#1a1a1a] border-l border-[#565869]' : 'bg-white border-l border-gray-200'}`}>
+            
+            {/* Header */}
+            <div className={`flex items-center justify-between p-4 border-b ${isDark ? 'border-[#565869]' : 'border-gray-200'}`}>
+              <div className="flex items-center gap-3">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                  <div className={`relative w-12 h-12 rounded-xl ${isDark ? 'bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]' : 'bg-gradient-to-br from-white to-gray-50'} border border-[#10a37f]/30 shadow-lg shadow-[#10a37f]/20 flex items-center justify-center group-hover:shadow-[#10a37f]/40 transition-all duration-300`}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/10 to-[#0d8f6f]/10 rounded-xl"></div>
+                    <img src="/placeholder-user.jpg" alt="CVChatter" className="relative w-7 h-7 rounded-lg object-cover ring-2 ring-[#10a37f]/20" />
+                  </div>
+                </div>
+                <div>
+                  <h2 className={`text-lg font-bold ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent' : 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent'}`}>
+                    CVChatter
+                  </h2>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Smart Profiles
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className={`p-2 rounded-lg transition-colors ${
+                  isDark 
+                    ? 'text-gray-300 hover:text-white hover:bg-[#10a37f]/20' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-[#10a37f]/10'
+                }`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Simple Navigation */}
+            <div className="p-4 space-y-2">
+              <div
+                onClick={() => {
+                  router.push("/")
+                  setIsDrawerOpen(false)
+                }}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-300 cursor-pointer group ${
+                  isHomePage 
+                    ? `${isDark ? 'bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border border-[#10a37f]/30' : 'bg-gradient-to-r from-[#10a37f]/10 to-[#0d8f6f]/10 border border-[#10a37f]/30'}` 
+                    : `${isDark ? 'text-gray-300 hover:text-white hover:bg-[#2a2a2a] border border-transparent hover:border-[#10a37f]/20' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-[#10a37f]/20'}`
+                }`}
+                style={{ justifyContent: 'flex-start' }}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isHomePage 
+                    ? 'bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 shadow-lg shadow-[#10a37f]/20' 
+                    : isDark ? 'bg-[#2a2a2a] group-hover:bg-[#10a37f]/10' : 'bg-gray-100 group-hover:bg-[#10a37f]/10'
+                }`}>
+                  <Home className={`w-5 h-5 ${isHomePage ? 'text-[#10a37f]' : isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+                </div>
+                <span className="font-medium">Home</span>
+              </div>
+
+              <div
+                onClick={() => {
+                  router.push("/explore")
+                  setIsDrawerOpen(false)
+                }}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-300 cursor-pointer group ${
+                  isDefaultPage 
+                    ? `${isDark ? 'bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border border-[#10a37f]/30' : 'bg-gradient-to-r from-[#10a37f]/10 to-[#0d8f6f]/10 border border-[#10a37f]/30'}` 
+                    : `${isDark ? 'text-gray-300 hover:text-white hover:bg-[#2a2a2a] border border-transparent hover:border-[#10a37f]/20' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-[#10a37f]/20'}`
+                }`}
+                style={{ justifyContent: 'flex-start' }}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isDefaultPage 
+                    ? 'bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 shadow-lg shadow-[#10a37f]/20' 
+                    : isDark ? 'bg-[#2a2a2a] group-hover:bg-[#10a37f]/10' : 'bg-gray-100 group-hover:bg-[#10a37f]/10'
+                }`}>
+                  <Search className={`w-5 h-5 ${isDefaultPage ? 'text-[#10a37f]' : isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+                </div>
+                <span className="font-medium">Explore Talent</span>
+              </div>
+
+              <div
+                onClick={() => {
+                  router.push("/ai-writer")
+                  setIsDrawerOpen(false)
+                }}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-300 cursor-pointer group ${
+                  isAIWriterPage 
+                    ? `${isDark ? 'bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border border-[#10a37f]/30' : 'bg-gradient-to-r from-[#10a37f]/10 to-[#0d8f6f]/10 border border-[#10a37f]/30'}` 
+                    : `${isDark ? 'text-gray-300 hover:text-white hover:bg-[#2a2a2a] border border-transparent hover:border-[#10a37f]/20' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-[#10a37f]/20'}`
+                }`}
+                style={{ justifyContent: 'flex-start' }}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isAIWriterPage 
+                    ? 'bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 shadow-lg shadow-[#10a37f]/20' 
+                    : isDark ? 'bg-[#2a2a2a] group-hover:bg-[#10a37f]/10' : 'bg-gray-100 group-hover:bg-[#10a37f]/10'
+                }`}>
+                  <Sparkles className={`w-5 h-5 ${isAIWriterPage ? 'text-[#10a37f]' : isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+                </div>
+                <span className="font-medium">AI Writer</span>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className={`mx-4 border-t ${isDark ? 'border-[#565869]' : 'border-gray-200'}`} />
+
+            {/* Auth Buttons */}
+            <div className="p-4 space-y-3">
+              <div
+                onClick={() => {
+                  router.push("/auth")
+                  setIsDrawerOpen(false)
+                }}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-300 cursor-pointer group ${
+                  isDark 
+                    ? 'text-gray-300 hover:text-white hover:bg-[#2a2a2a] border border-transparent hover:border-[#10a37f]/20' 
+                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-[#10a37f]/20'
+                }`}
+                style={{ justifyContent: 'flex-start' }}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isDark ? 'bg-[#2a2a2a] group-hover:bg-[#10a37f]/10' : 'bg-gray-100 group-hover:bg-[#10a37f]/10'
+                }`}>
+                  <Key className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+                </div>
+                <span className="font-medium">Sign In</span>
+              </div>
+              
+              <div
+                onClick={() => {
+                  router.push("/auth")
+                  setIsDrawerOpen(false)
+                }}
+                className="w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-300 cursor-pointer bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white shadow-lg shadow-[#10a37f]/25 hover:shadow-[#10a37f]/40 hover:scale-[1.02]"
+                style={{ justifyContent: 'flex-start' }}
+              >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/20 backdrop-blur-sm">
+                  <Rocket className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-medium">Get Started</span>
+              </div>
+            </div>
+
+                          {/* Theme Toggle */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className={`flex items-center justify-between p-3 rounded-lg ${
+                  isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'
+                }`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      isDark ? 'bg-[#2a2a2a]' : 'bg-gray-100'
+                    }`}>
+                      <Moon className={`w-4 h-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} />
+                    </div>
+                    <span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Theme
+                    </span>
+                  </div>
+                  <ThemeToggle />
+                </div>
+              </div>
+          </div>
+        </>
+      )}
     </header>
   )
 }
