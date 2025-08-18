@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 interface ProfileCompletionSectionProps {
   user: UserType
   isEditMode?: boolean
+  variant?: 'default' | 'compact' | 'advanced'
   onEditAbout?: () => void
   onEditSkills?: () => void
   onEditExperience?: () => void
@@ -27,6 +28,7 @@ interface ProfileCompletionSectionProps {
 export default function ProfileCompletionSection({
   user,
   isEditMode = false,
+  variant = 'default',
   onEditAbout,
   onEditSkills,
   onEditExperience,
@@ -248,7 +250,11 @@ export default function ProfileCompletionSection({
               Add information to these sections to make your profile more complete and professional.
             </p>
             
-            <div className="flex flex-wrap gap-3">
+            <div className={`${
+              variant === 'compact' 
+                ? 'flex flex-wrap gap-1.5' 
+                : 'flex flex-wrap gap-3'
+            }`}>
               {allEmptySections.map((section) => {
                 const addHandler = getAddHandler(section.id)
                 
@@ -257,14 +263,16 @@ export default function ProfileCompletionSection({
                     key={section.id}
                     onClick={addHandler}
                     variant="outline"
-                    size="sm"
+                    size={variant === 'compact' ? 'sm' : 'sm'}
                     className={`flex items-center gap-2 ${
+                      variant === 'compact' ? 'text-xs px-2 py-1' : ''
+                    } ${
                       isDark 
                         ? 'bg-[#2f2f2f]/60 border-[#565869]/40 text-white hover:bg-[#40414f]/60 hover:border-[#10a37f]/40' 
                         : 'bg-gray-50/60 border-gray-200 text-gray-700 hover:bg-gray-100/60 hover:border-[#10a37f]/40'
                     } transition-colors`}
                   >
-                    <Plus className="w-4 h-4 text-[#10a37f]" />
+                    <Plus className={`${variant === 'compact' ? 'w-3 h-3' : 'w-4 h-4'} text-[#10a37f]`} />
                     <span>Add {section.title}</span>
                   </Button>
                 )

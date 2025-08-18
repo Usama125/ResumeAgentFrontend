@@ -45,6 +45,7 @@ import PreferencesSection from "@/components/sections/PreferencesSection"
 interface ProfileSectionsProps {
   user: UserType
   isEditMode?: boolean
+  variant?: 'default' | 'compact' | 'advanced'
   onEditAbout?: () => void
   onEditSkills?: () => void
   onEditExperience?: () => void
@@ -130,6 +131,7 @@ function SortableSectionWrapper({ id, children, isEditMode }: SortableSectionWra
 const ProfileSections = memo(function ProfileSections({
   user,
   isEditMode = false,
+  variant = 'default',
   onEditAbout,
   onEditSkills,
   onEditExperience,
@@ -411,6 +413,7 @@ const ProfileSections = memo(function ProfileSections({
             <ProfileCompletionSection
               user={user}
               isEditMode={isEditMode}
+              variant={variant}
               onEditAbout={onEditAbout}
               onEditSkills={onEditSkills}
               onEditExperience={onEditExperience}

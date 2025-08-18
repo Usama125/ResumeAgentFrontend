@@ -19,10 +19,10 @@ const UserShowcaseSection = ({ isDark }: { isDark: boolean }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   
   const userSlides = [
-    "/placeholder-user.jpg", // Profile setup
-    "/placeholder-user.jpg", // Profile editing
-    "/placeholder-user.jpg", // Profile completion
-    "/placeholder-user.jpg", // Profile preview
+    "/images/carousel/profile-creation/signup-flow.gif", // Complete signup flow
+    "/images/carousel/profile-creation/profile-setup.gif", // Profile creation
+    "/images/carousel/profile-creation/onboarding-steps.gif", // Onboarding process
+    "/images/carousel/profile-creation/profile-preview.png", // Final result
   ]
 
   useEffect(() => {
@@ -142,10 +142,10 @@ const RecruiterShowcaseSection = ({ isDark }: { isDark: boolean }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   
   const recruiterSlides = [
-    "/placeholder-user.jpg", // Search interface
-    "/placeholder-user.jpg", // Profile browsing
-    "/placeholder-user.jpg", // Chat with candidate
-    "/placeholder-user.jpg", // Match analysis
+    "/images/carousel/recruiter-experience/search-interface.png", // Search interface
+    "/images/carousel/recruiter-experience/profile-browsing.png", // Profile browsing
+    "/images/carousel/recruiter-experience/chat-candidate.png", // Chat with candidate
+    "/images/carousel/recruiter-experience/match-analysis.png", // Match analysis
   ]
 
   useEffect(() => {
@@ -389,10 +389,10 @@ const ProfileVariantsSection = ({ isDark }: { isDark: boolean }) => {
   const router = useRouter()
   
   const variantSlides = [
-    "/placeholder-user.jpg", // Classic theme
-    "/placeholder-user.jpg", // Modern theme
-    "/placeholder-user.jpg", // Creative theme
-    "/placeholder-user.jpg", // Minimalist theme
+    "/images/carousel/portfolio-variants/theme-selection.png", // Theme selection
+    "/images/carousel/portfolio-variants/modern-theme.png", // Modern theme
+    "/images/carousel/portfolio-variants/classic-theme.png", // Classic theme
+    "/images/carousel/portfolio-variants/creative-theme.png", // Creative theme
   ]
 
   useEffect(() => {
@@ -523,10 +523,10 @@ const AIWriterSection = ({ isDark }: { isDark: boolean }) => {
   const router = useRouter()
   
   const writerSlides = [
-    "/placeholder-user.jpg", // Cover letter interface
-    "/placeholder-user.jpg", // AI generation process
-    "/placeholder-user.jpg", // Generated content
-    "/placeholder-user.jpg", // Export options
+    "/images/carousel/ai-writer/writer-form.png", // Cover letter interface
+    "/images/carousel/ai-writer/generation-process.png", // AI generation process
+    "/images/carousel/ai-writer/generated-content.png", // Generated content
+    "/images/carousel/ai-writer/export-options.png", // Export options
   ]
 
   useEffect(() => {

@@ -562,6 +562,7 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
               <ProfileCompletionSection
                 user={user}
                 isEditMode={isEditMode}
+                variant="advanced"
                 onEditAbout={otherProps.onEditAbout}
                 onEditSkills={otherProps.onEditSkills}
                 onEditExperience={otherProps.onEditExperience}
