@@ -19,11 +19,12 @@ interface HeaderProps {
     profile_picture?: string
     is_looking_for_job?: boolean
   }
+  isCurrentUserProfile?: boolean
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
 
-export default function Header({ variant = 'home', showBackButton = false, onEditProfile, profileData }: HeaderProps) {
+export default function Header({ variant = 'home', showBackButton = false, onEditProfile, profileData, isCurrentUserProfile = false }: HeaderProps) {
   const router = useRouter()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const { isDark } = useTheme()
@@ -169,15 +170,18 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               {/* Profile info for profile pages */}
               {isProfilePage && profileData && (
                 <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                  <img
-                    src={getImageUrl(profileData.profile_picture || null)}
-                    alt={profileData.name || "Profile"}
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder-user.jpg";
-                    }}
-                  />
+                  {/* Show profile picture only for public profiles (not current user's profile) */}
+                  {!isCurrentUserProfile && (
+                    <img
+                      src={getImageUrl(profileData.profile_picture || null)}
+                      alt={profileData.name || "Profile"}
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder-user.jpg";
+                      }}
+                    />
+                  )}
                   <h1 className={`text-sm sm:text-lg font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {profileData.name}
                   </h1>

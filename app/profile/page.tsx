@@ -1320,6 +1320,7 @@ export default function CurrentUserProfilePage() {
           profile_picture: user?.profile_picture || '',
           is_looking_for_job: user?.is_looking_for_job
         }}
+        isCurrentUserProfile={true}
       />
 
       {/* Main Content */}

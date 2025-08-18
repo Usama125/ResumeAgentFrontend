@@ -690,7 +690,7 @@ Please generate the content now.`
               <div>
                 <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent' : 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent'}`}>
                   AI-Powered <span className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent">
-                    Content Generator
+                    Cover Letters
                   </span>
                 </h1>
                 <p className={`text-xl sm:text-2xl leading-relaxed max-w-4xl mx-auto ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -705,7 +705,7 @@ Please generate the content now.`
                   onClick={() => router.push('/auth?tab=signup')}
                   className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
-                  🚀 Create Free Profile & Start Writing
+                  🚀 Create Free Profile
                 </Button>
                 
                 <Button
@@ -778,7 +778,7 @@ Please generate the content now.`
                 onClick={() => router.push('/auth?tab=signup')}
                 className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                🚀 Create Free Profile (3 generations/day)
+                🚀 Create Free Profile
               </Button>
               
               <Button
@@ -790,7 +790,7 @@ Please generate the content now.`
                     : 'border-gray-300 text-gray-700 hover:bg-[#10a37f]/10 hover:border-[#10a37f]/50'
                 }`}
               >
-                Sign In (5 generations/day)
+                Sign In
               </Button>
             </div>
           </div>

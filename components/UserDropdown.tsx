@@ -241,13 +241,13 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
 
           {/* Menu Items */}
           <div className="py-2">
-            <button
+            <div
               onClick={handleProfile}
-              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3`}
+              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 cursor-pointer`}
             >
               <User className="w-4 h-4" />
               <span>View Profile</span>
-            </button>
+            </div>
             
             {/* <button
               onClick={handleEditProfile}
@@ -257,51 +257,48 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
               <span>Edit Profile</span>
             </button> */}
 
-            <button
+            <div
               onClick={handleSearchProfiles}
-              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3`}
+              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 cursor-pointer`}
             >
               <Search className="w-4 h-4" />
               <span>Browse Profiles</span>
-            </button>
+            </div>
 
-            <button
+            <div
               onClick={handleAIWriter}
-              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 group`}
+              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 group cursor-pointer`}
             >
               <Sparkles className="w-4 h-4 text-[#10a37f] group-hover:text-[#0d8f6f]" />
               <span>AI Writer</span>
-              <span className="ml-auto px-1.5 py-0.5 text-xs bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] text-white rounded-full font-medium">
-                NEW
-              </span>
-            </button>
+            </div>
 
-            <button
+            <div
               onClick={handleDownloadProfile}
-              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3`}
+              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 cursor-pointer`}
             >
               <Download className="w-4 h-4" />
               <span>Download Profile</span>
-            </button>
+            </div>
             
-            <button
+            <div
               onClick={handleSettings}
-              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3`}
+              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 cursor-pointer`}
             >
               <Settings className="w-4 h-4" />
               <span>Settings</span>
-            </button>
+            </div>
           </div>
 
           {/* Logout Section */}
           <div className={`border-t ${themeClasses.border.primary}/30 py-2`}>
-            <button
+            <div
               onClick={handleLogout}
-              className={`w-full px-4 py-2 text-left text-sm hover:bg-red-500/10 transition-colors flex items-center space-x-3 ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'}`}
+              className={`w-full px-4 py-2 text-left text-sm hover:bg-red-500/10 transition-colors flex items-center space-x-3 cursor-pointer ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'}`}
             >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
-            </button>
+            </div>
           </div>
         </div>,
         document.body
