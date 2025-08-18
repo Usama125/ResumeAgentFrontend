@@ -517,6 +517,7 @@ export default function VariantAwareProfileSections({
       {isEditMode && (
         <ProfileCompletionSection 
           user={user} 
+          variant={variant}
           onEditAbout={sectionHandlers.onEditAbout}
           onEditSkills={sectionHandlers.onEditSkills}
           onEditExperience={sectionHandlers.onEditExperience}

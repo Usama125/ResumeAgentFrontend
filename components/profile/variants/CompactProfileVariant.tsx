@@ -490,6 +490,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
               <ProfileCompletionSection
                 user={user}
                 isEditMode={isEditMode}
+                variant="compact"
                 onEditAbout={onEditAbout}
                 onEditSkills={onEditSkills}
                 onEditExperience={onEditExperience}
