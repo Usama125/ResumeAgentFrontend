@@ -45,11 +45,12 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
   const isHomePage = variant === 'home'
   const isAuthPage = variant === 'auth'
   const isDefaultPage = variant === 'default'
+  const isAIWriterPage = variant === 'ai-writer'
 
   return (
     <header className="sticky top-0 z-40 w-full relative">
-      {/* Enhanced gradient background for home page and explore page */}
-      {(isHomePage || isDefaultPage) && (
+      {/* Enhanced gradient background for home page, explore page, and AI writer page */}
+      {(isHomePage || isDefaultPage || isAIWriterPage) && (
         <>
           <div className={`absolute inset-0 transition-all duration-500 ${isDark ? 'bg-gradient-to-r from-[#1a1a1a] via-[#2f2f2f] to-[#1a1a1a]' : 'bg-gradient-to-r from-white via-gray-100 to-white'}`}></div>
           <div className={`absolute inset-0 transition-all duration-700 ${isDark ? 'bg-gradient-to-br from-[#10a37f]/10 via-transparent to-[#10a37f]/5' : 'bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/3'}`}></div>
@@ -69,7 +70,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
       )}
 
       {/* Background for other pages */}
-      {!isHomePage && !isDefaultPage && (
+      {!isHomePage && !isDefaultPage && !isAIWriterPage && (
         <>
           {/* Profile page gets gradient background similar to home */}
           {isProfilePage ? (
@@ -87,7 +88,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
 
       <div className="relative backdrop-blur-sm overflow-hidden">
         <div className="w-full px-2 sm:px-4 lg:px-6">
-          <div className={`flex justify-between items-center ${(isHomePage || isDefaultPage) ? 'h-16 py-2' : 'h-14'} min-w-0`}>
+          <div className={`flex justify-between items-center ${(isHomePage || isDefaultPage || isAIWriterPage) ? 'h-16 py-2' : 'h-14'} min-w-0`}>
             
             {/* Left side content */}
             <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
@@ -105,8 +106,8 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                 </Button>
               )}
 
-              {/* Logo and title for home and default pages */}
-              {(isHomePage || isDefaultPage) && (
+              {/* Logo and title for home, default, and AI writer pages */}
+              {(isHomePage || isDefaultPage || isAIWriterPage) && (
                 <>
                   <div className="relative group cursor-pointer" onClick={() => router.push("/")}>
                     <div className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-[#10a37f]/30 shadow-lg shadow-[#10a37f]/20 group-hover:ring-[#10a37f]/50 group-hover:shadow-[#10a37f]/40 transition-all duration-300 group-hover:scale-105">
@@ -203,7 +204,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               )}
 
               {/* Simple title for other pages */}
-              {!isHomePage && !isProfilePage && !isDefaultPage && (
+              {!isHomePage && !isProfilePage && !isDefaultPage && !isAIWriterPage && (
                 <div>
                   <h1 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {variant === 'auth' ? 'Welcome Back' : variant === 'onboarding' ? 'Profile Setup' : 'AI Resume Builder'}
