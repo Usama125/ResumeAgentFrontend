@@ -8,7 +8,7 @@ interface RateLimitState {
   message: string;
   resetInSeconds: number;
   isAuthenticated: boolean;
-  rateLimitType: 'job_matching' | 'chat';
+  rateLimitType: 'job_matching' | 'chat' | 'content_generation';
 }
 
 export function useRateLimit() {
@@ -28,7 +28,7 @@ export function useRateLimit() {
         message: error.message,
         resetInSeconds: rateLimitData.resetInSeconds,
         isAuthenticated: rateLimitData.isAuthenticated,
-        rateLimitType: rateLimitData.rateLimitType as 'job_matching' | 'chat'
+        rateLimitType: rateLimitData.rateLimitType as 'job_matching' | 'chat' | 'content_generation'
       });
     } else if (error.type === 'RATE_LIMIT') {
       // Fallback for old rate limit format

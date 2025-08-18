@@ -10,7 +10,7 @@ import UserDropdown from "@/components/UserDropdown"
 import ThemeToggle from "@/components/ThemeToggle"
 
 interface HeaderProps {
-  variant?: 'home' | 'profile' | 'auth' | 'onboarding' | 'default'
+  variant?: 'home' | 'profile' | 'auth' | 'onboarding' | 'default' | 'content-generator'
   showBackButton?: boolean
   onEditProfile?: () => void
   profileData?: {
@@ -132,6 +132,24 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                       }`}
                     >
                       Explore Talent
+                    </button>
+                    <button
+                      onClick={() => router.push("/content-generator")}
+                      className={`relative flex items-center gap-2 text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                        variant === 'content-generator' 
+                          ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
+                          : isDark 
+                            ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
+                            : 'bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]'
+                      }`}
+                    >
+                      <span>✨</span>
+                      AI Writer
+                      {!isAuthenticated && (
+                        <span className="absolute -top-1 -right-2 px-1.5 py-0.5 text-xs bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] text-white rounded-full font-medium">
+                          NEW
+                        </span>
+                      )}
                     </button>
                   </nav>
                 </>

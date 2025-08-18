@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { User, Settings, LogOut, ChevronDown, Edit, Search, MessageCircle, Download } from 'lucide-react'
+import { User, Settings, LogOut, ChevronDown, Edit, Search, MessageCircle, Download, Sparkles } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { getThemeClasses } from '@/utils/theme'
@@ -65,6 +65,11 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
   const handleSearchProfiles = () => {
     setIsOpen(false)
     router.push('/explore')
+  }
+
+  const handleAIWriter = () => {
+    setIsOpen(false)
+    router.push('/content-generator')
   }
 
   const handleSettings = () => {
@@ -258,6 +263,17 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
             >
               <Search className="w-4 h-4" />
               <span>Browse Profiles</span>
+            </button>
+
+            <button
+              onClick={handleAIWriter}
+              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 group`}
+            >
+              <Sparkles className="w-4 h-4 text-[#10a37f] group-hover:text-[#0d8f6f]" />
+              <span>AI Writer</span>
+              <span className="ml-auto px-1.5 py-0.5 text-xs bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] text-white rounded-full font-medium">
+                NEW
+              </span>
             </button>
 
             <button

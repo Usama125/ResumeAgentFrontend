@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import { Clock, UserCheck, MessageCircle, Search, X } from 'lucide-react';
+import { Clock, UserCheck, MessageCircle, Search, X, Sparkles } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { getThemeClasses } from '@/utils/theme';
 import { useRouter } from 'next/navigation';
@@ -14,7 +14,7 @@ interface RateLimitModalProps {
   message: string;
   resetInSeconds: number;
   isAuthenticated: boolean;
-  rateLimitType: 'job_matching' | 'chat';
+  rateLimitType: 'job_matching' | 'chat' | 'content_generation';
 }
 
 export function RateLimitModal({
@@ -72,6 +72,14 @@ export function RateLimitModal({
           <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-md opacity-20 scale-200"></div>
         </div>
       );
+    } else if (rateLimitType === 'content_generation') {
+      return (
+        <div className="relative">
+          <Sparkles className="w-16 h-16 text-[#10a37f] drop-shadow-lg relative z-10" />
+          <div className="absolute inset-0 bg-[#10a37f] rounded-full blur-sm opacity-30 scale-150"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-md opacity-20 scale-200"></div>
+        </div>
+      );
     }
     return (
       <div className="relative">
@@ -101,6 +109,8 @@ export function RateLimitModal({
         <p className={`text-sm ${theme.text.secondary} mb-4`}>
           {rateLimitType === 'job_matching' 
             ? "Get 5 requests per day vs 3 for guests!"
+            : rateLimitType === 'content_generation'
+            ? "Get 5 content generations per day vs 3 for guests!"
             : "Get 15 requests per day vs 10 for guests!"
           }
         </p>
@@ -171,11 +181,19 @@ export function RateLimitModal({
             </div>
 
             <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent' : 'text-gray-900'}`}>
-              {rateLimitType === 'job_matching' ? 'Search Limit Reached! 🎯' : 'Chat Limit Reached! 💬'}
+              {rateLimitType === 'job_matching' 
+                ? 'Search Limit Reached! 🎯' 
+                : rateLimitType === 'content_generation'
+                ? 'Content Generation Limit Reached! ✨'
+                : 'Chat Limit Reached! 💬'
+              }
             </h2>
             
             <p className={`${theme.text.secondary} leading-relaxed mb-6`}>
-              You've reached your daily limit. Come back tomorrow for more amazing opportunities! ✨
+              {rateLimitType === 'content_generation' 
+                ? "You've reached your daily content generation limit. Come back tomorrow for more AI-powered writing! ✨"
+                : "You've reached your daily limit. Come back tomorrow for more amazing opportunities! ✨"
+              }
             </p>
 
             {/* Status indicators */}
