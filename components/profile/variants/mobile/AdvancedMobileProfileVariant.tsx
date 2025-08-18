@@ -22,7 +22,8 @@ import {
   Mail,
   Phone,
   Settings,
-  Share2
+  Share2,
+  FileText
 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
@@ -562,6 +563,20 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
                 </button>
               </div>
             )}
+
+            {/* Create Cover Letter Button - Only show in view mode */}
+            {!isEditMode && isCurrentUser && (
+              <div className="mb-4">
+                <button
+                  onClick={() => window.location.href = '/ai-writer'}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl backdrop-blur-sm text-sm"
+                  title="Create a professional cover letter using your profile"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Create Cover Letter</span>
+                </button>
+              </div>
+            )}
             
             {/* Edit Basic Info Button */}
             {isCurrentUser && isEditMode && otherProps.onEditContact && (
@@ -573,6 +588,21 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
                   <Edit3 className="w-5 h-5" />
                   <span>Edit Basic Info</span>
                   <Target className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+
+            {/* Create Cover Letter Button - Only show for current user in edit mode after Edit Basic Info */}
+            {isCurrentUser && isEditMode && (
+              <div className="mb-4">
+                <button
+                  onClick={() => window.location.href = '/ai-writer'}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl backdrop-blur-sm"
+                  title="Create a professional cover letter using your profile"
+                >
+                  <FileText className="w-5 h-5" />
+                  <span>Create Cover Letter</span>
+                  <Zap className="w-5 h-5" />
                 </button>
               </div>
             )}

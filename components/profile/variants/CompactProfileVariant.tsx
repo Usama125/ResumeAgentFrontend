@@ -7,6 +7,7 @@ import {
   Sparkles,
   Mail,
   Phone,
+  FileText,
 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
@@ -415,7 +416,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
             )}
 
             {/* Action Buttons Row */}
-            <div className="flex items-center justify-center gap-4 mt-4">
+            <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
               {/* AI Analysis Button */}
               {!isEditMode && onOpenAIAnalysis && (
                 <button
@@ -429,6 +430,22 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
                 >
                   <Sparkles className="w-4 h-4 text-[#10a37f]" />
                   <span className="text-sm font-medium">AI Analysis</span>
+                </button>
+              )}
+              
+              {/* Create Cover Letter Button - Only show in view mode */}
+              {!isEditMode && isCurrentUser && (
+                <button
+                  onClick={() => window.location.href = '/ai-writer'}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isDark 
+                      ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
+                      : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
+                  } shadow-sm hover:shadow-md`}
+                  title="Create a professional cover letter using your profile"
+                >
+                  <FileText className="w-4 h-4 text-[#10a37f]" />
+                  <span className="text-sm font-medium">Create Cover Letter</span>
                 </button>
               )}
 
@@ -445,6 +462,22 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
                 >
                   <Edit className="w-4 h-4 text-[#10a37f]" />
                   <span className="text-sm font-medium">Edit Info</span>
+                </button>
+              )}
+              
+              {/* Create Cover Letter Button - Only show for current user in edit mode after Edit Basic Info */}
+              {isCurrentUser && isEditMode && (
+                <button
+                  onClick={() => window.location.href = '/ai-writer'}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isDark 
+                      ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
+                      : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
+                  } shadow-sm hover:shadow-md`}
+                  title="Create a professional cover letter using your profile"
+                >
+                  <FileText className="w-4 h-4 text-[#10a37f]" />
+                  <span className="text-sm font-medium">Create Cover Letter</span>
                 </button>
               )}
             </div>

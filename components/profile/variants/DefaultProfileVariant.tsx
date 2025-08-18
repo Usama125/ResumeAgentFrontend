@@ -5,6 +5,7 @@ import {
   MapPin,
   Edit,
   Sparkles,
+  FileText,
 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
@@ -432,41 +433,105 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
               </div>
             </div>
 
-            {/* AI Analysis Button - Only show in view mode */}
-            {!isEditMode && onOpenAIAnalysis && (
-              <div className="flex justify-center mt-6">
-                <div className="relative group">
-                  {/* Gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/10 via-transparent to-[#10a37f]/10 rounded-xl"></div>
-                  
-                  {/* Button content */}
-                  <button
-                    onClick={onOpenAIAnalysis}
-                    className={`relative flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
-                      isDark 
-                        ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
-                        : 'bg-white/60 border-[#10a37f]/30 text-gray-900 hover:bg-white/80 hover:border-[#10a37f]/50'
-                    } shadow-lg hover:shadow-xl transform hover:scale-105`}
-                    title="Get AI analysis of this profile"
-                  >
-                    {/* Icon with gradient */}
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-sm opacity-60"></div>
-                      <Sparkles className="relative w-5 h-5 text-[#10a37f]" />
-                    </div>
-                    <span className="font-semibold text-base">AI Analysis</span>
+            {/* Action Buttons Row - Only show in view mode */}
+            {!isEditMode && (
+              <div className="flex justify-center items-center gap-4 mt-6">
+                {/* AI Analysis Button */}
+                {onOpenAIAnalysis && (
+                  <div className="relative group">
+                    {/* Gradient background */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/10 via-transparent to-[#10a37f]/10 rounded-xl"></div>
                     
-                    {/* Hover effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 via-transparent to-[#10a37f]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
-                </div>
+                    {/* Button content */}
+                    <button
+                      onClick={onOpenAIAnalysis}
+                      className={`relative flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                        isDark 
+                          ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
+                          : 'bg-white/60 border-[#10a37f]/30 text-gray-900 hover:bg-white/80 hover:border-[#10a37f]/50'
+                      } shadow-lg hover:shadow-xl transform hover:scale-105`}
+                      title="Get AI analysis of this profile"
+                    >
+                      {/* Icon with gradient */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-sm opacity-60"></div>
+                        <Sparkles className="relative w-5 h-5 text-[#10a37f]" />
+                      </div>
+                      <span className="font-semibold text-base">AI Analysis</span>
+                      
+                      {/* Hover effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 via-transparent to-[#10a37f]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </div>
+                )}
+
+                {/* Create Cover Letter Button */}
+                {isCurrentUser && (
+                  <div className="relative group">
+                    {/* Gradient background */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/10 via-transparent to-[#10a37f]/10 rounded-xl"></div>
+                    
+                    {/* Button content */}
+                    <button
+                      onClick={() => window.location.href = '/ai-writer'}
+                      className={`relative flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                        isDark 
+                          ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
+                          : 'bg-white/60 border-[#10a37f]/30 text-gray-900 hover:bg-white/80 hover:border-[#10a37f]/50'
+                      } shadow-lg hover:shadow-xl transform hover:scale-105`}
+                      title="Create a professional cover letter using your profile"
+                    >
+                      {/* Icon with gradient */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-sm opacity-60"></div>
+                        <FileText className="relative w-5 h-5 text-[#10a37f]" />
+                      </div>
+                      <span className="font-semibold text-base">Create Cover Letter</span>
+                      
+                      {/* Hover effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 via-transparent to-[#10a37f]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Edit Basic Info Button - Only show for current user in edit mode */}
-            {isCurrentUser && isEditMode && onEditContact && (
-              <div className="flex justify-center mt-4">
+            {/* Edit Mode Buttons Row - Only show for current user in edit mode */}
+            {isCurrentUser && isEditMode && (
+              <div className="flex justify-center items-center gap-4 mt-4">
+                {/* Edit Basic Info Button */}
+                {onEditContact && (
+                  <div className="relative group">
+                    {/* Gradient background */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/10 via-transparent to-[#10a37f]/10 rounded-xl"></div>
+                    
+                    {/* Button content */}
+                    <button
+                      onClick={onEditContact}
+                      className={`relative flex items-center gap-3 px-6 py-2.5 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                        isDark 
+                          ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
+                          : 'bg-white/60 border-[#10a37f]/30 text-gray-900 hover:bg-white/80 hover:border-[#10a37f]/50'
+                      } shadow-lg hover:shadow-xl transform hover:scale-105`}
+                      title="Edit Basic Info"
+                    >
+                      {/* Icon with gradient */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-sm opacity-60"></div>
+                        <Edit className="relative w-4 h-4 text-[#10a37f]" />
+                      </div>
+                      <span className="font-semibold text-base">Edit Basic Info</span>
+                      
+                      {/* Hover effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 via-transparent to-[#10a37f]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </div>
+                )}
+
+                {/* Create Cover Letter Button */}
                 <div className="relative group">
                   {/* Gradient background */}
                   <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300"></div>
@@ -474,20 +539,20 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
                   
                   {/* Button content */}
                   <button
-                    onClick={onEditContact}
+                    onClick={() => window.location.href = '/ai-writer'}
                     className={`relative flex items-center gap-3 px-6 py-2.5 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
                       isDark 
                         ? 'bg-[#2a2a2a]/60 border-[#10a37f]/30 text-white hover:bg-[#2a2a2a]/80 hover:border-[#10a37f]/50' 
                         : 'bg-white/60 border-[#10a37f]/30 text-gray-900 hover:bg-white/80 hover:border-[#10a37f]/50'
                     } shadow-lg hover:shadow-xl transform hover:scale-105`}
-                    title="Edit Basic Info"
+                    title="Create a professional cover letter using your profile"
                   >
                     {/* Icon with gradient */}
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-sm opacity-60"></div>
-                      <Edit className="relative w-4 h-4 text-[#10a37f]" />
+                      <FileText className="relative w-5 h-5 text-[#10a37f]" />
                     </div>
-                    <span className="font-semibold text-base">Edit Basic Info</span>
+                    <span className="font-semibold text-base">Create Cover Letter</span>
                     
                     {/* Hover effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 via-transparent to-[#10a37f]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

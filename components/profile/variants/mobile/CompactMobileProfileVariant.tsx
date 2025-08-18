@@ -11,7 +11,8 @@ import {
   Star,
   Users,
   TrendingUp,
-  Share2
+  Share2,
+  FileText
 } from "lucide-react"
 import { User as UserType } from "@/types"
 import { useTheme } from "@/context/ThemeContext"
@@ -435,38 +436,86 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
             </div>
           )}
 
-          {/* Action Buttons Row - Centered */}
-          <div className="flex justify-center mt-4">
-            {/* AI Analysis Button */}
-            {!isEditMode && onOpenAIAnalysis && (
-              <button
-                onClick={onOpenAIAnalysis}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                  isDark 
-                    ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
-                    : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
-                } shadow-sm hover:shadow-md`}
-                title="Get AI analysis"
-              >
-                <Sparkles className="w-4 h-4 text-[#10a37f]" />
-                <span className="text-sm font-medium">AI Analysis</span>
-              </button>
+          {/* Action Buttons */}
+          <div className="mt-4 space-y-3">
+            {/* View Mode Buttons */}
+            {!isEditMode && (
+              <>
+                {/* AI Analysis Button */}
+                {onOpenAIAnalysis && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={onOpenAIAnalysis}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                        isDark 
+                          ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
+                          : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
+                      } shadow-sm hover:shadow-md`}
+                      title="Get AI analysis"
+                    >
+                      <Sparkles className="w-4 h-4 text-[#10a37f]" />
+                      <span className="text-sm font-medium">AI Analysis</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Create Cover Letter Button */}
+                {isCurrentUser && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => window.location.href = '/ai-writer'}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                        isDark 
+                          ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
+                          : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
+                      } shadow-sm hover:shadow-md`}
+                      title="Create a professional cover letter using your profile"
+                    >
+                      <FileText className="w-4 h-4 text-[#10a37f]" />
+                      <span className="text-sm font-medium">Create Cover Letter</span>
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Edit Basic Info Button */}
-            {isCurrentUser && isEditMode && otherProps.onEditContact && (
-              <button
-                onClick={otherProps.onEditContact}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                  isDark 
-                    ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
-                    : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
-                } shadow-sm hover:shadow-md`}
-                title="Edit Basic Info"
-              >
-                <Edit className="w-4 h-4 text-[#10a37f]" />
-                <span className="text-sm font-medium">Edit Info</span>
-              </button>
+            {/* Edit Mode Buttons */}
+            {isCurrentUser && isEditMode && (
+              <>
+                {/* Edit Basic Info Button */}
+                {otherProps.onEditContact && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={otherProps.onEditContact}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                        isDark 
+                          ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
+                          : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
+                      } shadow-sm hover:shadow-md`}
+                      title="Edit Basic Info"
+                    >
+                      <Edit className="w-4 h-4 text-[#10a37f]" />
+                      <span className="text-sm font-medium">Edit Info</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Create Cover Letter Button */}
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => window.location.href = '/ai-writer'}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                      isDark 
+                        ? 'bg-[#1a1a1a] border border-[#10a37f]/30 text-white hover:bg-[#10a37f]/20' 
+                        : 'bg-gray-100 border border-[#10a37f]/30 text-gray-900 hover:bg-[#10a37f]/10'
+                    } shadow-sm hover:shadow-md`}
+                    title="Create a professional cover letter using your profile"
+                  >
+                    <FileText className="w-4 h-4 text-[#10a37f]" />
+                    <span className="text-sm font-medium">Create Cover Letter</span>
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </div>

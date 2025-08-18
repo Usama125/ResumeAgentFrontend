@@ -504,7 +504,7 @@ Please generate the content now.`
     
     try {
       // Submit to AI with custom data payload
-      const response = await fetch('/api/content-generator', {
+      const response = await fetch('/api/ai-writer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -677,7 +677,7 @@ Please generate the content now.`
   if (!isAuthenticated) {
     return (
       <div className={`min-h-screen ${isDark ? 'bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a]' : 'bg-gradient-to-br from-white via-gray-50 to-white'}`}>
-        <Header variant="default" />
+        <Header variant="ai-writer" />
         
         {/* Hero Section with same background pattern as home page */}
         <div className={`relative ${isDark ? 'bg-gradient-to-b from-[#10a37f]/5 via-[#10a37f]/3 to-transparent' : 'bg-gradient-to-b from-[#10a37f]/3 via-[#10a37f]/2 to-transparent'}`}>
@@ -799,7 +799,7 @@ Please generate the content now.`
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#212121] text-white' : 'bg-gray-50 text-gray-900'} overflow-x-hidden`}>
-      <Header variant="default" />
+      <Header variant="ai-writer" />
       
       {/* Main Content - Full Height Split Layout */}
       <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">

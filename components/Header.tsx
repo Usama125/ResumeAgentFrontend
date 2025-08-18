@@ -10,7 +10,7 @@ import UserDropdown from "@/components/UserDropdown"
 import ThemeToggle from "@/components/ThemeToggle"
 
 interface HeaderProps {
-  variant?: 'home' | 'profile' | 'auth' | 'onboarding' | 'default' | 'content-generator'
+  variant?: 'home' | 'profile' | 'auth' | 'onboarding' | 'default' | 'ai-writer'
   showBackButton?: boolean
   onEditProfile?: () => void
   profileData?: {
@@ -134,9 +134,9 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                       Explore Talent
                     </button>
                     <button
-                      onClick={() => router.push("/content-generator")}
+                      onClick={() => router.push("/ai-writer")}
                       className={`relative flex items-center gap-2 text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                        variant === 'content-generator' 
+                        variant === 'ai-writer' 
                           ? 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] bg-clip-text text-transparent' 
                           : isDark 
                             ? 'bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent hover:from-[#10a37f] hover:to-[#0d8f6f]' 
@@ -170,11 +170,19 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                   <h1 className={`text-sm sm:text-lg font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {profileData.name}
                   </h1>
-                  {profileData.is_looking_for_job && (
-                    <Badge className="bg-green-500 hover:bg-green-500 text-white text-xs px-1.5 py-0.5 hidden sm:inline-flex">
-                      Open to work
-                    </Badge>
-                  )}
+                  
+                  {/* AI Writer Quick Link */}
+                  <button
+                    onClick={() => router.push("/ai-writer")}
+                    className={`ml-4 text-sm font-medium transition-all duration-300 hover:scale-105 hidden sm:flex items-center gap-1 ${
+                      isDark 
+                        ? 'text-gray-300 hover:text-[#10a37f]' 
+                        : 'text-gray-600 hover:text-[#10a37f]'
+                    }`}
+                  >
+                    <span>✨</span>
+                    AI Writer
+                  </button>
                 </div>
               )}
 

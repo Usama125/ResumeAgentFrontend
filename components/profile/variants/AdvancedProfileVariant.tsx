@@ -28,6 +28,7 @@ import {
   Shield,
   Target,
   Trophy,
+  FileText,
   Rocket,
   Mail,
   Phone
@@ -490,32 +491,62 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
                     </div>
                   )}
 
-                  {/* AI Analysis Button - Only show in view mode */}
-                  {!isEditMode && onOpenAIAnalysis && (
-                    <div className="pt-4">
-                      <button
-                        onClick={onOpenAIAnalysis}
-                        className={`group flex items-center gap-3 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm`}
-                      >
-                        <Sparkles className="w-5 h-5 group-hover:animate-spin" />
-                        AI Professional Analysis
-                        <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                      </button>
+                  {/* Action Buttons Row - Only show in view mode */}
+                  {!isEditMode && (
+                    <div className="flex items-center justify-start gap-4 pt-4">
+                      {/* AI Analysis Button */}
+                      {onOpenAIAnalysis && (
+                        <button
+                          onClick={onOpenAIAnalysis}
+                          className={`group flex items-center gap-3 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm`}
+                        >
+                          <Sparkles className="w-5 h-5 group-hover:animate-spin" />
+                          AI Analysis
+                          <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      )}
+
+                      {/* Create Cover Letter Button */}
+                      {isCurrentUser && (
+                        <button
+                          onClick={() => window.location.href = '/ai-writer'}
+                          className={`group flex items-center gap-3 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm`}
+                          title="Create a professional cover letter using your profile"
+                        >
+                          <FileText className="w-5 h-5 group-hover:animate-pulse" />
+                          Create Cover Letter
+                          <Zap className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      )}
                     </div>
                   )}
                   
-                  {/* Edit Basic Info Button - Only show for current user in edit mode */}
-                  {isCurrentUser && isEditMode && otherProps.onEditContact && (
-                    <div className="pt-4">
+                  {/* Edit Mode Buttons Row - Only show for current user in edit mode */}
+                  {isCurrentUser && isEditMode && (
+                    <div className="flex items-center justify-start gap-4 pt-4">
+                      {/* Edit Basic Info Button */}
+                      {otherProps.onEditContact && (
+                        <button
+                          onClick={otherProps.onEditContact}
+                          className={`group flex items-center gap-3 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm`}
+                        >
+                          <svg className="w-5 h-5 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Edit Basic Info
+                          <Target className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      )}
+
+                      {/* Create Cover Letter Button */}
                       <button
-                        onClick={otherProps.onEditContact}
+                        onClick={() => window.location.href = '/ai-writer'}
                         className={`group flex items-center gap-3 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm`}
+                        title="Create a professional cover letter using your profile"
                       >
-                        <svg className="w-5 h-5 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit Basic Info
-                        <Target className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <FileText className="w-5 h-5 group-hover:animate-pulse" />
+                        Create Cover Letter
+                        <Zap className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
                   )}

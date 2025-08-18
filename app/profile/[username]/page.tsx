@@ -200,11 +200,6 @@ export default function UsernameProfilePage() {
                       </p>
                     )}
                   </div>
-                  {user.is_looking_for_job && (
-                    <Badge className="bg-green-500 hover:bg-green-500 text-white text-xs px-1.5 py-0.5 hidden sm:inline-flex">
-                      Open to work
-                    </Badge>
-                  )}
                 </div>
               </div>
 
