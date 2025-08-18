@@ -15,6 +15,8 @@ import { Building2, User, FileText, Briefcase, Sparkles, Settings, Palette, BarC
 import { calculateProfileCompletion } from "@/utils/profileCompletion"
 import { useChat } from 'ai/react'
 import ResizableSplitPane from "@/components/ResizableSplitPane"
+import { useIsMobile } from "@/hooks/use-mobile"
+import AIWriterMobile from "@/components/AIWriterMobile"
 
 // Content generation types
 type ContentType = 'cover_letter' | 'proposal'
@@ -405,6 +407,7 @@ export default function ContentGeneratorPage() {
   const router = useRouter()
   const { toast } = useToast()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
+  const isMobile = useIsMobile()
 
   // State for content generation options
   const [options, setOptions] = useState<ContentGenerationOptions>({
@@ -796,6 +799,10 @@ Please generate the content now.`
     )
   }
 
+  // Render mobile component if on mobile device - AFTER all hooks are called
+  if (isMobile) {
+    return <AIWriterMobile />
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#212121] text-white' : 'bg-gray-50 text-gray-900'} overflow-x-hidden`}>
@@ -823,7 +830,7 @@ Please generate the content now.`
                   </div>
                   <div>
                     <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      AI Content Generator
+                      AI Writer
                     </h1>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                       Create personalized cover letters using your profile data
