@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Edit } from "lucide-react"
@@ -26,6 +27,19 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
   const router = useRouter()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const { isDark } = useTheme()
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Mobile detection
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkIsMobile()
+    window.addEventListener('resize', checkIsMobile)
+    
+    return () => window.removeEventListener('resize', checkIsMobile)
+  }, [])
 
   const isProfilePage = variant === 'profile'
   const isHomePage = variant === 'home'
@@ -171,18 +185,20 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                     {profileData.name}
                   </h1>
                   
-                  {/* AI Writer Quick Link */}
-                  <button
-                    onClick={() => router.push("/ai-writer")}
-                    className={`ml-4 text-sm font-medium transition-all duration-300 hover:scale-105 hidden sm:flex items-center gap-1 ${
-                      isDark 
-                        ? 'text-gray-300 hover:text-[#10a37f]' 
-                        : 'text-gray-600 hover:text-[#10a37f]'
-                    }`}
-                  >
-                    <span>✨</span>
-                    AI Writer
-                  </button>
+                  {/* AI Writer Quick Link - Hidden on mobile */}
+                  {!isMobile && (
+                    <button
+                      onClick={() => router.push("/ai-writer")}
+                      className={`ml-4 text-sm font-medium transition-all duration-300 hover:scale-105 flex items-center gap-1 ${
+                        isDark 
+                          ? 'text-gray-300 hover:text-[#10a37f]' 
+                          : 'text-gray-600 hover:text-[#10a37f]'
+                      }`}
+                    >
+                      <span>✨</span>
+                      AI Writer
+                    </button>
+                  )}
                 </div>
               )}
 
