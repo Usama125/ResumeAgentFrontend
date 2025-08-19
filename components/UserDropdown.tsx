@@ -196,7 +196,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
         {/* User Info */}
         <div className="hidden sm:block text-left">
           <p className={`text-sm font-medium ${themeClasses.text.primary}`}>{user.name}</p>
-          <p className={`text-xs ${themeClasses.text.tertiary} truncate max-w-32`}>{user.email}</p>
+          <p className={`text-xs ${themeClasses.text.tertiary} truncate max-w-32`}>{user.username}</p>
         </div>
 
         {/* Dropdown Arrow */}

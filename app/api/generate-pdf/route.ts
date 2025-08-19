@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer'
+import puppeteerCore from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,24 +23,34 @@ export async function POST(request: NextRequest) {
 
     console.log('🎯 Generating PDF for:', printUrl)
 
-    // Launch Puppeteer
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu',
-        '--disable-web-security',
-        '--disable-features=VizDisplayCompositor',
-        '--allow-running-insecure-content',
-        '--disable-web-security',
-        '--disable-extensions',
-      ],
-    })
+    // Configure browser for production vs development
+    const isProduction = process.env.NODE_ENV === 'production'
+    
+    // Launch Puppeteer with appropriate configuration
+    const browser = isProduction
+      ? await puppeteerCore.launch({
+          args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+        })
+      : await puppeteer.launch({
+          headless: true,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+            '--allow-running-insecure-content',
+            '--disable-web-security',
+            '--disable-extensions',
+          ],
+        })
 
     const page = await browser.newPage()
 
