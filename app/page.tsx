@@ -441,10 +441,10 @@ export default function HomePage() {
               </div>
               
                               <h1 className={`text-5xl md:text-6xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  <span className="text-[#10a37f]">AI Profiles</span> That Work
+                  <span className="text-[#10a37f]">Discover</span> Top Talent
                 </h1>
                 <h2 className="text-3xl md:text-4xl font-semibold mb-6">
-                  While You <span className="text-[#10a37f]">Sleep</span>
+                  with AI powered <span className="text-[#10a37f]">Profiles</span>
                 </h2>
               
               <p className={`text-xl mb-8 max-w-4xl mx-auto leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
