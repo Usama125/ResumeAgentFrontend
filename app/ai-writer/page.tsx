@@ -52,353 +52,7 @@ function CoverLetterDisplay({ content, isStreaming, onCopy }: { content: string,
 }
 
 
-// Profile Completion Component for Content Generator
-function ProfileCompletionSection({ user, router, isDark }: { user: UserType, router: any, isDark: boolean }) {
-  const completionData = calculateProfileCompletion(user)
 
-  // Check if work preferences is completed
-  const hasWorkPreferences = user.work_preferences && (
-    user.work_preferences.preferred_work_mode?.length > 0 ||
-    user.work_preferences.preferred_employment_type?.length > 0 ||
-    user.work_preferences.preferred_location ||
-    user.work_preferences.notice_period ||
-    user.work_preferences.availability ||
-    user.current_salary ||
-    user.expected_salary
-  )
-
-  // Check if about section is completed
-  const hasAbout = user.summary && user.summary.trim()
-
-  // Check if about section is already in the empty sections from main calculation
-  const aboutAlreadyInEmpty = completionData.emptySections.some(section => section.id === 'about')
-
-  // Add work preferences to empty sections if not completed
-  const allEmptySections = [...completionData.emptySections]
-  if (!hasWorkPreferences) {
-    allEmptySections.push({
-      id: 'preferences',
-      title: 'Work Preferences',
-      field: 'work_preferences'
-    })
-  }
-
-  // Add about section to empty sections if not completed and not already in the list
-  if (!hasAbout && !aboutAlreadyInEmpty) {
-    allEmptySections.push({
-      id: 'about',
-      title: 'About Me',
-      field: 'summary'
-    })
-  }
-
-  // Calculate adjusted percentage including work preferences and about
-  const missingWorkPreferences = hasWorkPreferences ? 0 : 1
-  const missingAbout = hasAbout ? 0 : (aboutAlreadyInEmpty ? 0 : 1)
-  const missingSections = missingWorkPreferences + missingAbout
-  const adjustedTotalSections = completionData.totalSections + missingSections
-  const adjustedCompletedSections = completionData.completedSections
-  const adjustedPercentage = Math.round((adjustedCompletedSections / adjustedTotalSections) * 100)
-
-  // Calculate circle properties
-  const radius = 40
-  const circumference = 2 * Math.PI * radius
-  const strokeDasharray = circumference
-  const strokeDashoffset = circumference - (adjustedPercentage / 100) * circumference
-
-  // If no empty sections, show a completion message
-  if (allEmptySections.length === 0) {
-    return (
-      <div className={`relative overflow-hidden rounded-2xl border ${
-        isDark 
-          ? 'bg-[#2a2a2a]/80 border-[#10a37f]/60' 
-          : 'bg-white/80 border-[#10a37f]/40'
-      } shadow-lg backdrop-blur-sm`}>
-        
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/10"></div>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#10a37f]/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0d8f6f]/5 rounded-full blur-lg"></div>
-        
-        {/* Content */}
-        <div className="relative z-10 p-6">
-          <div className="flex items-start justify-between gap-6">
-            {/* Left side - Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="text-[#10a37f] flex-shrink-0">
-                  <CheckCircle className="w-5 h-5" />
-                </div>
-                <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Profile Complete!
-                </h3>
-              </div>
-              
-              <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                Congratulations! Your profile is complete and ready to create amazing content.
-              </p>
-              
-              <Button
-                onClick={() => router.push('/profile')}
-                className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-6 py-2.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/25"
-              >
-                View Your Profile
-              </Button>
-            </div>
-
-            {/* Right side - Circular Progress */}
-            <div className="flex-shrink-0">
-              <div className="flex items-center gap-4">
-                {/* Profile Completeness Circle */}
-                <div className="relative w-28 h-28">
-                  <svg 
-                    className="w-28 h-28 transform -rotate-90" 
-                    viewBox="0 0 100 100"
-                    style={{ width: '112px', height: '112px' }}
-                  >
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={radius}
-                      stroke={isDark ? '#374151' : '#e5e7eb'}
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeLinecap="round"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={radius}
-                      stroke="#10a37f"
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeDasharray={strokeDasharray}
-                      strokeDashoffset="0"
-                      strokeLinecap="round"
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                  
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        100%
-                      </div>
-                      <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Complete
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Profile Score Circle */}
-                {user.profile_score && user.profile_score > 0 && (
-                  <div className="relative w-28 h-28">
-                    <svg 
-                      className="w-28 h-28 transform -rotate-90" 
-                      viewBox="0 0 100 100"
-                      style={{ width: '112px', height: '112px' }}
-                    >
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r={radius}
-                        stroke={isDark ? '#374151' : '#e5e7eb'}
-                        strokeWidth="8"
-                        fill="transparent"
-                        strokeLinecap="round"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r={radius}
-                        stroke="#10a37f"
-                        strokeWidth="8"
-                        fill="transparent"
-                        strokeDasharray={strokeDasharray}
-                        strokeDashoffset="0"
-                        strokeLinecap="round"
-                        className="transition-all duration-1000 ease-out"
-                      />
-                    </svg>
-                    
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          {user.profile_score}
-                        </div>
-                        <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                          Score
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className={`relative overflow-hidden rounded-2xl border ${
-      isDark 
-        ? 'bg-[#2a2a2a]/80 border-[#565869]/60' 
-        : 'bg-white/80 border-gray-200'
-    } shadow-lg backdrop-blur-sm`}>
-      
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/10"></div>
-      <div className="absolute top-0 right-0 w-32 h-32 bg-[#10a37f]/10 rounded-full blur-xl"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0d8f6f]/5 rounded-full blur-lg"></div>
-      
-      {/* Content */}
-      <div className="relative z-10 p-6">
-        <div className="flex items-start justify-between gap-6">
-          {/* Left side - Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="text-[#10a37f] flex-shrink-0">
-                <AlertCircle className="w-5 h-5" />
-              </div>
-              <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                Complete Your Profile for Better AI Content
-              </h3>
-            </div>
-            
-            <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Add missing sections to create more personalized and compelling cover letters and proposals.
-            </p>
-            
-            <div className="flex flex-wrap gap-3 mb-4">
-              {allEmptySections.slice(0, 6).map((section) => (
-                <Button
-                  key={section.id}
-                  onClick={() => router.push('/profile')}
-                  variant="outline"
-                  size="sm"
-                  className={`flex items-center gap-2 ${
-                    isDark 
-                      ? 'bg-[#2f2f2f]/60 border-[#565869]/40 text-white hover:bg-[#40414f]/60 hover:border-[#10a37f]/40' 
-                      : 'bg-gray-50/60 border-gray-200 text-gray-700 hover:bg-gray-100/60 hover:border-[#10a37f]/40'
-                  } transition-colors`}
-                >
-                  <Plus className="w-4 h-4 text-[#10a37f]" />
-                  <span>Add {section.title}</span>
-                </Button>
-              ))}
-              {allEmptySections.length > 6 && (
-                <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} flex items-center`}>
-                  +{allEmptySections.length - 6} more
-                </span>
-              )}
-            </div>
-            
-            <Button
-              onClick={() => router.push('/profile')}
-              className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-6 py-2.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/25"
-            >
-              Complete Profile
-            </Button>
-          </div>
-
-          {/* Right side - Two circles side by side */}
-          <div className="flex-shrink-0">
-            <div className="flex items-center gap-4">
-              {/* Profile Completeness Circle */}
-              <div className="relative w-28 h-28">
-                <svg 
-                  className="w-28 h-28 transform -rotate-90" 
-                  viewBox="0 0 100 100"
-                  style={{ width: '112px', height: '112px' }}
-                >
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    stroke={isDark ? '#374151' : '#e5e7eb'}
-                    strokeWidth="8"
-                    fill="transparent"
-                    strokeLinecap="round"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    stroke="#10a37f"
-                    strokeWidth="8"
-                    fill="transparent"
-                    strokeDasharray={strokeDasharray}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                </svg>
-                
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      {adjustedPercentage}%
-                    </div>
-                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Complete
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Profile Score Circle */}
-              {user.profile_score && user.profile_score > 0 && (
-                <div className="relative w-28 h-28">
-                  <svg 
-                    className="w-28 h-28 transform -rotate-90" 
-                    viewBox="0 0 100 100"
-                    style={{ width: '112px', height: '112px' }}
-                  >
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={radius}
-                      stroke={isDark ? '#374151' : '#e5e7eb'}
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeLinecap="round"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r={radius}
-                      stroke="#10a37f"
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeDasharray={strokeDasharray}
-                      strokeDashoffset="0"
-                      strokeLinecap="round"
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                  
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        {user.profile_score}
-                      </div>
-                      <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Score
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default function ContentGeneratorPage() {
   const { user, isAuthenticated, loading: authLoading, refreshUser } = useAuth()
@@ -817,38 +471,11 @@ Please generate the content now.`
           maxLeftWidth={70}
         >
           {/* Left Side - Form and Options */}
-          <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
-            <div className="p-6">
-              {/* Small Page Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg blur opacity-30"></div>
-                    <div className={`relative p-2 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
-                      <Sparkles className="w-5 h-5 text-[#10a37f]" />
-                    </div>
-                  </div>
-                  <div>
-                    <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      AI Writer
-                    </h1>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Create personalized cover letters using your profile data
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Profile Completion Section */}
-              {user && (
-                <div className="mb-8">
-                  <ProfileCompletionSection user={user} router={router} isDark={isDark} />
-                </div>
-              )}
-
-              {/* Form Section Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-3 mb-4">
+          <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-hidden relative flex flex-col`}>
+            {/* Header */}
+            <div className="flex-shrink-0 p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-lg blur opacity-30"></div>
                     <div className={`relative p-2 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-white'} border border-[#10a37f]/30`}>
@@ -864,7 +491,25 @@ Please generate the content now.`
                     </p>
                   </div>
                 </div>
+                
+                {/* Complete Profile Section */}
+                {user && (
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <div className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        Complete Profile
+                      </div>
+                      <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {calculateProfileCompletion(user).completedSections}/{calculateProfileCompletion(user).totalSections} sections
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto p-6">
 
               {/* Form Fields */}
               <div className="space-y-6">
