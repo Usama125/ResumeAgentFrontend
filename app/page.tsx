@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Search, Users, Briefcase, X, Star, ChevronLeft, ChevronRight, MessageCircle, ArrowRight, MapPin, Plus, Palette, FileText, Download, Share2, Eye, Sparkles, Zap, Target, TrendingUp, Clock, Shield, Rocket, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,9 +11,7 @@ import { useTheme } from "@/context/ThemeContext"
 import Header from "@/components/Header"
 import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
-import { UserService } from "@/services/user"
-import { PublicUser } from "@/types"
-import { getImageUrl } from "@/utils/imageUtils"
+import DiscoverInteractiveTalent from "@/components/DiscoverInteractiveTalent"
 
 // Interactive How It Works Component with Tabbed Interface
 const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
@@ -111,13 +109,16 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className={`grid w-full grid-cols-3 mb-12 ${isDark ? 'bg-[#2f2f2f]' : 'bg-gray-100'}`}>
             <TabsTrigger value="job-seekers" className="data-[state=active]:bg-[#10a37f] data-[state=active]:text-white">
-              For Job Seekers
+              <span className="hidden sm:inline">For Job Seekers</span>
+              <span className="sm:hidden">Job Seekers</span>
             </TabsTrigger>
             <TabsTrigger value="recruiters" className="data-[state=active]:bg-[#10a37f] data-[state=active]:text-white">
-              For Recruiters
+              <span className="hidden sm:inline">For Recruiters</span>
+              <span className="sm:hidden">Recruiters</span>
             </TabsTrigger>
             <TabsTrigger value="ai-features" className="data-[state=active]:bg-[#10a37f] data-[state=active]:text-white">
-              AI Features
+              <span className="hidden sm:inline">AI Features</span>
+              <span className="sm:hidden">AI Features</span>
             </TabsTrigger>
           </TabsList>
 
@@ -230,128 +231,6 @@ const HeroStatsSection = ({ isDark }: { isDark: boolean }) => {
   )
 }
 
-// Top Profiles Section Component
-const TopProfilesSection = ({ isDark }: { isDark: boolean }) => {
-  const [profiles, setProfiles] = useState<PublicUser[]>([])
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
-
-  useEffect(() => {
-    const fetchTopProfiles = async () => {
-      try {
-        setLoading(true)
-        const topProfiles = await UserService.getFeaturedUsers(6, 0, true) // Get 6 top profiles
-        setProfiles(topProfiles)
-      } catch (error) {
-        console.error('Error fetching top profiles:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchTopProfiles()
-  }, [])
-
-  const handleProfileClick = (username: string | undefined) => {
-    if (username) {
-      router.push(`/profile/${username}`)
-    }
-  }
-
-  const handleExploreAll = () => {
-    router.push('/explore')
-  }
-
-  if (loading) {
-    return (
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {[...Array(6)].map((_, index) => (
-          <div key={index} className={`animate-pulse rounded-xl p-3 border flex-shrink-0 w-32 ${isDark ? 'bg-[#2f2f2f]/30 border-[#565869]/50' : 'bg-white/30 border-gray-300/50'}`}>
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-              <div className="w-full">
-                <div className="h-3 bg-gray-300 rounded mb-1"></div>
-                <div className="h-2 bg-gray-300 rounded w-2/3 mx-auto"></div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-4">
-      {/* Profiles Row */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {profiles.map((profile) => (
-          <Card
-            key={profile.id}
-            className={`backdrop-blur-sm transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-[#10a37f]/10 flex-shrink-0 w-32 hover:z-10 relative ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 hover:border-[#10a37f] hover:bg-[#2f2f2f]' : 'bg-white/80 border-gray-300/60 hover:border-[#10a37f] hover:bg-white'}`}
-            onClick={() => handleProfileClick(profile.username)}
-          >
-            <CardContent className="p-3">
-              <div className="flex flex-col items-center text-center space-y-2">
-                <div className="relative">
-                  <img
-                    src={getImageUrl(profile.profile_picture)}
-                    alt={profile.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder-user.jpg";
-                    }}
-                  />
-                  {profile.is_looking_for_job && (
-                    <div className={`absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 ${isDark ? 'border-[#2f2f2f]' : 'border-white'}`}></div>
-                  )}
-                </div>
-                <div className="space-y-1 w-full">
-                  <h3 className={`text-xs font-semibold group-hover:text-[#10a37f] transition-colors truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    {profile.name}
-                  </h3>
-                  <p className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {profile.designation || profile.profession || 'Professional'}
-                  </p>
-                  {profile.location && (
-                    <div className={`flex items-center justify-center text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      <MapPin className="w-2 h-2 mr-1 flex-shrink-0" />
-                      <span className="truncate">{profile.location}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-        
-        {/* Load More Card */}
-        <Card
-          className={`backdrop-blur-sm transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-[#10a37f]/10 flex-shrink-0 w-32 hover:z-10 relative ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 hover:border-[#10a37f] hover:bg-[#10a37f]/10' : 'bg-white/80 border-gray-300/60 hover:border-[#10a37f] hover:bg-[#10a37f]/5'}`}
-          onClick={handleExploreAll}
-        >
-          <CardContent className="p-3">
-            <div className="flex flex-col items-center text-center space-y-2 h-full justify-center">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border-2 border-[#10a37f]/50 flex items-center justify-center group-hover:border-[#10a37f] group-hover:bg-[#10a37f]/30 transition-all duration-300">
-                  <Plus className="w-5 h-5 text-[#10a37f] group-hover:text-white transition-colors duration-300" />
-                </div>
-              </div>
-              <div className="space-y-1 w-full">
-                <h3 className="text-xs font-semibold text-[#10a37f] group-hover:text-white transition-colors duration-300">
-                  Explore All
-                </h3>
-                <p className={`text-xs transition-colors duration-300 ${isDark ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-500'}`}>
-                  View more profiles
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-}
 
 // Benefits Section Component
 const BenefitsSection = ({ isDark }: { isDark: boolean }) => {
@@ -383,7 +262,7 @@ const BenefitsSection = ({ isDark }: { isDark: boolean }) => {
   ]
 
   return (
-    <div className={`py-24 ${isDark ? 'bg-gradient-to-b from-[#212121] to-[#1a1a1a]' : 'bg-gradient-to-b from-white to-gray-50'}`}>
+    <div className={`pb-24 ${isDark ? 'bg-gradient-to-b from-[#212121] to-[#1a1a1a]' : 'bg-gradient-to-b from-white to-gray-50'}`}>
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-16">
           <h2 className={`text-4xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -681,49 +560,7 @@ export default function HomePage() {
         </div>
 
         {/* Discover Interactive Talent Section */}
-        <div className={`relative ${isDark ? 'bg-gradient-to-b from-[#10a37f]/5 via-[#10a37f]/3 to-transparent' : 'bg-gradient-to-b from-[#10a37f]/3 via-[#10a37f]/2 to-transparent'}`}>
-          <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-20">
-            <div className="text-center mb-12">
-              <Users className="w-16 h-16 text-[#10a37f] mx-auto mb-6" />
-              <h3 className={`text-3xl font-bold mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent' : 'bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent'}`}>
-                Discover Interactive Talent
-              </h3>
-              <p className={`text-xl mb-8 max-w-3xl mx-auto leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                Browse professionals whose profiles answer your questions instantly. Find better matches, save time, and connect with confidence.
-              </p>
-            </div>
-
-            {/* Top Profiles Grid */}
-            <TopProfilesSection isDark={isDark} />
-
-            {/* CTA Buttons */}
-            <div className="text-center mt-12">
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                  {!isAuthenticated && (
-                    <>
-                      <Button
-                        className="bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white px-8 sm:px-12 py-3 sm:py-4 text-base sm:text-lg rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center"
-                        onClick={() => router.push("/auth")}
-                      >
-                        <Rocket className="w-5 h-5 mr-2" />
-                        Start Building for Free
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className={`px-8 sm:px-12 py-3 sm:py-4 text-base sm:text-lg rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 ${isDark ? 'border-[#565869] hover:border-[#10a37f] text-gray-300 hover:text-white hover:bg-[#10a37f]/10' : 'border-gray-300 hover:border-[#10a37f] text-gray-700 hover:text-gray-900 hover:bg-[#10a37f]/10'}`}
-                        onClick={() => router.push("/explore")}
-                      >
-                        <Search className="w-5 h-5 mr-2" />
-                        Explore AI Profiles
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DiscoverInteractiveTalent isDark={isDark} />
         
 
         {/* Hero Stats Section */}
