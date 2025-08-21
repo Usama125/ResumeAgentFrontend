@@ -69,26 +69,24 @@ export default function AdvancedExperienceSection({
             return (
               <div 
                 key={index} 
-                className={`group/item relative overflow-hidden rounded-2xl border-2 ${
+                className={`group/item relative rounded-2xl border-2 ${
                   isDark 
                     ? 'bg-gradient-to-br from-[#1a1a1a]/80 via-[#2a2a2a]/60 to-[#1a1a1a]/80 border-[#10a37f]/20 hover:border-[#10a37f]/40' 
                     : 'bg-gradient-to-br from-white/80 via-gray-50/60 to-white/80 border-[#10a37f]/15 hover:border-[#10a37f]/30'
                 } backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/10`}
+                style={{ overflow: 'visible' }}
               >
                 {/* Experience Item Background Effects */}
                 <div className="absolute inset-0 overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#10a37f]/5 to-transparent rounded-full blur-xl"></div>
                 </div>
                 
-                {/* Timeline Connection */}
-                {index < user.experience_details.length - 1 && (
-                  <div className="absolute -bottom-6 left-8 w-0.5 h-12 bg-gradient-to-b from-[#10a37f]/30 to-transparent"></div>
-                )}
+
                 
                 {/* Timeline Dot */}
                 <div className="absolute -left-3 top-6 w-6 h-6 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full border-2 border-white dark:border-[#1a1a1a] shadow-lg z-20"></div>
                 
-                <div className="relative z-10 p-4 sm:p-6">
+                <div className="relative z-10 p-4 sm:p-6 overflow-hidden rounded-2xl">
                   {/* Edit/Delete buttons - Floating on mobile, inline on desktop */}
                   {isEditMode && (onEditExperience || onDeleteExperience) && (
                     <div className="absolute top-2 right-2 sm:hidden flex items-center gap-1">

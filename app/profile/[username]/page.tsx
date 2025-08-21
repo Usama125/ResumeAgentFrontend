@@ -9,7 +9,7 @@ import { useTheme } from "@/context/ThemeContext"
 import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import { getThemeClasses } from "@/utils/theme"
-import ThemeToggle from "@/components/ThemeToggle"
+import Header from "@/components/Header"
 import DesktopPublicProfileView from "@/components/profile/DesktopPublicProfileView"
 import MobilePublicProfileView from "@/components/profile/MobilePublicProfileView"
 import { AuthService } from "@/services/auth"
@@ -158,59 +158,16 @@ export default function UsernameProfilePage() {
         rateLimitType={rateLimitState.rateLimitType}
       />
       {/* Header with Profile Info */}
-      <header className="sticky top-0 z-40 w-full relative">
-        {/* Background gradients */}
-        <div className={`absolute inset-0 transition-all duration-500 ${isDark ? 'bg-gradient-to-r from-[#1a1a1a] via-[#2f2f2f] to-[#1a1a1a]' : 'bg-gradient-to-r from-gray-50 via-white to-gray-50'}`}></div>
-        <div className={`absolute inset-0 transition-all duration-700 ${isDark ? 'bg-gradient-to-br from-[#10a37f]/8 via-transparent to-[#10a37f]/4' : 'bg-gradient-to-br from-[#10a37f]/4 via-transparent to-[#10a37f]/2'}`}></div>
-        <div className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#10a37f]/40 to-transparent`}></div>
-
-        <div className="relative backdrop-blur-sm overflow-hidden">
-          <div className="w-full px-2 sm:px-4 lg:px-6">
-            <div className="flex justify-between items-center h-14 min-w-0">
-              
-              {/* Left side content */}
-              <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-                {/* Back button */}
-                <button
-                  onClick={() => router.push("/")}
-                  className={`mr-2 flex items-center ${isDark ? 'text-gray-300 hover:text-white hover:bg-[#40414f]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} p-2 rounded-lg transition-colors`}
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline ml-2 text-sm">Back to Home</span>
-                </button>
-
-                {/* Profile info */}
-                <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                  <img
-                    src={user.profile_picture || "/placeholder-user.jpg"}
-                    alt={user.name}
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder-user.jpg";
-                    }}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <h1 className={`text-sm sm:text-lg font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      {user.name}
-                    </h1>
-                    {user.username && (
-                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} truncate`}>
-                        @{user.username}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right side content */}
-              <div className="flex items-center space-x-1 sm:space-x-3 flex-shrink-0">
-                <ThemeToggle />
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header 
+        variant="profile" 
+        showBackButton={true}
+        profileData={{
+          name: user.name,
+          profile_picture: user.profile_picture,
+          is_looking_for_job: user.is_looking_for_job
+        }}
+        isCurrentUserProfile={false}
+      />
 
       {/* Main Content */}
       {isMobile ? (

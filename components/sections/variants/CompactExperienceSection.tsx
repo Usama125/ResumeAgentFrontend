@@ -51,18 +51,19 @@ export default function CompactExperienceSection({
   }
 
   return (
-    <div className={`relative rounded-xl overflow-hidden ${
+    <div className={`relative rounded-xl ${
       isDark 
         ? 'bg-[#2a2a2a]/40 border border-[#10a37f]/20' 
         : 'bg-white/60 border border-[#10a37f]/15'
-    } backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300`}>
+    } backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300`}
+    style={{ overflow: 'visible' }}>
       
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#10a37f]/10 to-transparent rounded-full blur-xl"></div>
       </div>
 
-      <div className="relative z-10 p-4">
+      <div className="relative z-10 p-4 overflow-hidden rounded-xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -121,6 +122,7 @@ export default function CompactExperienceSection({
                       ? 'bg-[#1a1a1a]/30 border-[#10a37f]/20' 
                       : 'bg-white/40 border-[#10a37f]/15'
                   } backdrop-blur-sm hover:border-[#10a37f]/30 transition-all duration-200`}
+                  style={{ overflow: 'visible' }}
                 >
                   {/* Timeline dot */}
                   <div className="absolute -left-1 top-4 w-2 h-2 bg-[#10a37f] rounded-full"></div>
