@@ -422,28 +422,6 @@ export default function ResumeTemplatePage() {
               </div>
             )}
 
-            {/* Awards */}
-            {processedData.awards && processedData.awards.length > 0 && (
-              <div className="content-section avoid-break">
-                <div className="flex items-center mb-2">
-                  <Award className="w-4 h-4 text-[#10a37f] mr-2" />
-                  <h2 className="text-base font-bold text-gray-800">Awards</h2>
-                </div>
-                <div className="space-y-1">
-                  {processedData.awards.map((award, index) => (
-                    <div key={index} className="bg-[#10a37f]/5 border border-[#10a37f]/20 rounded-lg p-2">
-                      <h3 className="text-xs font-semibold text-gray-800">{award.title}</h3>
-                      <p className="text-xs text-[#10a37f]">{award.issuer}</p>
-                      <p className="text-xs text-gray-600">{award.date}</p>
-                      {award.description && (
-                        <p className="text-xs text-gray-700 mt-1">{award.description}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Education */}
             {processedData.education && processedData.education.length > 0 && (
               <div className="content-section avoid-break">
@@ -597,7 +575,7 @@ export default function ResumeTemplatePage() {
                 <h2 className="text-lg font-bold text-gray-800">Other Projects</h2>
               </div>
               <div className="space-y-2">
-                {processedData.projects.slice(3).map((project, index) => (
+                {processedData.projects.slice(3, 8).map((project, index) => (
                   <div key={index} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-base font-semibold text-gray-800">{project.name}</h3>

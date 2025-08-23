@@ -64,8 +64,6 @@ function getResumeProcessingPrompt(profileData: any): string {
   return `You are an expert resume data processor. Your task is to analyze the user's profile data and generate structured, professional resume content with specific character limits and formatting requirements.
 
 PROFILE DATA:
-
-PROFILE DATA:
 ${JSON.stringify(profileData, null, 2)}
 
 REQUIREMENTS:
@@ -124,14 +122,13 @@ RULES:
 1. Professional Summary: Create a compelling 2-3 sentence summary highlighting key strengths and experience
 2. Key Skills: Select top 8-12 most relevant skills, prioritize by level (Expert > Advanced > Intermediate > Beginner)
 3. Experience: Include ALL professional experiences from the profile data
-4. Projects: Include ALL projects from the profile data - DO NOT FILTER OR LIMIT PROJECTS
+4. Projects: Include 8 most impressive projects with clear technology stacks
 5. Education: Include all education entries but keep descriptions concise
 6. Languages: Include all languages with proficiency levels
 7. Awards: Include ALL awards from the profile data - DO NOT FILTER AWARDS
 8. All descriptions must be within character limits
 9. Maintain professional tone and focus on achievements
 10. If data is missing for any section, omit that section from the response
-11. CRITICAL: You must return exactly the same number of projects and awards as in the input data
 
 RESPONSE FORMAT:
 Return ONLY valid JSON without any additional text or formatting.`;
