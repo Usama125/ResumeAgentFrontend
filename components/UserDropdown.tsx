@@ -153,6 +153,82 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
     }
   }
 
+  const handleDownloadResume = async () => {
+    setIsOpen(false)
+    
+    if (!user || !user.username) {
+      toast({
+        title: "Error",
+        description: "Username not found. Please try again.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    // Show progress toast
+    const progressToast = toast({
+      title: "Generating Professional Resume",
+      description: (
+        <div className="flex items-center space-x-3">
+          <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#10a37f] border-t-transparent"></div>
+          <span>AI is processing your data and creating a professional resume...</span>
+        </div>
+      ),
+      duration: 0, // Don't auto-dismiss
+    })
+
+    try {
+      const response = await fetch('/api/generate-resume-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          username: user.username 
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate resume PDF')
+      }
+
+      // Create blob from response
+      const blob = await response.blob()
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      a.download = `${user.username}-professional-resume.pdf`
+      
+      // Trigger download
+      document.body.appendChild(a)
+      a.click()
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      // Show success toast
+      toast({
+        title: "Professional Resume Ready!",
+        description: "Your AI-optimized professional resume has been downloaded successfully.",
+      })
+      
+    } catch (error) {
+      console.error('Error generating resume PDF:', error)
+      toast({
+        title: "Error",
+        description: "Failed to generate resume PDF. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      // Dismiss progress toast
+      toast.dismiss(progressToast)
+    }
+  }
+
   const handleLogout = () => {
     setIsOpen(false)
     logout()
@@ -279,6 +355,14 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
             >
               <Download className="w-4 h-4" />
               <span>Download Profile</span>
+            </div>
+
+            <div
+              onClick={handleDownloadResume}
+              className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 cursor-pointer`}
+            >
+              <Download className="w-4 h-4 text-[#10a37f]" />
+              <span>Download Resume</span>
             </div>
             
             <div
