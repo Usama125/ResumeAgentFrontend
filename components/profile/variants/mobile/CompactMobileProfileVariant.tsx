@@ -25,6 +25,7 @@ import MobileProfileCompletionSection from '@/components/sections/MobileProfileC
 import PreferencesSection from '@/components/sections/PreferencesSection'
 import EditModeToggle from '@/components/EditModeToggle'
 import { Button } from "@/components/ui/button"
+import { GradientAvatar } from '@/components/ui/avatar'
 
 interface CompactMobileProfileVariantProps {
   user: UserType
@@ -88,6 +89,7 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
   onOpenShare,
   ...otherProps
 }: CompactMobileProfileVariantProps) {
+  const [imageError, setImageError] = useState(false)
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
 
@@ -151,15 +153,19 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
           <div className="flex items-center gap-4 mb-4">
             {/* Profile Picture - Small like desktop */}
             <div className="relative flex-shrink-0">
-              <img
-                src={getImageUrl(user.profile_picture)}
-                alt={user.name}
-                className="w-16 h-16 rounded-full object-cover border-2 border-[#10a37f]/30 shadow-lg"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder-user.jpg";
-                }}
-              />
+              {user.profile_picture && !imageError ? (
+                <img
+                  src={getImageUrl(user.profile_picture)}
+                  alt={user.name}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-[#10a37f]/30 shadow-lg"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <GradientAvatar
+                  className="w-16 h-16 border-2 border-[#10a37f]/30 shadow-lg"
+                  isDark={isDark}
+                />
+              )}
               {isCurrentUser && onEditPhoto && (
                 <button
                   onClick={onEditPhoto}

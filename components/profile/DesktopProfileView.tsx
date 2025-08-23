@@ -101,6 +101,7 @@ import EditModeToggle from '@/components/EditModeToggle';
 import ProfileSections from '@/components/ProfileSections';
 import AddMissingSections from '@/components/AddMissingSections';
 import AIAnalysisModal from '@/components/AIAnalysisModal';
+import { GradientAvatar } from '@/components/ui/avatar';
 
 // Portfolio Section Component
 const PortfolioSection = memo(function PortfolioSection({
@@ -206,7 +207,7 @@ const PortfolioSection = memo(function PortfolioSection({
   onAddSection?: (sectionId: string) => void
   onOpenShare?: () => void
 }) {
-
+  const [imageError, setImageError] = useState(false)
 
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
@@ -286,15 +287,19 @@ const PortfolioSection = memo(function PortfolioSection({
               {/* Profile Picture */}
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-lg opacity-30"></div>
-                <img
-                  src={getImageUrl(user.profile_picture)}
-                  alt={user.name}
-                  className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/placeholder-user.jpg";
-                  }}
-                />
+                {user.profile_picture && !imageError ? (
+                  <img
+                    src={getImageUrl(user.profile_picture)}
+                    alt={user.name}
+                    className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <GradientAvatar
+                    className="relative w-32 h-32 border-4 border-[#10a37f]/30 shadow-2xl"
+                    isDark={isDark}
+                  />
+                )}
                 {isCurrentUser && onEditPhoto && (
                   <button
                     onClick={onEditPhoto}

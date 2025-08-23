@@ -22,6 +22,7 @@ import MobileProfileCompletionSection from '@/components/sections/MobileProfileC
 import PreferencesSection from '@/components/sections/PreferencesSection'
 import EditModeToggle from '@/components/EditModeToggle'
 import { Button } from "@/components/ui/button"
+import { GradientAvatar } from '@/components/ui/avatar'
 
 interface DefaultMobileProfileVariantProps {
   user: UserType
@@ -87,6 +88,7 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
 }: DefaultMobileProfileVariantProps) {
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
+  const [imageError, setImageError] = useState(false)
 
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} min-h-screen`}>
@@ -151,15 +153,19 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
           <div className="mb-6">
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-lg opacity-30"></div>
-              <img
-                src={getImageUrl(user.profile_picture)}
-                alt={user.name}
-                className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder-user.jpg";
-                }}
-              />
+              {user.profile_picture && !imageError ? (
+                <img
+                  src={getImageUrl(user.profile_picture)}
+                  alt={user.name}
+                  className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <GradientAvatar
+                  className="w-32 h-32 border-4 border-[#10a37f]/30 shadow-2xl"
+                  isDark={isDark}
+                />
+              )}
               {isCurrentUser && onEditPhoto && (
                 <button
                   onClick={onEditPhoto}

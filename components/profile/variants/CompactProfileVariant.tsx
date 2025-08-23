@@ -1,6 +1,6 @@
 "use client"
 
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 import {
   MapPin,
   Edit,
@@ -18,6 +18,7 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import VariantAwareProfileSections from '@/components/sections/variants/VariantAwareProfileSections'
 import ProfileCompletionSection from '@/components/sections/ProfileCompletionSection'
 import PreferencesSection from '@/components/sections/PreferencesSection'
+import { GradientAvatar } from '@/components/ui/avatar'
 
 interface CompactProfileVariantProps {
   user: UserType
@@ -116,6 +117,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
 }: CompactProfileVariantProps) {
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
+  const [imageError, setImageError] = useState(false)
 
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
@@ -130,15 +132,19 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
             <div className="flex items-center gap-6">
               {/* Profile Picture - Smaller */}
               <div className="relative flex-shrink-0">
-                <img
-                  src={getImageUrl(user.profile_picture)}
-                  alt={user.name}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-[#10a37f]/30 shadow-lg"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/placeholder-user.jpg";
-                  }}
-                />
+                {user.profile_picture && !imageError ? (
+                  <img
+                    src={getImageUrl(user.profile_picture)}
+                    alt={user.name}
+                    className="w-20 h-20 rounded-full object-cover border-2 border-[#10a37f]/30 shadow-lg"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <GradientAvatar
+                    className="w-20 h-20 border-2 border-[#10a37f]/30 shadow-lg"
+                    isDark={isDark}
+                  />
+                )}
                 {isCurrentUser && onEditPhoto && (
                   <button
                     onClick={onEditPhoto}

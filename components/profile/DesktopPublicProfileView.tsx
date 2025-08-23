@@ -45,6 +45,7 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils';
 import ProfileSections from '@/components/ProfileSections';
 import ProfessionalAnalysisModal from '@/components/ProfessionalAnalysisModal';
 import ProfileVariantWrapper from './variants/ProfileVariantWrapper';
+import { GradientAvatar } from '@/components/ui/avatar';
 
 // Memoized Portfolio Section Component
 const PortfolioSection = memo<{
@@ -60,6 +61,7 @@ const PortfolioSection = memo<{
   onChatToggle,
   onOpenAIAnalysis
 }) {
+  const [imageError, setImageError] = useState(false)
   return (
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto relative scrollbar-hide`}>
         
@@ -112,15 +114,19 @@ const PortfolioSection = memo<{
               {/* Profile Picture */}
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-lg opacity-30"></div>
-                <img
-                  src={user.profile_picture || "/placeholder-user.jpg"}
-                  alt={user.name}
-                  className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/placeholder-user.jpg";
-                  }}
-                />
+                {user.profile_picture && !imageError ? (
+                  <img
+                    src={getImageUrl(user.profile_picture)}
+                    alt={user.name}
+                    className="relative w-32 h-32 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <GradientAvatar
+                    className="relative w-32 h-32 border-4 border-[#10a37f]/30 shadow-2xl"
+                    isDark={isDark}
+                  />
+                )}
               </div>
 
               {/* Name & Title */}

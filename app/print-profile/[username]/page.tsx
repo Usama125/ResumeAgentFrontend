@@ -1,14 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { PublicUser } from "@/types"
 import { MapPin, Mail, Phone, Briefcase, Calendar, Award, Globe, Github, Linkedin, Twitter, ExternalLink } from "lucide-react"
 import { calculateTotalExperience } from "@/utils/experienceCalculator"
+import { GradientAvatar } from '@/components/ui/avatar'
+import { useTheme } from '@/context/ThemeContext'
 
 export default function PrintProfilePage() {
   const [user, setUser] = useState<PublicUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const [imageError, setImageError] = useState(false)
+  const { isDark } = useTheme()
   const params = useParams()
   const username = params.username as string
 
@@ -61,7 +65,7 @@ export default function PrintProfilePage() {
     : calculateTotalExperience(user.experience_details || []) || 'N/A';
 
   const getImageUrl = (imageUrl: string | null) => {
-    if (!imageUrl) return "/placeholder-user.jpg";
+    if (!imageUrl) return null;
     if (imageUrl.startsWith('http')) return imageUrl;
     return imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
   };
@@ -153,16 +157,20 @@ export default function PrintProfilePage() {
           {/* Profile Picture */}
           <div className="flex justify-center">
             <div className="relative">
-              <img
-                src={getImageUrl(user.profile_picture)}
-                alt={user.name}
-                className="w-32 h-32 rounded-full object-cover border-4 border-[#10a37f] shadow-lg"
-                crossOrigin="anonymous"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder-user.jpg";
-                }}
-              />
+              {user.profile_picture && !imageError ? (
+                <img
+                  src={getImageUrl(user.profile_picture)}
+                  alt={user.name}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-[#10a37f] shadow-lg"
+                  crossOrigin="anonymous"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <GradientAvatar
+                  className="w-32 h-32 border-4 border-[#10a37f] shadow-lg"
+                  isDark={isDark}
+                />
+              )}
             </div>
           </div>
 

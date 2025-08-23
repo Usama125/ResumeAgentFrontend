@@ -16,6 +16,7 @@ import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import { getImageUrl } from '@/utils/imageUtils'
 import ProfessionalAnalysisModal from "@/components/ProfessionalAnalysisModal"
+import { GradientAvatar } from '@/components/ui/avatar'
 
 // Calculate skill matching percentage
 const calculateSkillMatch = (userSkills: { name: string; level: string }[] | string[] | undefined, searchQuery: string): number => {
@@ -61,6 +62,7 @@ export default function ExplorePage() {
   const [currentSearchQuery, setCurrentSearchQuery] = useState("")
   const [isProfessionalAnalysisModalOpen, setIsProfessionalAnalysisModalOpen] = useState(false)
   const [selectedUserForAnalysis, setSelectedUserForAnalysis] = useState<{ id: string; name: string; designation?: string } | null>(null)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
@@ -501,15 +503,16 @@ export default function ExplorePage() {
                       <CardContent className="p-4">
                         <div className="flex flex-col items-center text-center space-y-3">
                           <div className="relative">
-                            <img
-                              src={getImageUrl(user.profile_picture)}
-                              alt={user.name}
-                              className="w-12 h-12 rounded-full object-cover"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "/placeholder-user.jpg";
-                              }}
-                            />
+                            {user.profile_picture && !imageErrors[user.id] ? (
+                              <img
+                                src={getImageUrl(user.profile_picture)}
+                                alt={user.name}
+                                className="w-12 h-12 rounded-full object-cover"
+                                onError={() => setImageErrors(prev => ({ ...prev, [user.id]: true }))}
+                              />
+                            ) : (
+                              <GradientAvatar className="w-12 h-12" isDark={isDark} />
+                            )}
                             {user.is_looking_for_job && (
                               <div className={`absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 ${isDark ? 'border-[#2f2f2f]' : 'border-white'}`}></div>
                             )}

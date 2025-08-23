@@ -10,6 +10,7 @@ import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import VariantAwareProfileSections from "@/components/sections/variants/VariantAwareProfileSections"
 import ProfileCompletionSection from "@/components/sections/ProfileCompletionSection"
 import PreferencesSection from "@/components/sections/PreferencesSection"
+import { GradientAvatar } from '@/components/ui/avatar'
 import {
   MapPin,
   Briefcase,
@@ -93,6 +94,7 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
   const [isHovered, setIsHovered] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   const totalExperience = calculateTotalExperience(user.experience_details || [])
 
@@ -157,11 +159,19 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
                   <div className="absolute -inset-1 bg-gradient-to-r from-[#10a37f]/40 via-[#0d8f6f]/25 to-[#10a37f]/40 rounded-full animate-pulse"></div>
                   
                   <div className="relative">
-                    <img
-                      src={getImageUrl(user.profile_picture)}
-                      alt={user.name}
-                      className="w-32 h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 border-white/20 shadow-2xl group-hover/photo:scale-105 transition-transform duration-500"
-                    />
+                    {user.profile_picture && !imageError ? (
+                      <img
+                        src={getImageUrl(user.profile_picture)}
+                        alt={user.name}
+                        className="w-32 h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 border-white/20 shadow-2xl group-hover/photo:scale-105 transition-transform duration-500"
+                        onError={() => setImageError(true)}
+                      />
+                    ) : (
+                      <GradientAvatar
+                        className="w-32 h-32 lg:w-40 lg:h-40 border-4 border-white/20 shadow-2xl group-hover/photo:scale-105 transition-transform duration-500"
+                        isDark={isDark}
+                      />
+                    )}
                     
                     {/* Premium Badge */}
                     <div className="absolute -bottom-2 -right-2">

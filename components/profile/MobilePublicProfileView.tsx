@@ -43,6 +43,7 @@ import { getImageUrl } from '@/utils/imageUtils';
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils';
 import ProfileSections from '@/components/ProfileSections';
 import ProfessionalAnalysisModal from '@/components/ProfessionalAnalysisModal';
+import { GradientAvatar } from '@/components/ui/avatar';
 
 export default function MobilePublicProfileView({
   user,
@@ -64,6 +65,7 @@ export default function MobilePublicProfileView({
 }: MobilePublicProfileViewProps) {
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
   const [isProfessionalAnalysisModalOpen, setIsProfessionalAnalysisModalOpen] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const { isDark } = useTheme()
 
   return (
@@ -108,15 +110,19 @@ export default function MobilePublicProfileView({
               {/* Profile Picture */}
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-lg opacity-30"></div>
-                <img
-                  src={user.profile_picture || "/placeholder-user.jpg"}
-                  alt={user.name}
-                  className="relative w-24 h-24 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/placeholder-user.jpg";
-                  }}
-                />
+                {user.profile_picture && !imageError ? (
+                  <img
+                    src={getImageUrl(user.profile_picture)}
+                    alt={user.name}
+                    className="relative w-24 h-24 rounded-full object-cover border-4 border-[#10a37f]/30 shadow-2xl"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <GradientAvatar
+                    className="relative w-24 h-24 border-4 border-[#10a37f]/30 shadow-2xl"
+                    isDark={isDark}
+                  />
+                )}
               </div>
 
               {/* Name & Title */}

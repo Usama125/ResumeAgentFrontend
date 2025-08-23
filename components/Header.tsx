@@ -23,6 +23,7 @@ interface HeaderProps {
 }
 
 import { getImageUrl } from '@/utils/imageUtils';
+import { GradientAvatar } from '@/components/ui/avatar';
 
 export default function Header({ variant = 'home', showBackButton = false, onEditProfile, profileData, isCurrentUserProfile = false }: HeaderProps) {
   const router = useRouter()
@@ -30,6 +31,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
   const { isDark } = useTheme()
   const [isMobile, setIsMobile] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   // Mobile detection
   useEffect(() => {
@@ -172,15 +174,18 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
                 <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                   {/* Show profile picture only for public profiles (not current user's profile) */}
                   {!isCurrentUserProfile && (
-                    <img
-                      src={getImageUrl(profileData.profile_picture || null)}
-                      alt={profileData.name || "Profile"}
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder-user.jpg";
-                      }}
-                    />
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden flex-shrink-0">
+                      {profileData.profile_picture && !imageError ? (
+                        <img
+                          src={getImageUrl(profileData.profile_picture)}
+                          alt={profileData.name || "Profile"}
+                          className="w-full h-full object-cover"
+                          onError={() => setImageError(true)}
+                        />
+                      ) : (
+                        <GradientAvatar className="w-7 h-7 sm:w-8 sm:h-8" isDark={isDark} />
+                      )}
+                    </div>
                   )}
                   <h1 className={`text-sm sm:text-lg font-semibold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {profileData.name}

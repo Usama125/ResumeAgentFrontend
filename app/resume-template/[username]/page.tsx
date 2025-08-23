@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { PublicUser } from "@/types"
 import { 
@@ -25,6 +25,8 @@ import {
   Phone as PhoneIcon,
   MapPin as MapPinIcon
 } from "lucide-react"
+import { GradientAvatar } from '@/components/ui/avatar'
+import { useTheme } from '@/context/ThemeContext'
 
 interface ProcessedResumeData {
   professional_summary: string;
@@ -69,6 +71,8 @@ export default function ResumeTemplatePage() {
   const [processedData, setProcessedData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false)
+  const { isDark } = useTheme()
   const params = useParams()
   const username = params.username as string
 
@@ -133,7 +137,7 @@ export default function ResumeTemplatePage() {
   }
 
   const getImageUrl = (imageUrl: string | null) => {
-    if (!imageUrl) return "/placeholder-user.jpg";
+    if (!imageUrl) return null;
     if (imageUrl.startsWith('http')) return imageUrl;
     return imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
   };
@@ -293,16 +297,20 @@ export default function ResumeTemplatePage() {
           <div className="flex items-center space-x-4">
             {/* Profile Picture */}
             <div className="relative">
-              <img
-                src={getImageUrl(user.profile_picture)}
-                alt={user.name}
-                className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
-                crossOrigin="anonymous"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder-user.jpg";
-                }}
-              />
+              {user.profile_picture && !imageError ? (
+                <img
+                  src={getImageUrl(user.profile_picture)}
+                  alt={user.name}
+                  className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                  crossOrigin="anonymous"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <GradientAvatar
+                  className="w-20 h-20 border-4 border-white shadow-lg"
+                  isDark={false}
+                />
+              )}
             </div>
 
             {/* Name & Title */}

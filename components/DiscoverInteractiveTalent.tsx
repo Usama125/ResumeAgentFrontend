@@ -9,6 +9,7 @@ import { PublicUser } from "@/types"
 import { getImageUrl } from "@/utils/imageUtils"
 import { algoliaSearchService } from "@/services/algolia-search"
 import { UserService } from "@/services/user"
+import { GradientAvatar } from '@/components/ui/avatar'
 
 // Interactive Talent Cards Component
 const InteractiveTalentCards = ({ isDark }: { isDark: boolean }) => {
@@ -20,6 +21,7 @@ const InteractiveTalentCards = ({ isDark }: { isDark: boolean }) => {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [countdown, setCountdown] = useState(10)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -210,15 +212,16 @@ const InteractiveTalentCards = ({ isDark }: { isDark: boolean }) => {
           {/* Profile Picture */}
           <div className="relative">
             <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-[#10a37f]/20 group-hover:ring-[#10a37f]/40 transition-all duration-300">
-              <img
-                src={getImageUrl(profile.profile_picture)}
-                alt={profile.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder-user.jpg";
-                }}
-              />
+              {profile.profile_picture && !imageErrors[profile.id] ? (
+                <img
+                  src={getImageUrl(profile.profile_picture)}
+                  alt={profile.name}
+                  className="w-full h-full object-cover"
+                  onError={() => setImageErrors(prev => ({ ...prev, [profile.id]: true }))}
+                />
+              ) : (
+                <GradientAvatar className="w-20 h-20" isDark={isDark} />
+              )}
             </div>
             {profile.is_looking_for_job && (
               <div className={`absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 ${isDark ? 'border-[#2f2f2f]' : 'border-white'} shadow-lg`}></div>

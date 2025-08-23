@@ -10,6 +10,7 @@ import { getThemeClasses } from '@/utils/theme'
 import { useToast } from '@/hooks/use-toast'
 
 import { getImageUrl } from '@/utils/imageUtils';
+import { GradientAvatar } from '@/components/ui/avatar';
 
 interface UserDropdownProps {
   onEditProfile?: () => void;
@@ -19,6 +20,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const { user, logout } = useAuth()
@@ -255,15 +257,16 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
         {/* Profile Picture */}
         <div className="relative">
           <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-[#10a37f]/30">
-            <img 
-              src={getImageUrl(user.profile_picture)} 
-              alt={user.name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/placeholder-user.jpg";
-              }}
-            />
+            {user.profile_picture && !imageError ? (
+              <img 
+                src={getImageUrl(user.profile_picture)} 
+                alt={user.name}
+                className="w-full h-full object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <GradientAvatar className="w-8 h-8" isDark={isDark} />
+            )}
           </div>
           {/* Online indicator */}
           <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 ${themeClasses.bg.primary.replace('bg-', 'border-')}`}></div>
@@ -295,15 +298,16 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
           <div className={`px-4 py-3 border-b ${themeClasses.border.primary}/30`}>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#10a37f]/30">
-                <img 
-                  src={getImageUrl(user.profile_picture)} 
-                  alt={user.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/placeholder-user.jpg";
-                  }}
-                />
+                {user.profile_picture && !imageError ? (
+                  <img 
+                    src={getImageUrl(user.profile_picture)} 
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <GradientAvatar className="w-10 h-10" isDark={isDark} />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-medium ${themeClasses.text.primary} truncate`}>{user.name}</p>
