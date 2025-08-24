@@ -293,25 +293,25 @@ export default function ResumeTemplatePage() {
 
       <div className="max-w-6xl mx-auto bg-white shadow-xl main-container rounded-lg overflow-hidden">
         {/* Header Section */}
-        <div className="resume-header text-white p-6 mt-4 mb-8 avoid-break">
+        <div className="resume-header text-white p-6 mb-8 avoid-break">
           <div className="flex items-center space-x-4">
-            {/* Profile Picture */}
-            <div className="relative">
-              {user.profile_picture && !imageError ? (
-                <img
-                  src={getImageUrl(user.profile_picture)}
-                  alt={user.name}
-                  className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
-                  crossOrigin="anonymous"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <GradientAvatar
-                  className="w-20 h-20 border-4 border-white shadow-lg"
-                  isDark={false}
-                />
-              )}
-            </div>
+                          {/* Profile Picture */}
+              <div className="relative w-20 h-20">
+                {user.profile_picture && !imageError ? (
+                  <img
+                    src={getImageUrl(user.profile_picture)}
+                    alt={user.name}
+                    className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                    crossOrigin="anonymous"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <GradientAvatar
+                    className="w-20 h-20 border-4 border-white shadow-lg"
+                    isDark={false}
+                  />
+                )}
+              </div>
 
             {/* Name & Title */}
             <div className="flex-1">
@@ -380,7 +380,7 @@ export default function ResumeTemplatePage() {
         {/* First Page Content */}
         <div className="first-page-content">
           {/* Left Sidebar - Only on first page */}
-          <div className="w-1/3 sidebar p-2">
+          <div className="w-1/3 sidebar p-2 bg-white border border-gray-200 rounded-lg shadow-sm">
             {/* Professional Summary */}
             {processedData.professional_summary && (
               <div className="content-section avoid-break">
@@ -519,9 +519,9 @@ export default function ResumeTemplatePage() {
                       </div>
                       <p className="text-gray-700 text-xs mb-2 line-clamp-2">{project.description}</p>
                       {project.technologies && project.technologies.length > 0 && (
-                        <div className="tech-chips-container">
-                          {project.technologies.slice(0, 2).map((tech, idx) => (
-                            <span key={idx} className="tech-chip bg-[#10a37f]/10 border border-[#10a37f]/20 text-[#10a37f] rounded-full font-medium">
+                        <div className="flex flex-wrap gap-1">
+                          {project.technologies.slice(0, 3).map((tech, idx) => (
+                            <span key={idx} className="px-2 py-1 bg-[#10a37f]/10 border border-[#10a37f]/20 text-[#10a37f] rounded-full text-xs font-medium">
                               {tech}
                             </span>
                           ))}
@@ -600,13 +600,13 @@ export default function ResumeTemplatePage() {
                     </div>
                     <p className="text-gray-700 text-xs mb-2 line-clamp-2">{project.description}</p>
                     {project.technologies && project.technologies.length > 0 && (
-                                                                      <div className="tech-chips-container">
-                          {project.technologies.slice(0, 2).map((tech, idx) => (
-                            <span key={idx} className="tech-chip bg-[#10a37f]/10 border border-[#10a37f]/20 text-[#10a37f] rounded-full font-medium">
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
+                      <div className="flex flex-wrap gap-1">
+                        {project.technologies.slice(0, 3).map((tech, idx) => (
+                          <span key={idx} className="px-2 py-1 bg-[#10a37f]/10 border border-[#10a37f]/20 text-[#10a37f] rounded-full text-xs font-medium">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
                 ))}

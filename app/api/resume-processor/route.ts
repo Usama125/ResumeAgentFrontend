@@ -82,14 +82,14 @@ REQUIREMENTS:
       "position": "string",
       "company": "string", 
       "duration": "string",
-      "description": "string (max 150 characters)",
+      "description": "string (max 100 characters)",
       "key_achievements": ["string (max 80 chars each)"]
     }
   ],
   "projects": [
     {
       "name": "string",
-      "description": "string (max 120 characters)",
+      "description": "string (max 80 characters)",
       "technologies": ["string"],
       "url": "string (optional)"
     }
@@ -126,7 +126,7 @@ RULES:
 5. Education: Include all education entries but keep descriptions concise
 6. Languages: Include all languages with proficiency levels
 7. Awards: Include ALL awards from the profile data - DO NOT FILTER AWARDS
-8. All descriptions must be within character limits
+8. All descriptions must be within character limits. Experience and project descriptions must be exactly 2 lines maximum (around 80-100 characters). Do not exceed this limit.
 9. Maintain professional tone and focus on achievements
 10. If data is missing for any section, omit that section from the response
 
