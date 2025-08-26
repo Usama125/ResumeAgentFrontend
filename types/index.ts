@@ -408,7 +408,7 @@ export interface RateLimitData {
 }
 
 export interface APIError {
-  type: 'RATE_LIMIT' | 'AUTH_ERROR' | 'VALIDATION_ERROR' | 'GENERIC_ERROR';
+  type: 'RATE_LIMIT' | 'AUTH_ERROR' | 'VALIDATION_ERROR' | 'GENERIC_ERROR' | 'BLOCKED_USER';
   message: string;
   detail?: string | any[];
   retryAfter?: number;

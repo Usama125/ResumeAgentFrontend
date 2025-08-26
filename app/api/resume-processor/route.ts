@@ -15,6 +15,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+
+
+    // Track AI resume processing request
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/admin/analytics/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action_type: 'ai_resume_analysis',
+          user_id: profileData?.id || null,
+          username: profileData?.username || null,
+          details: {
+            type: 'resume_processing',
+            has_experience: !!(profileData?.experience?.length),
+            has_projects: !!(profileData?.projects?.length),
+            has_skills: !!(profileData?.skills?.length),
+            sections_count: Object.keys(profileData || {}).length
+          },
+          ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+          user_agent: req.headers.get('user-agent') || 'unknown'
+        })
+      });
+    } catch (trackingError) {
+      console.error('Analytics tracking failed:', trackingError);
+    }
+
     // Create the AI prompt for resume data processing
     const systemPrompt = getResumeProcessingPrompt(profileData);
 

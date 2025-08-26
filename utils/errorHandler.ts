@@ -68,6 +68,18 @@ export class ErrorHandler {
         }
         break;
       
+      case 'CONTACT_SUPPORT':
+        // For blocked users, show a more prominent error and clear auth
+        if (typeof window !== 'undefined') {
+          // Clear stored authentication
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+          // Redirect to auth page with blocked user message
+          window.location.href = '/auth?blocked=true';
+        }
+        break;
+      
       default:
         // For other errors, just log them
         break;
@@ -130,6 +142,14 @@ export class ErrorHandler {
         type: 'AUTH_ERROR',
         message: data.detail || data.error || 'Authentication failed',
         action: 'REDIRECT_TO_LOGIN'
+      };
+    }
+    
+    if (response.status === 403) {
+      return {
+        type: 'BLOCKED_USER',
+        message: data.detail || data.error || 'Access forbidden',
+        action: 'CONTACT_SUPPORT'
       };
     }
     

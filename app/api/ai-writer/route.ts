@@ -34,6 +34,34 @@ export async function POST(req: NextRequest) {
       additionalInstructions
     );
 
+    // Track AI content generation request
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/admin/analytics/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action_type: 'ai_content_generation',
+          user_id: profileData?.id || null,
+          username: profileData?.username || null,
+          details: {
+            type: 'cover_letter',
+            company: companyName,
+            position: positionTitle,
+            tone: tone,
+            length: length,
+            has_job_description: !!jobDescription,
+            has_additional_instructions: !!additionalInstructions
+          },
+          ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+          user_agent: req.headers.get('user-agent') || 'unknown'
+        })
+      });
+    } catch (trackingError) {
+      console.error('Analytics tracking failed:', trackingError);
+    }
+
     const result = await streamText({
       model: openai('gpt-3.5-turbo'),
       system: systemPrompt,

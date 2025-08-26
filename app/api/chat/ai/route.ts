@@ -8,6 +8,30 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, profileData, context } = await req.json();
 
+    // Track AI chat message
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/admin/analytics/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action_type: 'ai_chat',
+          user_id: profileData?.id || null,
+          username: profileData?.username || null,
+          details: {
+            context: context,
+            message_length: messages[messages.length - 1]?.content?.length || 0,
+            total_messages_in_conversation: messages.length
+          },
+          ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+          user_agent: req.headers.get('user-agent') || 'unknown'
+        })
+      });
+    } catch (trackingError) {
+      console.error('Analytics tracking failed:', trackingError);
+    }
+
     // Determine which agent to use based on context
     const systemPrompt = context === 'self-profile' 
       ? getSelfProfileAgentPrompt(profileData)

@@ -253,6 +253,36 @@ Please generate the content now.`
         // If no content was generated, treat as error
         throw new Error('No content was generated')
       }
+
+      // Track cover letter generation for admin analytics (after successful generation)
+      try {
+        await fetch('/api/admin/track-cover-letter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: user?.username || 'guest',
+            user_id: user?.id || null,
+            cover_letter_content: fullContent,
+            options_used: {
+              jobDescription: options.jobDescription,
+              companyName: options.companyName,
+              positionTitle: options.positionTitle,
+              jobType: options.jobType,
+              tone: options.tone,
+              length: options.length,
+              additionalInstructions: options.additionalInstructions
+            },
+            word_count: fullContent.split(' ').length,
+            character_count: fullContent.length
+          })
+        });
+        console.log('✅ Cover letter tracked successfully for admin analytics');
+      } catch (trackingError) {
+        console.error('❌ Failed to track cover letter generation:', trackingError);
+        // Don't throw error - tracking failure shouldn't affect user experience
+      }
     } catch (error) {
       console.error('Content generation error:', error)
       setIsGenerating(false)
@@ -278,6 +308,7 @@ Please generate the content now.`
     
     try {
       await navigator.clipboard.writeText(content)
+      
       toast({
         title: "Copied to Clipboard",
         description: "Content has been copied to your clipboard.",

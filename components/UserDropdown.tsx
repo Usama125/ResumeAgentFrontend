@@ -353,13 +353,13 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
               <span>AI Writer</span>
             </div>
 
-            <div
+            {/* <div
               onClick={handleDownloadProfile}
               className={`w-full px-4 py-2 text-left text-sm ${themeClasses.text.secondary} hover:${themeClasses.bg.tertiary}/50 hover:${themeClasses.text.primary} transition-colors flex items-center space-x-3 cursor-pointer`}
             >
               <Download className="w-4 h-4" />
               <span>Download Profile</span>
-            </div>
+            </div> */}
 
             <div
               onClick={handleDownloadResume}

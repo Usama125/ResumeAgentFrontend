@@ -75,7 +75,7 @@ export default function MobilePublicProfileView({
         {mobileView === 'profile' && (
           <button
             onClick={() => setMobileView('chat')}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-[#10a37f] hover:bg-[#0d8f6f] rounded-full shadow-lg z-50 flex items-center justify-center transition-colors"
+            className="fixed bottom-6 left-6 w-12 h-12 bg-[#10a37f] hover:bg-[#0d8f6f] rounded-full shadow-lg z-50 flex items-center justify-center transition-colors"
             title="Start Chat"
           >
             <MessageCircle className="w-6 h-6 text-white" />
@@ -84,7 +84,7 @@ export default function MobilePublicProfileView({
         {mobileView === 'chat' && (
           <button
             onClick={() => setMobileView('profile')}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-[#10a37f] hover:bg-[#0d8f6f] rounded-full shadow-lg z-50 flex items-center justify-center transition-colors"
+            className="fixed bottom-6 left-6 w-12 h-12 bg-[#10a37f] hover:bg-[#0d8f6f] rounded-full shadow-lg z-50 flex items-center justify-center transition-colors"
             title="View Profile"
           >
             <User className="w-6 h-6 text-white" />

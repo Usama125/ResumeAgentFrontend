@@ -140,6 +140,14 @@ class SecureAPIClient {
       };
     }
     
+    if (response.status === 403) {
+      return {
+        type: 'BLOCKED_USER',
+        message: data.detail || data.error || 'Access forbidden',
+        action: 'CONTACT_SUPPORT'
+      };
+    }
+    
     if (response.status === 422) {
       return {
         type: 'VALIDATION_ERROR',

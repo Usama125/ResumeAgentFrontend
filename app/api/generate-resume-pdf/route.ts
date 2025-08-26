@@ -14,6 +14,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Fetch user data and process with AI to save for admin review
+    let userData = null;
+    let processedData = null;
+    
+    try {
+      // Fetch user data
+      const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/users/username/${username}`);
+      if (userResponse.ok) {
+        userData = await userResponse.json();
+        
+        // Process data with AI (same as the resume template does)
+        const processResponse = await fetch(`${request.nextUrl.origin}/api/resume-processor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ profileData: userData }),
+        });
+        
+        if (processResponse.ok) {
+          processedData = await processResponse.json();
+        }
+      }
+    } catch (dataError) {
+      console.log('Could not fetch user data for saving:', dataError);
+    }
+
+
+
+
+
     // Get the full URL for the resume template page
     const host = request.headers.get('host') || 'localhost:3001'
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
@@ -142,6 +173,35 @@ export async function POST(request: NextRequest) {
     await browser.close()
 
     console.log('✅ Professional Resume PDF generated successfully')
+
+    // Track resume download for analytics count only
+    try {
+      // Get user ID from userData if available
+      const userId = userData?.id || null;
+      
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/admin/analytics/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action_type: 'resume_download',
+          user_id: userId,  // Attribute to resume owner
+          username: username,
+          details: {
+            downloaded_user_id: userId,
+            downloaded_username: username
+          },
+          ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+          user_agent: request.headers.get('user-agent') || 'unknown'
+        })
+      });
+    } catch (trackingError) {
+      console.error('Analytics tracking failed:', trackingError);
+      // Don't fail the PDF generation if tracking fails
+    }
+
+
 
     // Return PDF as response
     return new NextResponse(pdfBuffer, {

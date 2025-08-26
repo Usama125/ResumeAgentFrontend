@@ -16,18 +16,44 @@ export class UserService {
 
   // Get AI analysis for a user
   static async getAIAnalysis(endpoint: string, token?: string): Promise<any> {
-    // Use authAPI for own profile analysis, publicAPI for others
-    if (endpoint.includes('/me/ai-analysis')) {
-      return authAPI.get<any>(endpoint, token);
-    } else {
-      return publicAPI.get<any>(endpoint);
+    // Use frontend API routes for tracking
+    const apiUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000';
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token && endpoint.includes('/me/ai-analysis')) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
+
+    const response = await fetch(`${apiUrl}/api${endpoint}`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch AI analysis');
+    }
+
+    return response.json();
   }
 
   // Get professional analysis for a user
   static async getProfessionalAnalysis(endpoint: string): Promise<any> {
-    // Use publicAPI for professional analysis since it's publicly available
-    return publicAPI.get<any>(endpoint);
+    // Use frontend API routes for tracking
+    const apiUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000';
+    const response = await fetch(`${apiUrl}/api${endpoint}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch professional analysis');
+    }
+
+    return response.json();
   }
 
   // Update current user profile

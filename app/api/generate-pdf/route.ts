@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
+
+
     // Get the full URL for the print-optimized page
     // Try to detect the correct port from the request headers
     const host = request.headers.get('host') || 'localhost:3001'
@@ -144,6 +146,43 @@ export async function POST(request: NextRequest) {
     await browser.close()
 
     console.log('✅ PDF generated successfully')
+
+    // Track profile PDF download for analytics
+    try {
+      // Get user data to extract user ID
+      let userId = null;
+      try {
+        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/users/username/${username}`);
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          userId = userData.id;
+        }
+      } catch (error) {
+        console.log('Could not fetch user ID for analytics:', error);
+      }
+      
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/admin/analytics/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action_type: 'pdf_download',
+          user_id: userId,  // Attribute to profile owner
+          username: username,
+          details: { 
+            file_type: 'profile',
+            downloaded_user_id: userId,
+            downloaded_username: username
+          },
+          ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+          user_agent: request.headers.get('user-agent') || 'unknown'
+        })
+      });
+    } catch (trackingError) {
+      console.error('Analytics tracking failed:', trackingError);
+      // Don't fail the PDF generation if tracking fails
+    }
 
     // Return PDF as response
     return new NextResponse(pdfBuffer, {

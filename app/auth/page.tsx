@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Mail, Lock, User, AlertCircle, AtSign } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { useErrorHandler } from "@/utils/errorHandler"
 import { useTheme } from "@/context/ThemeContext"
@@ -35,10 +35,19 @@ export default function AuthPage() {
   }>({ checking: false, available: null, message: "" })
   
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const [isBlocked, setIsBlocked] = useState(false)
   const { login, register, loading, error, isAuthenticated, user, clearError } = useAuth()
   const { formatError } = useErrorHandler()
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
+
+  // Check for blocked user parameter
+  useEffect(() => {
+    if (searchParams?.get('blocked') === 'true') {
+      setIsBlocked(true)
+    }
+  }, [searchParams])
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -215,8 +224,23 @@ export default function AuthPage() {
                 </p>
               </CardHeader>
               <CardContent className="space-y-6 px-8 pb-8">
+                {/* Blocked User Alert */}
+                {isBlocked && (
+                  <div className="bg-red-600/30 border border-red-500/50 rounded-xl p-4 mb-4">
+                    <div className="flex items-center">
+                      <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+                      <div>
+                        <p className="text-red-300 text-sm font-medium">Account Blocked</p>
+                        <p className="text-red-300/80 text-xs mt-1">
+                          You are blocked by the admin, please contact support for assistance.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Error Display */}
-                {error && (
+                {error && !isBlocked && (
                   <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 mb-4">
                     <div className="flex items-center">
                       <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
