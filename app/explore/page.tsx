@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import React from "react"
-import { Search, Users, MapPin, Star, X, Plus, ArrowRight, Sparkles } from "lucide-react"
+import { Search, Users, MapPin, Star, X, Plus, ArrowRight, Sparkles, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -17,6 +17,7 @@ import { RateLimitModal } from "@/components/RateLimitModal"
 import { getImageUrl } from '@/utils/imageUtils'
 import ProfessionalAnalysisModal from "@/components/ProfessionalAnalysisModal"
 import { GradientAvatar } from '@/components/ui/avatar'
+import ExploreFilters, { FilterState } from "@/components/ExploreFilters"
 
 // Calculate skill matching percentage
 const calculateSkillMatch = (userSkills: { name: string; level: string }[] | string[] | undefined, searchQuery: string): number => {
@@ -63,11 +64,46 @@ export default function ExplorePage() {
   const [isProfessionalAnalysisModalOpen, setIsProfessionalAnalysisModalOpen] = useState(false)
   const [selectedUserForAnalysis, setSelectedUserForAnalysis] = useState<{ id: string; name: string; designation?: string } | null>(null)
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
+  const [showFilters, setShowFilters] = useState(false)
+  const [filters, setFilters] = useState<FilterState>({
+    locations: [],
+    professions: [],
+    skills: []
+  })
+  const [availableFilterOptions, setAvailableFilterOptions] = useState({
+    locations: [],
+    professions: [],
+    skills: []
+  })
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const { isDark } = useTheme()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
+
+  // Load filter options on mount and expose debug function
+  useEffect(() => {
+    const loadFilterOptions = async () => {
+      try {
+        const facets = await algoliaSearchService.getFacets()
+        setAvailableFilterOptions({
+          locations: facets.locations.map(f => ({ value: f.value, label: f.value, count: f.count })),
+          professions: facets.professions.map(f => ({ value: f.value, label: f.value, count: f.count })),
+          skills: facets.skills.map(f => ({ value: f.value, label: f.value, count: f.count }))
+        })
+      } catch (error) {
+        console.error('Error loading filter options:', error)
+      }
+    }
+
+    // Expose debug function to global window for manual testing
+    if (typeof window !== 'undefined') {
+      (window as any).algoliaDebugTest = () => algoliaSearchService.manualDebugTest()
+      console.log('🔧 Debug function exposed: Run algoliaDebugTest() in console to test search scenarios')
+    }
+
+    loadFilterOptions()
+  }, [])
 
   // Fetch initial users on page load and handle URL params
   useEffect(() => {
@@ -97,9 +133,20 @@ export default function ExplorePage() {
           setCurrentSearchQuery("")
           setIsSearchMode(false)
           
-          // Fetch initial 11 users using Algolia
-          console.log('🔍 [EXPLORE] Calling getAllUsers(11, 0)...')
-          const searchResponse = await algoliaSearchService.getAllUsers(11, 0)
+          // Fetch initial 24 users using Algolia with filters
+          console.log('🔍 [EXPLORE] Calling getAllUsers(24, 0)...')
+          const searchResponse = await algoliaSearchService.searchUsers({
+            q: '',
+            limit: 24,
+            page: 0,
+            advancedFilters: {
+              locations: filters.locations,
+              professions: filters.professions,
+              skills: filters.skills,
+              minProfileScore: filters.minProfileScore,
+              is_looking_for_job: filters.is_looking_for_job
+            }
+          })
           console.log('🔍 [EXPLORE] getAllUsers response:', {
             hitsLength: searchResponse.hits.length,
             total: searchResponse.total,
@@ -114,13 +161,13 @@ export default function ExplorePage() {
           setDisplayedUsers(sortedUsers)
           setTotalFetched(sortedUsers.length)
           
-          // Check if there are more users available (if we got 11 users and there are more pages)
-          setHasMoreUsers(searchResponse.total > 11 && searchResponse.pages > 1)
+          // Check if there are more users available (if we got 24 users and there are more pages)
+          setHasMoreUsers(searchResponse.total > 24 && searchResponse.pages > 1)
           
           console.log('🔍 [EXPLORE] Final state:', {
             displayedUsersLength: searchResponse.hits.length,
             totalFetched: searchResponse.hits.length,
-            hasMoreUsers: searchResponse.total > 11 && searchResponse.pages > 1
+            hasMoreUsers: searchResponse.total > 24 && searchResponse.pages > 1
           })
         }
       } catch (error) {
@@ -138,16 +185,40 @@ export default function ExplorePage() {
     fetchInitialUsers()
   }, [searchParams])
 
+  // Re-fetch when filters change
+  useEffect(() => {
+    const hasActiveFilters = Object.values(filters).some(value => {
+      if (Array.isArray(value)) return value.length > 0
+      return value !== undefined
+    })
+
+    if (hasActiveFilters || isSearchMode) {
+      performSearch(currentSearchQuery || searchQuery, false)
+    }
+  }, [filters])
+
   const performSearch = async (query: string, isLoadMore: boolean = false) => {
-    if (!query.trim()) {
-      // Reset to initial state - fetch first 11 users sorted by profile_score
+    const hasActiveFilters = Object.values(filters).some(value => {
+      if (Array.isArray(value)) return value.length > 0
+      return value !== undefined
+    })
+
+    // Determine if we're in search/filter mode
+    const isSearchOrFilterMode = query.trim() || hasActiveFilters
+    
+    if (!isSearchOrFilterMode) {
+      // Reset to initial state - fetch first 24 users sorted by profile_score (no filters, no search)
       setIsSearchMode(false)
       setCurrentSearchQuery("")
       setSearchTotalFetched(0)
       setSearchLoading(true)
       try {
-        // Fetch initial 11 users
-        const searchResponse = await algoliaSearchService.getAllUsers(11, 0)
+        // Fetch initial 24 users with no filters
+        const searchResponse = await algoliaSearchService.searchUsers({
+          q: '',
+          limit: 24,
+          page: 0
+        })
         
         // Sort reset users by profile_score descending (highest first)
         const sortedUsers = searchResponse.hits
@@ -156,7 +227,7 @@ export default function ExplorePage() {
         
         setDisplayedUsers(sortedUsers)
         setTotalFetched(sortedUsers.length)
-        setHasMoreUsers(searchResponse.total > 11 && searchResponse.pages > 1)
+        setHasMoreUsers(searchResponse.total > 24 && searchResponse.pages > 1)
       } catch (error) {
         console.error('Error fetching users:', error)
         // Check if it's a rate limit error
@@ -173,7 +244,7 @@ export default function ExplorePage() {
     try {
       if (!isLoadMore) {
         setSearchLoading(true)
-        setIsSearchMode(true)
+        setIsSearchMode(isSearchOrFilterMode)
         setCurrentSearchQuery(query)
         setSearchTotalFetched(0)
       } else {
@@ -181,14 +252,28 @@ export default function ExplorePage() {
       }
       
       // Calculate the page for Algolia
-      const pageSize = isLoadMore ? 6 : 11
-      const currentPage = isLoadMore ? Math.floor(searchTotalFetched / 6) : 0
+      const pageSize = isLoadMore ? 5 : 24
+      const currentPage = isLoadMore ? Math.floor(searchTotalFetched / 5) : 0
       
-      // Perform Algolia search with pagination
+      // Perform Algolia search with pagination and filters
       const searchResponse = await algoliaSearchService.searchUsers({
         q: query,
         limit: pageSize,
-        page: currentPage
+        page: currentPage,
+        advancedFilters: {
+          locations: filters.locations,
+          professions: filters.professions,
+          skills: filters.skills,
+          minProfileScore: filters.minProfileScore,
+          is_looking_for_job: filters.is_looking_for_job
+        }
+      })
+      
+      console.log('🔍 [EXPLORE] Search with query + filters:', {
+        query: query,
+        filters: filters,
+        resultsCount: searchResponse.hits.length,
+        total: searchResponse.total
       })
       
       if (searchResponse && searchResponse.hits.length > 0) {
@@ -289,11 +374,22 @@ export default function ExplorePage() {
       // Load more regular users using Algolia for consistency
       setLoadMoreLoading(true)
       try {
-        // Calculate the current page for Algolia (6 users per page for load more)
-        const currentPage = Math.floor(totalFetched / 6) + 1
+        // Calculate the current page for Algolia (5 users per page for load more)
+        const currentPage = Math.floor(totalFetched / 5) + 1
         
-        // Fetch next 6 users using Algolia
-        const searchResponse = await algoliaSearchService.getAllUsers(6, currentPage)
+        // Fetch next 5 users using Algolia with filters
+        const searchResponse = await algoliaSearchService.searchUsers({
+          q: '',
+          limit: 5,
+          page: currentPage,
+          advancedFilters: {
+            locations: filters.locations,
+            professions: filters.professions,
+            skills: filters.skills,
+            minProfileScore: filters.minProfileScore,
+            is_looking_for_job: filters.is_looking_for_job
+          }
+        })
         
         if (searchResponse.hits.length > 0) {
           // Combine existing and new users, then sort by profile_score descending
@@ -466,157 +562,184 @@ export default function ExplorePage() {
         {/* Profiles Section */}
         <div className={`relative ${isDark ? 'bg-gradient-to-b from-[#10a37f]/5 via-[#10a37f]/3 to-transparent' : 'bg-gradient-to-b from-[#10a37f]/3 via-[#10a37f]/2 to-transparent'}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-4">
-            {/* Results Section */}
-            <div className="mb-2">
-              <div className="mb-8 text-center">
-                <h3 className={`text-2xl font-semibold mb-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {isSearchMode ? `Search Results${currentSearchQuery ? ` for "${currentSearchQuery}"` : ''}` : 'Featured Professionals'}
-                </h3>
-                <div className="w-20 h-0.5 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] mx-auto"></div>
-              </div>
-              
-              {(loading || searchLoading) ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {Array.from({ length: 12 }).map((_, index) => (
-                    <Card key={index} className={`backdrop-blur-sm animate-pulse ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60' : 'bg-white/80 border-gray-300/60'}`}>
-                      <CardContent className="p-4">
-                        <div className="flex flex-col items-center text-center space-y-3">
-                          <div className={`w-12 h-12 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
-                          <div className="space-y-2 w-full">
-                            <div className={`h-4 rounded w-3/4 mx-auto ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
-                            <div className={`h-3 rounded w-1/2 mx-auto ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
-                            <div className={`h-3 rounded w-2/3 mx-auto ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {displayedUsers.map((user) => (
-                    <Card
-                      key={user.id}
-                      className={`backdrop-blur-sm transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-[#10a37f]/10 hover:scale-105 ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 hover:border-[#10a37f] hover:bg-[#2f2f2f]' : 'bg-white/80 border-gray-300/60 hover:border-[#10a37f] hover:bg-white'}`}
-                      onClick={() => router.push(`/profile/${user.username}`)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex flex-col items-center text-center space-y-3">
-                          <div className="relative">
-                            {user.profile_picture && !imageErrors[user.id] ? (
-                              <img
-                                src={getImageUrl(user.profile_picture)}
-                                alt={user.name}
-                                className="w-12 h-12 rounded-full object-cover"
-                                onError={() => setImageErrors(prev => ({ ...prev, [user.id]: true }))}
-                              />
-                            ) : (
-                              <GradientAvatar className="w-12 h-12" isDark={isDark} />
-                            )}
-                            {user.is_looking_for_job && (
-                              <div className={`absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 ${isDark ? 'border-[#2f2f2f]' : 'border-white'}`}></div>
-                            )}
-                          </div>
-                          <div className="space-y-1 w-full">
-                            <h3 className={`text-sm font-semibold group-hover:text-[#10a37f] transition-colors truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                              {user.name}
-                            </h3>
-                            <p className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{user.designation}</p>
-                            <div className={`flex items-center justify-center text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                              <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                              <span className="truncate">{user.location}</span>
-                            </div>
-                            {/* Show profile score */}
-                            {user.profile_score !== undefined && user.profile_score > 0 && (
-                              <div className="flex items-center justify-center space-x-1">
-                                <div className={`w-2 h-2 rounded-full ${user.profile_score >= 80 ? 'bg-green-500' : user.profile_score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}></div>
-                                <span className={`text-xs font-medium ${user.profile_score >= 80 ? 'text-green-600' : user.profile_score >= 60 ? 'text-yellow-600' : 'text-orange-600'} ${isDark ? 'brightness-125' : ''}`}>
-                                  Profile Score: {user.profile_score}/100
-                                </span>
-                              </div>
-                            )}
-                            
-                            {/* Professional Analysis Button - Show for all profiles */}
-                            <div className="flex items-center justify-center">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleOpenProfessionalAnalysis(user.id, user.name, user.designation || undefined)
-                                }}
-                                className={`flex items-center justify-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
-                                  isDark 
-                                    ? 'bg-[#10a37f]/20 text-[#10a37f] hover:bg-[#10a37f]/30 border border-[#10a37f]/30' 
-                                    : 'bg-[#10a37f]/10 text-[#10a37f] hover:bg-[#10a37f]/20 border border-[#10a37f]/20'
-                                }`}
-                                title="Get professional analysis of this candidate"
-                              >
-                                <Sparkles className="w-3 h-3" />
-                                AI Analysis
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                  
-                  {/* Load More Card - Show when there are more users (both search and non-search) */}
-                  {hasMoreUsers && (
-                    <Card
-                      className={`backdrop-blur-sm transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-[#10a37f]/10 hover:scale-105 ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 hover:border-[#10a37f] hover:bg-[#10a37f]/10' : 'bg-white/80 border-gray-300/60 hover:border-[#10a37f] hover:bg-[#10a37f]/5'}`}
-                      onClick={handleLoadMore}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex flex-col items-center text-center space-y-3 h-full justify-center">
-                          {loadMoreLoading ? (
-                            <>
-                              <div className={`w-12 h-12 rounded-full animate-pulse ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
-                              <div className="space-y-1 w-full">
-                                <div className={`h-4 rounded w-3/4 mx-auto animate-pulse ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
-                                <div className={`h-3 rounded w-1/2 mx-auto animate-pulse ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="relative">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border-2 border-[#10a37f]/50 flex items-center justify-center group-hover:border-[#10a37f] group-hover:bg-[#10a37f]/30 transition-all duration-300">
-                                  <Plus className="w-6 h-6 text-[#10a37f] group-hover:text-white transition-colors duration-300" />
-                                </div>
-                              </div>
-                              <div className="space-y-1 w-full">
-                                <h3 className="text-sm font-semibold text-[#10a37f] group-hover:text-white transition-colors duration-300">
-                                  Load More
-                                </h3>
-                                <p className={`text-xs transition-colors duration-300 ${isDark ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-500'}`}>
-                                  {isSearchMode ? "More search results" : "View more profiles"}
-                                </p>
-                                <div className={`flex items-center justify-center text-xs transition-colors duration-300 ${isDark ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-500'}`}>
-                                  <ArrowRight className="w-3 h-3 mr-1 flex-shrink-0" />
-                                  <span className="truncate">{isSearchMode ? "Load more" : "6 more"}</span>
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              )}
+            {/* Filter Toggle Button - Mobile */}
+            <div className="lg:hidden mb-4">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                  isDark 
+                    ? 'bg-[#2f2f2f] border-[#565869] text-white hover:border-[#10a37f]' 
+                    : 'bg-white border-gray-300 text-gray-900 hover:border-[#10a37f]'
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+                Filters
+                {Object.values(filters).some(value => Array.isArray(value) ? value.length > 0 : value !== undefined) && (
+                  <div className="w-2 h-2 rounded-full bg-[#10a37f]"></div>
+                )}
+              </button>
             </div>
 
-            {/* Empty State */}
-            {!loading && !searchLoading && displayedUsers.length === 0 && (
-              <div className="text-center pt-4 pb-16">
-                <div className={`rounded-2xl p-12 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50' : 'bg-white/50 border-gray-300/50'} backdrop-blur-sm border`}>
-                  <Users className={`w-20 h-20 mx-auto mb-6 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                  <h3 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>No professionals found</h3>
-                  <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {searchQuery ? 'Try adjusting your search criteria or browse all available profiles.' : 'No users available at the moment.'}
-                  </p>
+            {/* Main Layout with Filters */}
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Filter Sidebar */}
+              <div className={`lg:block ${showFilters ? 'block' : 'hidden'} w-full lg:w-80 flex-shrink-0`}>
+                <div className={`sticky top-4 rounded-xl border p-4 ${
+                  isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 backdrop-blur-sm' : 'bg-white/80 border-gray-300/60 backdrop-blur-sm'
+                }`}>
+                  <ExploreFilters
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    availableOptions={availableFilterOptions}
+                  />
                 </div>
               </div>
-            )}
+
+              {/* Results Section */}
+              <div className="flex-1 min-w-0">
+                
+                {(loading || searchLoading) ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {Array.from({ length: 24 }).map((_, index) => (
+                      <Card key={index} className={`backdrop-blur-sm animate-pulse ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60' : 'bg-white/80 border-gray-300/60'}`}>
+                        <CardContent className="p-4">
+                          <div className="flex flex-col items-center text-center space-y-3">
+                            <div className={`w-12 h-12 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
+                            <div className="space-y-2 w-full">
+                              <div className={`h-4 rounded w-3/4 mx-auto ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
+                              <div className={`h-3 rounded w-1/2 mx-auto ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+                              <div className={`h-3 rounded w-2/3 mx-auto ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {displayedUsers.map((user) => (
+                      <Card
+                        key={user.id}
+                        className={`backdrop-blur-sm transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-[#10a37f]/10 hover:scale-105 ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 hover:border-[#10a37f] hover:bg-[#2f2f2f]' : 'bg-white/80 border-gray-300/60 hover:border-[#10a37f] hover:bg-white'}`}
+                        onClick={() => router.push(`/profile/${user.username}`)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex flex-col items-center text-center space-y-3">
+                            <div className="relative">
+                              {user.profile_picture && !imageErrors[user.id] ? (
+                                <img
+                                  src={getImageUrl(user.profile_picture)}
+                                  alt={user.name}
+                                  className="w-12 h-12 rounded-full object-cover"
+                                  onError={() => setImageErrors(prev => ({ ...prev, [user.id]: true }))}
+                                />
+                              ) : (
+                                <GradientAvatar className="w-12 h-12" isDark={isDark} />
+                              )}
+                              {user.is_looking_for_job && (
+                                <div className={`absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 ${isDark ? 'border-[#2f2f2f]' : 'border-white'}`}></div>
+                              )}
+                            </div>
+                            <div className="space-y-1 w-full">
+                              <h3 className={`text-sm font-semibold group-hover:text-[#10a37f] transition-colors truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                {user.name}
+                              </h3>
+                              <p className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{user.designation}</p>
+                              <div className={`flex items-center justify-center text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                                <span className="truncate">{user.location}</span>
+                              </div>
+                              {/* Show profile score */}
+                              {user.profile_score !== undefined && user.profile_score > 0 && (
+                                <div className="flex items-center justify-center space-x-1">
+                                  <span className={`text-xs font-medium ${user.profile_score >= 80 ? 'text-green-600' : user.profile_score >= 60 ? 'text-yellow-600' : 'text-orange-600'} ${isDark ? 'brightness-125' : ''}`}>
+                                    Score: {user.profile_score}/100
+                                  </span>
+                                </div>
+                              )}
+                              
+                              {/* Professional Analysis Button - Show for all profiles */}
+                              <div className="flex items-center justify-center">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleOpenProfessionalAnalysis(user.id, user.name, user.designation || undefined)
+                                  }}
+                                  className={`flex items-center justify-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
+                                    isDark 
+                                      ? 'bg-[#10a37f]/20 text-[#10a37f] hover:bg-[#10a37f]/30 border border-[#10a37f]/30' 
+                                      : 'bg-[#10a37f]/10 text-[#10a37f] hover:bg-[#10a37f]/20 border border-[#10a37f]/20'
+                                  }`}
+                                  title="Get professional analysis of this candidate"
+                                >
+                                  <Sparkles className="w-3 h-3" />
+                                  AI Analysis
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    
+                    {/* Load More Card - Show when there are more users (both search and non-search) */}
+                    {hasMoreUsers && (
+                      <Card
+                        className={`backdrop-blur-sm transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-[#10a37f]/10 hover:scale-105 ${isDark ? 'bg-[#2f2f2f]/80 border-[#565869]/60 hover:border-[#10a37f] hover:bg-[#10a37f]/10' : 'bg-white/80 border-gray-300/60 hover:border-[#10a37f] hover:bg-[#10a37f]/5'}`}
+                        onClick={handleLoadMore}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex flex-col items-center text-center space-y-3 h-full justify-center">
+                            {loadMoreLoading ? (
+                              <>
+                                <div className={`w-12 h-12 rounded-full animate-pulse ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
+                                <div className="space-y-1 w-full">
+                                  <div className={`h-4 rounded w-3/4 mx-auto animate-pulse ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
+                                  <div className={`h-3 rounded w-1/2 mx-auto animate-pulse ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="relative">
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#10a37f]/20 to-[#0d8f6f]/20 border-2 border-[#10a37f]/50 flex items-center justify-center group-hover:border-[#10a37f] group-hover:bg-[#10a37f]/30 transition-all duration-300">
+                                    <Plus className="w-6 h-6 text-[#10a37f] group-hover:text-white transition-colors duration-300" />
+                                  </div>
+                                </div>
+                                <div className="space-y-1 w-full">
+                                  <h3 className="text-sm font-semibold text-[#10a37f] group-hover:text-white transition-colors duration-300">
+                                    Load More
+                                  </h3>
+                                  <p className={`text-xs transition-colors duration-300 ${isDark ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-500'}`}>
+                                    {isSearchMode ? "More search results" : "View more profiles"}
+                                  </p>
+                                  <div className={`flex items-center justify-center text-xs transition-colors duration-300 ${isDark ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-500'}`}>
+                                    <ArrowRight className="w-3 h-3 mr-1 flex-shrink-0" />
+                                    <span className="truncate">{isSearchMode ? "Load more" : "5 more"}</span>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                )}
+
+                {/* Empty State */}
+                {!loading && !searchLoading && displayedUsers.length === 0 && (
+                  <div className="text-center pt-4 pb-16">
+                    <div className={`rounded-2xl p-12 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50' : 'bg-white/50 border-gray-300/50'} backdrop-blur-sm border`}>
+                      <Users className={`w-20 h-20 mx-auto mb-6 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                      <h3 className={`text-2xl font-semibold mb-4 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>No professionals found</h3>
+                      <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {searchQuery ? 'Try adjusting your search criteria or browse all available profiles.' : 'No users available at the moment.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </main>
