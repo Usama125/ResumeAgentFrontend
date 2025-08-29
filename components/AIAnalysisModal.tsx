@@ -15,10 +15,25 @@ import { RateLimitModal } from '@/components/RateLimitModal'
 import { APIError } from '@/types'
 
 interface AIAnalysisData {
-  score: number
+  // New OpenAI format for /profile
+  profile_score?: number
+  overall_assessment?: string
+  recommendations?: string[]
+  
+  // Legacy format for backwards compatibility
+  score?: number
   strengths: string[]
-  weaknesses: string[]
-  section_scores: {
+  weaknesses?: string[]
+  areas_for_improvement?: string[]
+  
+  // Professional analysis format
+  professional_assessment?: string
+  key_strengths?: string[]
+  professional_fit_score?: number
+  hiring_recommendation?: string
+  
+  // Section scores (legacy)
+  section_scores?: {
     basic_info: number
     contact_info: number
     skills: number
@@ -245,46 +260,72 @@ export default function AIAnalysisModal({
                 </div>
               ) : analysisData ? (
                 <div className="space-y-6">
-                                           {/* Overall Score */}
-                         <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
-                           <div className="flex items-center justify-between mb-4">
-                             <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
-                               Overall Profile Score
-                             </h3>
-                             <Badge className={`${getScoreColor(analysisData.score)} bg-opacity-10 border ${getScoreColor(analysisData.score)}`}>
-                               {getScoreLabel(analysisData.score)}
-                             </Badge>
-                           </div>
-                           
-                           <div className="flex items-center gap-4 mb-4">
-                             <div className="text-4xl font-bold text-[#10a37f]">
-                               {analysisData.score}/100
-                             </div>
-                             <div className="flex-1">
-                               <Progress 
-                                 value={analysisData.score} 
-                                 className="h-3"
-                               />
-                             </div>
-                           </div>
-                           
-                           <p className={`text-sm ${themeClasses.text.secondary}`}>
-                             {isOwnProfile 
-                               ? "This score reflects how complete and compelling your profile is to potential employers. Each section has a specific weight in the total score."
-                               : "This score reflects how complete and compelling this profile is to potential employers."
-                             }
-                           </p>
-                           
-                           {isOwnProfile && (
-                             <div className={`mt-4 p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]/50' : 'bg-gray-50/50'} border ${themeClasses.border}`}>
-                               <p className={`text-xs ${themeClasses.text.muted}`}>
-                                 <strong>Scoring System:</strong> Experience (20 pts), Basic Info (15 pts), Projects (15 pts), 
-                                 Skills (12 pts), Education (12 pts), Contact Info (10 pts), Certifications (6 pts), 
-                                 Languages (5 pts), Additional Sections (5 pts)
-                               </p>
-                             </div>
-                           )}
-                         </div>
+                  {/* Overall Assessment - New OpenAI format */}
+                  {analysisData.overall_assessment && (
+                    <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-sm opacity-60"></div>
+                          <Sparkles className="relative w-6 h-6 text-[#10a37f]" />
+                        </div>
+                        <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
+                          AI Profile Assessment
+                        </h3>
+                      </div>
+                      <p className={`text-base leading-relaxed ${themeClasses.text.primary} mb-4`}>
+                        {analysisData.overall_assessment}
+                      </p>
+                      {(analysisData.profile_score || analysisData.score) && (
+                        <div className="flex items-center gap-4">
+                          <div className="text-3xl font-bold text-[#10a37f]">
+                            {analysisData.profile_score || analysisData.score}/100
+                          </div>
+                          <div className="flex-1">
+                            <Progress 
+                              value={analysisData.profile_score || analysisData.score || 0} 
+                              className="h-3"
+                            />
+                          </div>
+                          <Badge className={`${getScoreColor(analysisData.profile_score || analysisData.score || 0)} bg-opacity-10 border ${getScoreColor(analysisData.profile_score || analysisData.score || 0)}`}>
+                            {getScoreLabel(analysisData.profile_score || analysisData.score || 0)}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Legacy Overall Score - for backward compatibility */}
+                  {!analysisData.overall_assessment && (analysisData.score || analysisData.professional_fit_score) && (
+                    <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
+                          Overall Profile Score
+                        </h3>
+                        <Badge className={`${getScoreColor(analysisData.score || analysisData.professional_fit_score || 0)} bg-opacity-10 border ${getScoreColor(analysisData.score || analysisData.professional_fit_score || 0)}`}>
+                          {getScoreLabel(analysisData.score || analysisData.professional_fit_score || 0)}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="text-4xl font-bold text-[#10a37f]">
+                          {analysisData.score || analysisData.professional_fit_score}/100
+                        </div>
+                        <div className="flex-1">
+                          <Progress 
+                            value={analysisData.score || analysisData.professional_fit_score || 0} 
+                            className="h-3"
+                          />
+                        </div>
+                      </div>
+                      
+                      <p className={`text-sm ${themeClasses.text.secondary}`}>
+                        {isOwnProfile 
+                          ? "This score reflects how complete and compelling your profile is to potential employers."
+                          : "This score reflects how complete and compelling this profile is to potential employers."
+                        }
+                      </p>
+                    </div>
+                  )}
 
                                            {/* Section Scores */}
                          <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
@@ -326,43 +367,95 @@ export default function AIAnalysisModal({
                            </div>
                          </div>
 
-                  {/* Strengths */}
-                  {analysisData.strengths.length > 0 && (
+                  {/* Recommendations - New OpenAI format */}
+                  {analysisData.recommendations && analysisData.recommendations.length > 0 && (
                     <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
                       <div className="flex items-center gap-3 mb-4">
-                        <TrendingUp className="w-6 h-6 text-green-600" />
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-sm opacity-60"></div>
+                          <BookOpen className="relative w-6 h-6 text-blue-600" />
+                        </div>
                         <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
-                          Strengths
+                          Recommended Actions
                         </h3>
                       </div>
-                      <div className="space-y-3">
-                        {analysisData.strengths.map((strength, index) => (
-                          <div key={index} className="flex items-start gap-3">
-                            <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                            <p className={`${themeClasses.text.secondary}`}>{strength}</p>
+                      <div className="space-y-4">
+                        {analysisData.recommendations.map((recommendation, index) => (
+                          <div key={index} className={`p-4 rounded-lg ${isDark ? 'bg-blue-500/10' : 'bg-blue-50'} border ${isDark ? 'border-blue-500/20' : 'border-blue-200'}`}>
+                            <div className="flex items-start gap-3">
+                              <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                {index + 1}
+                              </div>
+                              <p className={`${themeClasses.text.primary} font-medium`}>{recommendation}</p>
+                            </div>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Weaknesses */}
-                  {analysisData.weaknesses.length > 0 && (
+                  {/* Strengths */}
+                  {(analysisData.strengths || analysisData.key_strengths) && (analysisData.strengths?.length > 0 || analysisData.key_strengths?.length > 0) && (
                     <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
                       <div className="flex items-center gap-3 mb-4">
-                        <TrendingDown className="w-6 h-6 text-red-600" />
+                        <TrendingUp className="w-6 h-6 text-green-600" />
+                        <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
+                          Key Strengths
+                        </h3>
+                      </div>
+                      <div className="space-y-3">
+                        {(analysisData.strengths || analysisData.key_strengths || []).map((strength, index) => (
+                          <div key={index} className={`p-3 rounded-lg ${isDark ? 'bg-green-500/10' : 'bg-green-50'} border ${isDark ? 'border-green-500/20' : 'border-green-200'}`}>
+                            <div className="flex items-start gap-3">
+                              <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                              <p className={`${themeClasses.text.primary}`}>{strength}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Weaknesses / Areas for Improvement */}
+                  {(analysisData.weaknesses || analysisData.areas_for_improvement) && ((analysisData.weaknesses?.length || 0) > 0 || (analysisData.areas_for_improvement?.length || 0) > 0) && (
+                    <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
+                      <div className="flex items-center gap-3 mb-4">
+                        <TrendingDown className="w-6 h-6 text-orange-600" />
                         <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
                           Areas for Improvement
                         </h3>
                       </div>
                       <div className="space-y-3">
-                        {analysisData.weaknesses.map((weakness, index) => (
-                          <div key={index} className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                            <p className={`${themeClasses.text.secondary}`}>{weakness}</p>
+                        {(analysisData.weaknesses || analysisData.areas_for_improvement || []).map((weakness, index) => (
+                          <div key={index} className={`p-3 rounded-lg ${isDark ? 'bg-orange-500/10' : 'bg-orange-50'} border ${isDark ? 'border-orange-500/20' : 'border-orange-200'}`}>
+                            <div className="flex items-start gap-3">
+                              <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                              <p className={`${themeClasses.text.primary}`}>{weakness}</p>
+                            </div>
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Professional Assessment - for public profiles */}
+                  {analysisData.professional_assessment && (
+                    <div className={`${themeClasses.card} backdrop-blur-sm rounded-xl p-6 border ${themeClasses.border}`}>
+                      <div className="flex items-center gap-3 mb-4">
+                        <Briefcase className="w-6 h-6 text-purple-600" />
+                        <h3 className={`text-xl font-semibold ${themeClasses.text.primary}`}>
+                          Professional Assessment
+                        </h3>
+                      </div>
+                      <p className={`text-base leading-relaxed ${themeClasses.text.primary} mb-4`}>
+                        {analysisData.professional_assessment}
+                      </p>
+                      {analysisData.hiring_recommendation && (
+                        <div className={`p-4 rounded-lg ${isDark ? 'bg-purple-500/10' : 'bg-purple-50'} border ${isDark ? 'border-purple-500/20' : 'border-purple-200'}`}>
+                          <p className={`font-semibold ${themeClasses.text.primary} mb-1`}>Hiring Recommendation:</p>
+                          <p className={`${themeClasses.text.secondary}`}>{analysisData.hiring_recommendation}</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
