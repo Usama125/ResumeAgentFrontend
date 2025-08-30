@@ -509,7 +509,7 @@ Please generate the content now.`
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
 
               {/* Form Fields */}
               <div className="space-y-6">

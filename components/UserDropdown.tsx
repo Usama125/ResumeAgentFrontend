@@ -71,7 +71,7 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
 
   const handleAIWriter = () => {
     setIsOpen(false)
-    router.push('/content-generator')
+    router.push('/ai-writer')
   }
 
   const handleSettings = () => {

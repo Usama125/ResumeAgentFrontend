@@ -160,29 +160,6 @@ function ProfileCompletionSection({ user, router, isDark }: { user: UserType, ro
           Add missing sections to create more personalized content.
         </p>
         
-        <div className="flex flex-wrap gap-2 mb-4">
-          {allEmptySections.slice(0, 3).map((section) => (
-            <Button
-              key={section.id}
-              onClick={() => router.push('/profile')}
-              variant="outline"
-              size="sm"
-              className={`flex items-center gap-2 ${
-                isDark 
-                  ? 'bg-[#2f2f2f]/60 border-[#565869]/40 text-white hover:bg-[#40414f]/60 hover:border-[#10a37f]/40' 
-                  : 'bg-gray-50/60 border-gray-200 text-gray-700 hover:bg-gray-100/60 hover:border-[#10a37f]/40'
-              } transition-colors`}
-            >
-              <Plus className="w-3 h-3 text-[#10a37f]" />
-              <span className="text-xs">Add {section.title}</span>
-            </Button>
-          ))}
-          {allEmptySections.length > 3 && (
-            <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'} flex items-center`}>
-              +{allEmptySections.length - 3} more
-            </span>
-          )}
-        </div>
         
         <Button
           onClick={() => router.push('/profile')}
