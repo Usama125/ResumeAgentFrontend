@@ -13,6 +13,8 @@ export { default as VolunteerSection } from './VolunteerSection'
 export { default as InterestsSection } from './InterestsSection'
 export { default as ProfileCompletionSection } from './ProfileCompletionSection'
 export { default as PreferencesSection } from './PreferencesSection'
+export { default as EmptyProfileSection } from './EmptyProfileSection'
+export { default as MobileEmptyProfileSection } from './MobileEmptyProfileSection'
 
 // Section registry for dynamic rendering
 import { User as UserType } from "@/types"

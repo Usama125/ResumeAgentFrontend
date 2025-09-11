@@ -82,13 +82,14 @@ export default function CurrentUserProfilePage() {
     profileData: user,
     context: 'self-profile',
     userId: user?.id,
-    token: AuthService.getToken(),
+    token: AuthService.getToken() || undefined,
     showRateLimitModal
   })
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isEditPhotoModalOpen, setIsEditPhotoModalOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isAboutEditModalOpen, setIsAboutEditModalOpen] = useState(false)
+  const [isPreferencesEditModalOpen, setIsPreferencesEditModalOpen] = useState(false)
   const [isSkillsEditModalOpen, setIsSkillsEditModalOpen] = useState(false)
   const [isExperienceEditModalOpen, setIsExperienceEditModalOpen] = useState(false)
   const [experienceEditMode, setExperienceEditMode] = useState<'add' | 'edit'>('add')
@@ -178,7 +179,6 @@ export default function CurrentUserProfilePage() {
   // Interests modal state
   const [isInterestsEditModalOpen, setIsInterestsEditModalOpen] = useState(false)
   const [interestsEditMode, setInterestsEditMode] = useState<'add' | 'edit'>('add')
-  const [isPreferencesEditModalOpen, setIsPreferencesEditModalOpen] = useState(false)
   const [isProfileSettingsModalOpen, setIsProfileSettingsModalOpen] = useState(false)
   const [isShareProfileModalOpen, setIsShareProfileModalOpen] = useState(false)
 
@@ -186,6 +186,41 @@ export default function CurrentUserProfilePage() {
   const [isMounted, setIsMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [authTimeout, setAuthTimeout] = useState(false)
+
+  // Modal update handlers
+  const handleAboutUpdate = async (newSummary: string) => {
+    if (user) {
+      updateUser({ ...user, summary: newSummary });
+      await refreshUser();
+    }
+  };
+
+  const handleSkillsUpdate = async (newSkills: any[]) => {
+    if (user) {
+      updateUser({ ...user, skills: newSkills });
+      await refreshUser();
+    }
+  };
+
+  const handleExperienceUpdate = async (newExperiences: any[]) => {
+    if (user) {
+      updateUser({ ...user, experience_details: newExperiences });
+      await refreshUser();
+    }
+  };
+
+  const handlePhotoUpdate = async (newPhotoUrl: string | null) => {
+    if (user) {
+      updateUser({ ...user, profile_picture: newPhotoUrl });
+      await refreshUser();
+    }
+  };
+
+  // Wrapper for setMessage to match React.Dispatch<React.SetStateAction<string>> signature
+  const handleSetMessage = useCallback((value: React.SetStateAction<string>) => {
+    const newValue = typeof value === 'function' ? value(message) : value;
+    setMessage(newValue);
+  }, [message, setMessage]);
   
   // Section order change handler state
   const [pendingSectionOrder, setPendingSectionOrder] = useState<string[] | null>(null)
@@ -952,9 +987,18 @@ export default function CurrentUserProfilePage() {
     
     if (isAuthenticated && authUser) {
       // Check if user completed onboarding (either top-level field or progress.completed)
-      const isOnboardingCompleted = authUser.onboarding_completed || authUser.onboarding_progress?.completed;
+      // Since resume upload is now optional, we also consider onboarding completed if user has basic profile info
+      const isOnboardingCompleted = authUser.onboarding_completed || 
+                                   authUser.onboarding_progress?.completed ||
+                                   (authUser.name && authUser.email); // Basic profile info exists
       
-      console.log('🔍 PROFILE PAGE - Onboarding completion check:', { isOnboardingCompleted });
+      console.log('🔍 PROFILE PAGE - Onboarding completion check:', { 
+        isOnboardingCompleted,
+        hasName: !!authUser.name,
+        hasEmail: !!authUser.email,
+        onboarding_completed: authUser.onboarding_completed,
+        progress_completed: authUser.onboarding_progress?.completed
+      });
       
       if (!isOnboardingCompleted) {
         console.log('🚨 PROFILE PAGE - User onboarding not completed, redirecting to onboarding');
@@ -993,7 +1037,10 @@ export default function CurrentUserProfilePage() {
   }, [isAuthenticated, authUser, authLoading, authTimeout, isFromOnboarding])
 
   // Optimized loading check - minimize loading states and flicker
-  const isOnboardingCompleted = authUser?.onboarding_completed || authUser?.onboarding_progress?.completed;
+  // Since resume upload is now optional, we also consider onboarding completed if user has basic profile info
+  const isOnboardingCompleted = authUser?.onboarding_completed || 
+                               authUser?.onboarding_progress?.completed ||
+                               (authUser?.name && authUser?.email);
   
   // Only show loading if:
   // 1. Component hasn't mounted yet
@@ -1031,57 +1078,8 @@ export default function CurrentUserProfilePage() {
 
   // Chat function is now handled by useAIChat hook
 
-  const handlePhotoUpdate = (newPhotoUrl: string | null) => {
-    if (user) {
-      // Update local state
-      setUser({
-        ...user,
-        profile_picture: newPhotoUrl
-      })
-      
-      // Update global auth context
-      updateUser({ profile_picture: newPhotoUrl })
-    }
-  }
 
-  const handleAboutUpdate = (newSummary: string) => {
-    if (user) {
-      // Update local state
-      setUser({
-        ...user,
-        summary: newSummary
-      })
-      
-      // Update global auth context
-      updateUser({ summary: newSummary })
-    }
-  }
 
-  const handleSkillsUpdate = (newSkills: any[]) => {
-    if (user) {
-      // Update local state
-      setUser({
-        ...user,
-        skills: newSkills
-      })
-      
-      // Update global auth context
-      updateUser({ skills: newSkills })
-    }
-  }
-
-  const handleExperienceUpdate = (newExperience: any[]) => {
-    if (user) {
-      // Update local state
-      setUser({
-        ...user,
-        experience_details: newExperience
-      })
-      
-      // Update global auth context
-      updateUser({ experience_details: newExperience })
-    }
-  }
 
   const handleAboutDelete = async () => {
     if (!user) return
@@ -1331,7 +1329,7 @@ export default function CurrentUserProfilePage() {
               setChatHistory={setChatHistory}
               suggestedQuestions={suggestedQuestions}
               message={message}
-              setMessage={setMessage}
+              setMessage={handleSetMessage}
               isLoading={isLoading}
               handleSendMessage={handleSendMessage}
               isCurrentUser={true}
@@ -1347,6 +1345,7 @@ export default function CurrentUserProfilePage() {
               isEditMode={isEditMode}
               onEditAbout={() => setIsAboutEditModalOpen(true)}
               onEditSkills={() => setIsSkillsEditModalOpen(true)}
+              onEditPreferences={() => setIsPreferencesEditModalOpen(true)}
               onEditExperience={handleAddExperience}
               onEditSingleExperience={handleEditExperience}
               onDeleteSingleExperience={handleDeleteSingleExperience}
@@ -1397,7 +1396,7 @@ export default function CurrentUserProfilePage() {
           setChatHistory={setChatHistory}
           suggestedQuestions={suggestedQuestions}
           message={message}
-          setMessage={setMessage}
+          setMessage={handleSetMessage}
           isLoading={isLoading}
           handleSendMessage={handleSendMessage}
           isCurrentUser={true}
@@ -1413,6 +1412,7 @@ export default function CurrentUserProfilePage() {
           isEditMode={isEditMode}
           onEditAbout={() => setIsAboutEditModalOpen(true)}
           onEditSkills={() => setIsSkillsEditModalOpen(true)}
+          onEditPreferences={() => setIsPreferencesEditModalOpen(true)}
           onEditExperience={handleAddExperience}
           onEditSingleExperience={handleEditExperience}
           onDeleteSingleExperience={handleDeleteSingleExperience}
@@ -1448,7 +1448,6 @@ export default function CurrentUserProfilePage() {
           onEditInterests={handleEditInterests}
           onDeleteInterests={handleInterestsDelete}
           onAddInterests={handleAddInterests}
-          onEditPreferences={() => setIsPreferencesEditModalOpen(true)}
           onEditModeToggle={handleEditModeToggle}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
@@ -1494,6 +1493,13 @@ export default function CurrentUserProfilePage() {
         onClose={() => setIsAboutEditModalOpen(false)}
         currentSummary={user?.summary || ''}
         onUpdate={handleAboutUpdate}
+      />
+
+      {/* Preferences Edit Modal */}
+      <PreferencesEditModal
+        isOpen={isPreferencesEditModalOpen}
+        onClose={() => setIsPreferencesEditModalOpen(false)}
+        user={user}
       />
 
       {/* Skills Section Edit Modal */}
@@ -1599,12 +1605,6 @@ export default function CurrentUserProfilePage() {
         mode={interestsEditMode}
       />
 
-      {/* Preferences Section Edit Modal */}
-      <PreferencesEditModal
-        isOpen={isPreferencesEditModalOpen}
-        onClose={() => setIsPreferencesEditModalOpen(false)}
-        user={user}
-      />
 
       {/* Education Delete Confirmation Modal */}
       <ConfirmationModal
@@ -1713,7 +1713,7 @@ export default function CurrentUserProfilePage() {
             <MobileProfileSettingsModal
               isOpen={isProfileSettingsModalOpen}
               onClose={() => setIsProfileSettingsModalOpen(false)}
-              currentVariant={user.profile_variant || 'default'}
+              currentVariant={(user.profile_variant as ProfileVariant) || 'default'}
               onVariantChange={handleProfileVariantChange}
             />
           </div>

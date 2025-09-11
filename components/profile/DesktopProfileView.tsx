@@ -52,6 +52,7 @@ interface DesktopProfileViewProps {
   isEditMode?: boolean
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onEditPreferences?: () => void
   onEditExperience?: () => void
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
@@ -87,7 +88,6 @@ interface DesktopProfileViewProps {
   onEditInterests?: () => void
   onDeleteInterests?: () => void
   onAddInterests?: () => void
-  onEditPreferences?: () => void
   onEditModeToggle?: (editMode: boolean) => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
@@ -115,6 +115,7 @@ const PortfolioSection = memo(function PortfolioSection({
   onEditPhoto,
   onEditAbout,
   onEditSkills,
+  onEditPreferences,
   onEditExperience,
   onEditSingleExperience,
   onDeleteSingleExperience,
@@ -150,7 +151,6 @@ const PortfolioSection = memo(function PortfolioSection({
   onEditInterests,
   onDeleteInterests,
   onAddInterests,
-  onEditPreferences,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection,
@@ -987,6 +987,7 @@ export default function DesktopProfileView({
             onDeleteInterests={onDeleteInterests}
             onAddInterests={onAddInterests}
             onEditPreferences={onEditPreferences}
+            onEditModeToggle={onEditModeToggle}
             onSectionOrderChange={onSectionOrderChange}
             onAddSection={onAddSection}
             onOpenAIAnalysis={() => setIsAIAnalysisModalOpen(true)}

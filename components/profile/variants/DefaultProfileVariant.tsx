@@ -15,7 +15,9 @@ import { getImageUrl } from '@/utils/imageUtils'
 import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import ProfileSections from '@/components/ProfileSections'
 import PreferencesSection from '@/components/sections/PreferencesSection'
+import EmptyProfileSection from '@/components/sections/EmptyProfileSection'
 import { GradientAvatar } from '@/components/ui/avatar'
+import { isProfileEmpty } from '@/utils/profileUtils'
 
 interface DefaultProfileVariantProps {
   user: UserType
@@ -63,6 +65,7 @@ interface DefaultProfileVariantProps {
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
   onOpenAIAnalysis?: () => void
+  onEditModeToggle?: (editMode: boolean) => void
 }
 
 const DefaultProfileVariant = memo(function DefaultProfileVariant({
@@ -110,7 +113,8 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
   onEditPreferences,
   onSectionOrderChange,
   onAddSection,
-  onOpenAIAnalysis
+  onOpenAIAnalysis,
+  onEditModeToggle
 }: DefaultProfileVariantProps) {
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
@@ -126,8 +130,9 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
       {/* Content Container */}
       <div className="h-full overflow-y-auto relative z-10 scrollbar-hide">
         <div className="p-12 max-w-4xl mx-auto space-y-6">
-          {/* Hero Section */}
-          <div className="text-center space-y-6">
+          {/* Hero Section - Hide when profile is empty and in view mode */}
+          {!(isCurrentUser && !isEditMode && isProfileEmpty(user)) && (
+            <div className="text-center space-y-6">
             {/* Profile Picture */}
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full blur-lg opacity-30"></div>
@@ -566,11 +571,23 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
                 </div>
               </div>
             )}
-
           </div>
+          )}
 
           {/* Sections Container */}
           <div className="space-y-6">
+            {/* Show Empty Profile Section only when profile is empty and in view mode */}
+            {(() => {
+              const isEmpty = isProfileEmpty(user)
+              const shouldShow = !isEditMode && isCurrentUser && isEmpty
+              return shouldShow && (
+                <EmptyProfileSection
+                  user={user}
+                  isEditMode={isEditMode}
+                  onEditModeToggle={onEditModeToggle}
+                />
+              )
+            })()}
             <ProfileSections
               user={user}
               isEditMode={isEditMode}

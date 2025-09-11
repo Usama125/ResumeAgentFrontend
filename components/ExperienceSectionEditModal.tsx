@@ -147,7 +147,8 @@ const ExperienceSectionEditModal = memo(function ExperienceSectionEditModal({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          zIndex: 50
+          zIndex: 50,
+          maxHeight: '80vh'
         }}
       >
         {/* Background gradients */}
@@ -159,7 +160,7 @@ const ExperienceSectionEditModal = memo(function ExperienceSectionEditModal({
         <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#10a37f]/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
         
         {/* Content wrapper */}
-        <div className="relative z-10 w-full h-full flex flex-col">
+        <div className="relative z-10 w-full h-full flex flex-col max-h-[80vh]">
           {/* Header */}
           <div className={`shrink-0 p-6 border-b ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
             <div className="flex items-center justify-between">
@@ -176,7 +177,7 @@ const ExperienceSectionEditModal = memo(function ExperienceSectionEditModal({
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6 min-h-0">
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

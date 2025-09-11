@@ -18,7 +18,9 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import VariantAwareProfileSections from '@/components/sections/variants/VariantAwareProfileSections'
 import ProfileCompletionSection from '@/components/sections/ProfileCompletionSection'
 import PreferencesSection from '@/components/sections/PreferencesSection'
+import EmptyProfileSection from '@/components/sections/EmptyProfileSection'
 import { GradientAvatar } from '@/components/ui/avatar'
+import { isProfileEmpty } from '@/utils/profileUtils'
 
 interface CompactProfileVariantProps {
   user: UserType
@@ -65,6 +67,7 @@ interface CompactProfileVariantProps {
   onEditPreferences?: () => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
+  onEditModeToggle?: (editMode: boolean) => void
   onOpenAIAnalysis?: () => void
 }
 
@@ -113,6 +116,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
   onEditPreferences,
   onSectionOrderChange,
   onAddSection,
+  onEditModeToggle,
   onOpenAIAnalysis
 }: CompactProfileVariantProps) {
   const { isDark } = useTheme()
@@ -127,8 +131,9 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
       {/* Content Container - More compact with top margin for non-default variant */}
       <div className="h-full overflow-y-auto relative z-10 scrollbar-hide">
         <div className="p-6 max-w-3xl mx-auto space-y-4 mt-16">
-          {/* Compact Hero Section - Horizontal Layout */}
-          <div className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-white/70'} backdrop-blur-sm rounded-xl p-6 border ${theme.border.primary} shadow-lg`}>
+          {/* Compact Hero Section - Horizontal Layout - Hide when profile is empty and in view mode */}
+          {!(isCurrentUser && !isEditMode && isProfileEmpty(user)) && (
+            <div className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-white/70'} backdrop-blur-sm rounded-xl p-6 border ${theme.border.primary} shadow-lg`}>
             <div className="flex items-center gap-6">
               {/* Profile Picture - Smaller */}
               <div className="relative flex-shrink-0">
@@ -488,6 +493,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
               )}
             </div>
           </div>
+          )}
 
           {/* Compact Sections Container */}
           <div className="space-y-4">
@@ -509,6 +515,14 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
                 onAddVolunteerExperience={onAddVolunteerExperience}
                 onAddInterests={onAddInterests}
                 onEditPreferences={onEditPreferences}
+              />
+            )}
+            {/* Show Empty Profile Section only when profile is empty and in view mode */}
+            {!isEditMode && isCurrentUser && isProfileEmpty(user) && (
+              <EmptyProfileSection
+                user={user}
+                isEditMode={isEditMode}
+                onEditModeToggle={onEditModeToggle}
               />
             )}
             <VariantAwareProfileSections

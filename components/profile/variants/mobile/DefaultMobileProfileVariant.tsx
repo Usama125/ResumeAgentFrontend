@@ -20,9 +20,11 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import VariantAwareProfileSections from '@/components/sections/variants/VariantAwareProfileSections'
 import MobileProfileCompletionSection from '@/components/sections/MobileProfileCompletionSection'
 import PreferencesSection from '@/components/sections/PreferencesSection'
+import MobileEmptyProfileSection from '@/components/sections/MobileEmptyProfileSection'
 import EditModeToggle from '@/components/EditModeToggle'
 import { Button } from "@/components/ui/button"
 import { GradientAvatar } from '@/components/ui/avatar'
+import { isProfileEmpty } from '@/utils/profileUtils'
 
 interface DefaultMobileProfileVariantProps {
   user: UserType
@@ -69,9 +71,9 @@ interface DefaultMobileProfileVariantProps {
   onEditPreferences?: () => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
+  onEditModeToggle?: (editMode: boolean) => void
   onOpenAIAnalysis?: () => void
   onOpenSettings?: () => void
-  onEditModeToggle?: (editMode: boolean) => void
   onOpenShare?: () => void
 }
 
@@ -146,9 +148,10 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#10a37f]/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#0d8f6f]/5 rounded-full blur-2xl"></div>
       
-      {/* Default Mobile Profile Card - Matches Desktop Centered Design */}
-      <div className="relative z-10 p-4">
-        <div className={`${isDark ? 'bg-[#2a2a2a]/80' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${theme.border.primary} shadow-lg text-center`}>
+      {/* Default Mobile Profile Card - Matches Desktop Centered Design - Hide when profile is empty and in view mode */}
+      {!(isCurrentUser && !isEditMode && isProfileEmpty(user)) && (
+        <div className="relative z-10 p-4">
+          <div className={`${isDark ? 'bg-[#2a2a2a]/80' : 'bg-white/80'} backdrop-blur-sm rounded-2xl p-6 border ${theme.border.primary} shadow-lg text-center`}>
           {/* Profile Picture - Centered like desktop */}
           <div className="mb-6">
             <div className="relative inline-block">
@@ -534,6 +537,7 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
           )}
         </div>
       </div>
+      )}
 
       {/* Mobile Sections */}
       <div className="relative z-10 px-4 pb-6 space-y-4">
@@ -555,6 +559,17 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
             onAddInterests={otherProps.onAddInterests}
             onEditPreferences={otherProps.onEditPreferences}
           />
+        )}
+
+        {/* Show Empty Profile Section only when profile is empty and in view mode */}
+        {!isEditMode && isCurrentUser && isProfileEmpty(user) && (
+          <div className="px-4 mb-6">
+            <MobileEmptyProfileSection
+              user={user}
+              isEditMode={isEditMode}
+              onEditModeToggle={onEditModeToggle}
+            />
+          </div>
         )}
 
         <VariantAwareProfileSections

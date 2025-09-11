@@ -10,7 +10,9 @@ import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import VariantAwareProfileSections from "@/components/sections/variants/VariantAwareProfileSections"
 import ProfileCompletionSection from "@/components/sections/ProfileCompletionSection"
 import PreferencesSection from "@/components/sections/PreferencesSection"
+import EmptyProfileSection from '@/components/sections/EmptyProfileSection'
 import { GradientAvatar } from '@/components/ui/avatar'
+import { isProfileEmpty } from '@/utils/profileUtils'
 import {
   MapPin,
   Briefcase,
@@ -80,6 +82,7 @@ interface AdvancedProfileVariantProps {
   onEditPreferences?: () => void
   onSectionOrderChange?: (sections: any[]) => void
   onAddSection?: (sectionId: string) => void
+  onEditModeToggle?: (editMode: boolean) => void
   onOpenAIAnalysis?: () => void
 }
 
@@ -131,16 +134,17 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
       {/* Content Container with top margin */}
       <div className="h-full overflow-y-auto relative z-10 scrollbar-hide">
         <div className="p-8 max-w-7xl mx-auto space-y-8 mt-16">
-          {/* Advanced Hero Section */}
-          <div 
-            className={`relative overflow-hidden rounded-3xl border-2 ${
-              isDark 
-                ? 'bg-gradient-to-br from-[#2a2a2a]/90 via-[#1a1a1a]/95 to-[#2a2a2a]/90 border-[#10a37f]/30' 
-                : 'bg-gradient-to-br from-white/90 via-gray-50/95 to-white/90 border-[#10a37f]/20'
-            } backdrop-blur-xl shadow-2xl transition-all duration-700 hover:shadow-[#10a37f]/20 hover:shadow-3xl group`}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
+          {/* Advanced Hero Section - Hide when profile is empty and in view mode */}
+          {!(isCurrentUser && !isEditMode && isProfileEmpty(user)) && (
+            <div 
+              className={`relative overflow-hidden rounded-3xl border-2 ${
+                isDark 
+                  ? 'bg-gradient-to-br from-[#2a2a2a]/90 via-[#1a1a1a]/95 to-[#2a2a2a]/90 border-[#10a37f]/30' 
+                  : 'bg-gradient-to-br from-white/90 via-gray-50/95 to-white/90 border-[#10a37f]/20'
+              } backdrop-blur-xl shadow-2xl transition-all duration-700 hover:shadow-[#10a37f]/20 hover:shadow-3xl group`}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
             {/* Premium Border Glow */}
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             
@@ -564,6 +568,7 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
               </div>
             </div>
           </div>
+          )}
 
           {/* Profile Sections with Enhanced Styling */}
           <div className="space-y-6">
@@ -585,6 +590,14 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
                 onAddVolunteerExperience={otherProps.onAddVolunteerExperience}
                 onAddInterests={otherProps.onAddInterests}
                 onEditPreferences={otherProps.onEditPreferences}
+              />
+            )}
+            {/* Show Empty Profile Section only when profile is empty and in view mode */}
+            {!isEditMode && isCurrentUser && isProfileEmpty(user) && (
+              <EmptyProfileSection
+                user={user}
+                isEditMode={isEditMode}
+                onEditModeToggle={otherProps.onEditModeToggle}
               />
             )}
             <VariantAwareProfileSections 

@@ -469,7 +469,7 @@ const SkillsSectionEditModal = memo(function SkillsSectionEditModal({
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div 
-          className={`relative w-full max-w-lg md:max-w-2xl h-[90vh] flex flex-col border-0 rounded-2xl shadow-2xl`}
+          className={`relative w-full max-w-lg md:max-w-2xl h-[90vh] flex flex-col border-0 rounded-2xl shadow-2xl overflow-hidden`}
           style={{
             position: 'fixed',
             top: '50%',
@@ -509,38 +509,34 @@ const SkillsSectionEditModal = memo(function SkillsSectionEditModal({
             </div>
 
             {/* Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Sticky Add New Skill Section */}
-              <div className={`shrink-0 p-6 border-b ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
-                <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <div className="flex-1 flex flex-col overflow-auto">
+              {/* Ultra-compact Add New Skill Section */}
+              <div className={`shrink-0 p-3 border-b ${isDark ? 'border-[#10a37f]/20' : 'border-gray-200'}`}>
+                <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   Add New Skill
                 </h3>
                 
-                <div className="flex gap-3 items-start">
-                  <div className="flex-1 space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Skill Name
-                    </label>
+                {/* Minimal layout: Skill name on one line, then proficiency + years + button on next line */}
+                <div className="space-y-1.5">
+                  {/* Skill Name - Full width on first line */}
+                  <div>
                     <Input
                       value={newSkill.name}
                       onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
-                      placeholder="e.g., React.js, Python, AWS"
-                      className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-500'}`}
+                      placeholder="Skill name (e.g., React.js, Python, AWS)"
+                      className={`h-7 text-xs ${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-500'}`}
                     />
-                    <div className="h-4"></div>
                   </div>
                   
-                  <div className="flex-1 space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Proficiency Level
-                    </label>
+                  {/* Second line: Proficiency + Years + Add Button */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5 items-center">
                     <Select
                       value={newSkill.level}
                       onValueChange={(value: "Beginner" | "Intermediate" | "Advanced" | "Expert") => 
                         setNewSkill({ ...newSkill, level: value })
                       }
                     >
-                      <SelectTrigger className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'}`}>
+                      <SelectTrigger className={`h-7 text-xs ${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className={isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30' : 'bg-white border-gray-200'}>
@@ -550,50 +546,40 @@ const SkillsSectionEditModal = memo(function SkillsSectionEditModal({
                         <SelectItem value="Expert">Expert</SelectItem>
                       </SelectContent>
                     </Select>
-                    <div className="h-4"></div>
-                  </div>
-                  
-                  <div className="flex-1 space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Years of Experience
-                    </label>
-                    <div className="space-y-1">
-                      <Input
-                        type="number"
-                        min="0"
-                        max="50"
-                        value={newSkill.years}
-                        onChange={(e) => setNewSkill({ ...newSkill, years: parseInt(e.target.value) || 0 })}
-                        className={`${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'} ${newSkill.years > 50 ? 'border-red-500' : ''}`}
-                      />
-                      <div className="h-4">
-                        {newSkill.years > 50 && (
-                          <p className="text-red-500 text-xs">Maximum 50 years allowed</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col space-y-2">
-                    <div className="h-6"></div>
+                    
+                    <Input
+                      type="number"
+                      min="0"
+                      max="50"
+                      value={newSkill.years}
+                      onChange={(e) => setNewSkill({ ...newSkill, years: parseInt(e.target.value) || 0 })}
+                      placeholder="Years"
+                      className={`h-7 text-xs ${isDark ? 'bg-[#1a1a1a] border-[#10a37f]/30 text-white' : 'bg-white border-gray-200 text-gray-900'} ${newSkill.years > 50 ? 'border-red-500' : ''}`}
+                    />
+                    
+                    {/* Add Skill Button - Inline with other fields */}
                     <Button
                       type="button"
                       onClick={handleAddSkill}
                       disabled={isSubmitting || !newSkill.name.trim() || newSkill.years > 50}
-                      className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-10"
+                      className="bg-[#10a37f] hover:bg-[#0d8f6f] text-white px-2 py-1 h-7 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full"
                     >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Skill
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add
                     </Button>
-                    <div className="h-4"></div>
                   </div>
+                  
+                  {/* Error message for years validation */}
+                  {newSkill.years > 50 && (
+                    <p className="text-red-500 text-xs">Maximum 50 years allowed</p>
+                  )}
                 </div>
               </div>
 
               {/* Scrollable Current Skills Section */}
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="space-y-4">
-                  <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <div className="flex-1 overflow-auto p-3">
+                <div className="space-y-2">
+                  <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     Current Skills (Drag to reorder)
                   </h3>
                   

@@ -55,6 +55,7 @@ interface MobileProfileViewProps {
   isEditMode?: boolean
   onEditAbout?: () => void
   onEditSkills?: () => void
+  onEditPreferences?: () => void
   onEditExperience?: () => void
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
@@ -175,6 +176,7 @@ export default function MobileProfileView({
   isEditMode = false,
   onEditAbout,
   onEditSkills,
+  onEditPreferences,
   onEditExperience,
   onEditSingleExperience,
   onDeleteSingleExperience,
@@ -285,6 +287,7 @@ export default function MobileProfileView({
           onEditPhoto={onEditPhoto}
           onEditAbout={onEditAbout}
           onEditSkills={onEditSkills}
+          onEditPreferences={onEditPreferences}
           onEditExperience={onEditExperience}
           onEditSingleExperience={onEditSingleExperience}
           onDeleteSingleExperience={onDeleteSingleExperience}

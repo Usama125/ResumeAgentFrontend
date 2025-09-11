@@ -79,12 +79,12 @@ export default function AboutSectionEditModal({
     }
   }
 
-  if (!isOpen || isMobile) return null
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div 
-        className={`relative w-full max-w-lg md:max-w-2xl max-h-[80vh] flex flex-col border-0 rounded-2xl shadow-2xl`}
+        className={`relative w-full max-w-lg md:max-w-2xl ${isMobile ? 'max-h-[90vh]' : 'max-h-[80vh]'} flex flex-col border-0 rounded-2xl shadow-2xl`}
         style={{
           position: 'fixed',
           top: '50%',

@@ -23,9 +23,11 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import VariantAwareProfileSections from '@/components/sections/variants/VariantAwareProfileSections'
 import MobileProfileCompletionSection from '@/components/sections/MobileProfileCompletionSection'
 import PreferencesSection from '@/components/sections/PreferencesSection'
+import MobileEmptyProfileSection from '@/components/sections/MobileEmptyProfileSection'
 import EditModeToggle from '@/components/EditModeToggle'
 import { Button } from "@/components/ui/button"
 import { GradientAvatar } from '@/components/ui/avatar'
+import { isProfileEmpty } from '@/utils/profileUtils'
 
 interface CompactMobileProfileVariantProps {
   user: UserType
@@ -146,9 +148,10 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
         </div>
       )}
 
-      {/* Compact Mobile Profile Card - Matches Desktop Layout */}
-      <div className="p-4">
-        <div className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-white/70'} backdrop-blur-sm rounded-xl p-4 border ${theme.border.primary} shadow-lg`}>
+      {/* Compact Mobile Profile Card - Matches Desktop Layout - Hide when profile is empty and in view mode */}
+      {!(isCurrentUser && !isEditMode && isProfileEmpty(user)) && (
+        <div className="p-4">
+          <div className={`${isDark ? 'bg-[#2a2a2a]/50' : 'bg-white/70'} backdrop-blur-sm rounded-xl p-4 border ${theme.border.primary} shadow-lg`}>
           {/* Main Horizontal Layout - Matching Desktop Compact */}
           <div className="flex items-center gap-4 mb-4">
             {/* Profile Picture - Small like desktop */}
@@ -526,6 +529,7 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
           </div>
         </div>
       </div>
+      )}
 
       {/* Mobile Sections */}
       <div className="px-4 pb-6 space-y-4">
@@ -547,6 +551,17 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
             onAddInterests={otherProps.onAddInterests}
             onEditPreferences={otherProps.onEditPreferences}
           />
+        )}
+
+        {/* Show Empty Profile Section only when profile is empty and in view mode */}
+        {!isEditMode && isCurrentUser && isProfileEmpty(user) && (
+          <div className="px-4 mb-6">
+            <MobileEmptyProfileSection
+              user={user}
+              isEditMode={isEditMode}
+              onEditModeToggle={onEditModeToggle}
+            />
+          </div>
         )}
 
         <VariantAwareProfileSections

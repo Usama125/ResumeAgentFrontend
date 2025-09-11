@@ -43,7 +43,12 @@ export default function AuthPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (!user.onboarding_completed) {
+      // Since resume upload is now optional, we also consider onboarding completed if user has basic profile info
+      const isOnboardingCompleted = user.onboarding_completed || 
+                                   user.onboarding_progress?.completed ||
+                                   (user.name && user.email);
+      
+      if (!isOnboardingCompleted) {
         router.push("/onboarding")
       } else {
         router.push("/profile")

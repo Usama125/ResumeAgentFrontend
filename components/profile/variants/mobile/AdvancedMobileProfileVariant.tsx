@@ -33,9 +33,11 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils'
 import { calculateTotalExperience } from "@/utils/experienceCalculator"
 import VariantAwareProfileSections from "@/components/sections/variants/VariantAwareProfileSections"
 import MobileProfileCompletionSection from "@/components/sections/MobileProfileCompletionSection"
+import MobileEmptyProfileSection from '@/components/sections/MobileEmptyProfileSection'
 import EditModeToggle from "@/components/EditModeToggle"
 import { Button } from "@/components/ui/button"
 import { GradientAvatar } from '@/components/ui/avatar'
+import { isProfileEmpty } from '@/utils/profileUtils'
 
 interface AdvancedMobileProfileVariantProps {
   user: UserType
@@ -164,17 +166,18 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
         </div>
       )}
 
-      {/* Advanced Profile Hero Card */}
-      <div className="relative z-10 p-4">
-        <div 
-          className={`relative overflow-hidden rounded-3xl ${
-            isDark 
-              ? 'bg-gradient-to-br from-[#2a2a2a]/90 via-[#1a1a1a]/95 to-[#2a2a2a]/90 border-2 border-[#10a37f]/30' 
-              : 'bg-gradient-to-br from-white/90 via-gray-50/95 to-white/90 border-2 border-[#10a37f]/20'
-          } backdrop-blur-xl shadow-2xl transition-all duration-700`}
-          onTouchStart={() => setIsHovered(true)}
-          onTouchEnd={() => setIsHovered(false)}
-        >
+      {/* Advanced Profile Hero Card - Hide when profile is empty and in view mode */}
+      {!(isCurrentUser && !isEditMode && isProfileEmpty(user)) && (
+        <div className="relative z-10 p-4">
+          <div 
+            className={`relative overflow-hidden rounded-3xl ${
+              isDark 
+                ? 'bg-gradient-to-br from-[#2a2a2a]/90 via-[#1a1a1a]/95 to-[#2a2a2a]/90 border-2 border-[#10a37f]/30' 
+                : 'bg-gradient-to-br from-white/90 via-gray-50/95 to-white/90 border-2 border-[#10a37f]/20'
+            } backdrop-blur-xl shadow-2xl transition-all duration-700`}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
+          >
           {/* Premium Border Glow */}
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#10a37f]/20 via-[#0d8f6f]/15 to-[#10a37f]/20 blur-sm opacity-30"></div>
           
@@ -619,6 +622,7 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
           </div>
         </div>
       </div>
+      )}
 
       {/* Mobile Sections */}
       <div className="relative z-10 px-4 pb-6 space-y-4">
@@ -640,6 +644,17 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
             onAddInterests={otherProps.onAddInterests}
             onEditPreferences={otherProps.onEditPreferences}
           />
+        )}
+
+        {/* Show Empty Profile Section only when profile is empty and in view mode */}
+        {!isEditMode && isCurrentUser && isProfileEmpty(user) && (
+          <div className="px-4 mb-6">
+            <MobileEmptyProfileSection
+              user={user}
+              isEditMode={isEditMode}
+              onEditModeToggle={onEditModeToggle}
+            />
+          </div>
         )}
 
         <VariantAwareProfileSections 
