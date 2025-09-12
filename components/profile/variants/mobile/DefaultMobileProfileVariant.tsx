@@ -25,6 +25,8 @@ import EditModeToggle from '@/components/EditModeToggle'
 import { Button } from "@/components/ui/button"
 import { GradientAvatar } from '@/components/ui/avatar'
 import { isProfileEmpty } from '@/utils/profileUtils'
+import { canAccessAIWriter } from '@/utils/profileScoreValidation'
+import ProfileScoreRestrictionMessage from '@/components/ProfileScoreRestrictionMessage'
 
 interface DefaultMobileProfileVariantProps {
   user: UserType
@@ -96,7 +98,11 @@ const DefaultMobileProfileVariant = memo(function DefaultMobileProfileVariant({
     <div className={`${isDark ? 'bg-[#212121]' : 'bg-gray-50'} min-h-screen`}>
       {/* Mobile Header with Edit Toggle, Settings, and Share */}
       {isCurrentUser && (onEditModeToggle || onOpenSettings || onOpenShare) && (
-        <div className="sticky top-0 z-50 bg-gradient-to-b from-[#212121]/95 via-[#212121]/80 to-transparent backdrop-blur-md border-b border-gray-700/20 py-4 px-4 shadow-lg">
+        <div className={`sticky top-0 z-50 backdrop-blur-md border-b py-4 px-4 shadow-lg ${
+          isDark 
+            ? 'bg-gradient-to-b from-[#212121]/95 via-[#212121]/80 to-transparent border-gray-700/20' 
+            : 'bg-gradient-to-b from-white/95 via-gray-50/80 to-transparent border-gray-200/20'
+        }`}>
           <div className="flex justify-center gap-2">
             {onEditModeToggle && (
               <EditModeToggle

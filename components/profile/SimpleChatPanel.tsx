@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Send, Sparkles, CheckCircle, Trash2, Copy } from 'lucide-react'
 import { MessageLimitModal } from '@/components/MessageLimitModal'
 import { ClearChatModal } from '@/components/ClearChatModal'
+import { User as UserType } from '@/types'
+import { canAccessChat } from '@/utils/profileScoreValidation'
+import ProfileScoreRestrictionMessage from '@/components/ProfileScoreRestrictionMessage'
+import { useTheme } from '@/context/ThemeContext'
 
 interface SimpleChatPanelProps {
   chatHistory: Array<{ type: "user" | "ai"; content: string }>
@@ -23,6 +27,8 @@ interface SimpleChatPanelProps {
   handleMessageLimitModalConfirm?: () => void
   handleMessageLimitModalCancel?: () => void
   clearChat?: () => void
+  user?: UserType
+  isCurrentUser?: boolean
 }
 
 export const SimpleChatPanel = memo(function SimpleChatPanel({
@@ -41,11 +47,17 @@ export const SimpleChatPanel = memo(function SimpleChatPanel({
   showMessageLimitModal = false,
   handleMessageLimitModalConfirm,
   handleMessageLimitModalCancel,
-  clearChat
+  clearChat,
+  user,
+  isCurrentUser = false
 }: SimpleChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [showClearChatModal, setShowClearChatModal] = useState(false)
+  const { isDark } = useTheme()
+  
+  // Check if user can access chat (only for current user)
+  const canAccessChatFeature = !isCurrentUser || !user || canAccessChat(user)
   
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -245,6 +257,18 @@ export const SimpleChatPanel = memo(function SimpleChatPanel({
         
         {/* Input Area */}
         <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700">
+          {/* Profile Score Validation */}
+          {isCurrentUser && user && !canAccessChat(user) && (
+            <div className="mb-4">
+              <ProfileScoreRestrictionMessage
+                user={user}
+                featureName="Chat"
+                variant="compact"
+                isDark={isDark}
+              />
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="relative">
               <textarea
@@ -252,15 +276,15 @@ export const SimpleChatPanel = memo(function SimpleChatPanel({
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about your profile, skills, or get improvement suggestions..."
+                placeholder={canAccessChatFeature ? "Ask about your profile, skills, or get improvement suggestions..." : "Complete your profile to access chat..."}
                 className="w-full resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 pr-12 text-sm placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-[60px] max-h-[120px]"
-                disabled={isLoading}
+                disabled={isLoading || !canAccessChatFeature}
                 rows={2}
               />
               
               <Button
                 type="submit"
-                disabled={!message.trim() || isLoading}
+                disabled={!message.trim() || isLoading || !canAccessChatFeature}
                 size="sm"
                 className="absolute bottom-2 right-2 w-8 h-8 p-0 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white"
               >

@@ -13,6 +13,8 @@ import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import { Building2, User, FileText, Briefcase, Sparkles, Settings, Palette, BarChart3, Mail, FileEdit, Users, Zap, MessageCircle, Plus, AlertCircle, CheckCircle, Copy, Send, Clock, Type, BookOpen, RotateCcw, Download, File, Clipboard } from "lucide-react"
 import { calculateProfileCompletion } from "@/utils/profileCompletion"
+import { canAccessAIWriter } from "@/utils/profileScoreValidation"
+import ProfileScoreRestrictionMessage from "@/components/ProfileScoreRestrictionMessage"
 import { useChat } from 'ai/react'
 import ResizableSplitPane from "@/components/ResizableSplitPane"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -83,6 +85,16 @@ export default function ContentGeneratorPage() {
 
   const handleGenerate = useCallback(async () => {
     if (!options.jobDescription.trim()) return
+    
+    // Check if user has sufficient profile score
+    if (!user || !canAccessAIWriter(user)) {
+      toast({
+        title: "Profile Completion Required",
+        description: "Complete your profile to at least 50% to access the AI Writer feature.",
+        variant: "destructive"
+      })
+      return
+    }
 
     setIsGenerating(true)
     setGeneratedContent('')
@@ -688,12 +700,23 @@ Please generate the content now.`
                   />
                 </div>
 
+                {/* Profile Score Validation */}
+                {user && !canAccessAIWriter(user) && (
+                  <ProfileScoreRestrictionMessage
+                    user={user}
+                    featureName="AI Writer"
+                    variant="default"
+                    isDark={isDark}
+                    className="mb-6"
+                  />
+                )}
+
                 {/* Generate Button */}
                 <button
                   onClick={handleGenerate}
-                  disabled={isGenerating || !options.jobDescription.trim()}
+                  disabled={isGenerating || !options.jobDescription.trim() || (user && !canAccessAIWriter(user))}
                   className={`w-full py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${
-                    isGenerating || !options.jobDescription.trim()
+                    isGenerating || !options.jobDescription.trim() || (user && !canAccessAIWriter(user))
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white shadow-lg hover:shadow-xl hover:scale-105'
                   }`}

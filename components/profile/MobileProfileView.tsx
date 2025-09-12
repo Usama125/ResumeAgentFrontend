@@ -118,7 +118,9 @@ const MobileChatSection = memo(function MobileChatSection({
   showMessageLimitModal,
   handleMessageLimitModalConfirm,
   handleMessageLimitModalCancel,
-  clearChat
+  clearChat,
+  user,
+  isCurrentUser
 }: {
   chatHistory: Array<{ type: "user" | "ai"; content: string }>;
   setChatHistory: React.Dispatch<React.SetStateAction<Array<{ type: "user" | "ai"; content: string }>>>;
@@ -135,6 +137,8 @@ const MobileChatSection = memo(function MobileChatSection({
   handleMessageLimitModalConfirm?: () => void;
   handleMessageLimitModalCancel?: () => void;
   clearChat?: () => void;
+  user?: UserType;
+  isCurrentUser?: boolean;
 }) {
   return (
     <SimpleChatPanel
@@ -154,6 +158,8 @@ const MobileChatSection = memo(function MobileChatSection({
       handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
       handleMessageLimitModalCancel={handleMessageLimitModalCancel}
       clearChat={clearChat}
+      user={user}
+      isCurrentUser={isCurrentUser}
     />
   );
 });
@@ -248,8 +254,10 @@ export default function MobileProfileView({
     showMessageLimitModal,
     handleMessageLimitModalConfirm,
     handleMessageLimitModalCancel,
-    clearChat
-  }), [chatHistory, message, isLoading, currentStreamingMessage, isStreaming, messageCount, messageLimit, showMessageLimitModal])
+    clearChat,
+    user,
+    isCurrentUser
+  }), [chatHistory, message, isLoading, currentStreamingMessage, isStreaming, messageCount, messageLimit, showMessageLimitModal, user, isCurrentUser])
 
   return (
     <div className="flex h-[calc(100vh-56px)] relative w-full">

@@ -38,6 +38,8 @@ import EditModeToggle from "@/components/EditModeToggle"
 import { Button } from "@/components/ui/button"
 import { GradientAvatar } from '@/components/ui/avatar'
 import { isProfileEmpty } from '@/utils/profileUtils'
+import { canAccessAIWriter } from '@/utils/profileScoreValidation'
+import ProfileScoreRestrictionMessage from '@/components/ProfileScoreRestrictionMessage'
 
 interface AdvancedMobileProfileVariantProps {
   user: UserType
@@ -119,7 +121,11 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
 
       {/* Premium Mobile Header with Edit Toggle, Settings, and Share */}
       {isCurrentUser && (onEditModeToggle || onOpenSettings || onOpenShare) && (
-        <div className="sticky top-0 z-50 bg-gradient-to-b from-[#212121]/95 via-[#212121]/80 to-transparent backdrop-blur-md border-b border-gray-700/20 py-4 px-4 shadow-lg">
+        <div className={`sticky top-0 z-50 backdrop-blur-md border-b py-4 px-4 shadow-lg ${
+          isDark 
+            ? 'bg-gradient-to-b from-[#212121]/95 via-[#212121]/80 to-transparent border-gray-700/20' 
+            : 'bg-gradient-to-b from-white/95 via-gray-50/80 to-transparent border-gray-200/20'
+        }`}>
           <div className="flex justify-center gap-2">
             {onEditModeToggle && (
               <EditModeToggle
@@ -582,7 +588,7 @@ const AdvancedMobileProfileVariant = memo(function AdvancedMobileProfileVariant(
               <div className="mb-4">
                 <button
                   onClick={() => window.location.href = '/ai-writer'}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl backdrop-blur-sm text-sm"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 text-sm bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl backdrop-blur-sm"
                   title="Create a professional cover letter using your profile"
                 >
                   <FileText className="w-4 h-4" />

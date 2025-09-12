@@ -21,6 +21,8 @@ import PreferencesSection from '@/components/sections/PreferencesSection'
 import EmptyProfileSection from '@/components/sections/EmptyProfileSection'
 import { GradientAvatar } from '@/components/ui/avatar'
 import { isProfileEmpty } from '@/utils/profileUtils'
+import { canAccessAIWriter } from '@/utils/profileScoreValidation'
+import ProfileScoreRestrictionMessage from '@/components/ProfileScoreRestrictionMessage'
 
 interface CompactProfileVariantProps {
   user: UserType

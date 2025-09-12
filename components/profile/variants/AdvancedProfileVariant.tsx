@@ -13,6 +13,8 @@ import PreferencesSection from "@/components/sections/PreferencesSection"
 import EmptyProfileSection from '@/components/sections/EmptyProfileSection'
 import { GradientAvatar } from '@/components/ui/avatar'
 import { isProfileEmpty } from '@/utils/profileUtils'
+import { canAccessAIWriter } from '@/utils/profileScoreValidation'
+import ProfileScoreRestrictionMessage from '@/components/ProfileScoreRestrictionMessage'
 import {
   MapPin,
   Briefcase,
@@ -524,7 +526,7 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
                       {isCurrentUser && (
                         <button
                           onClick={() => window.location.href = '/ai-writer'}
-                          className={`group flex items-center gap-3 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm`}
+                          className="group flex items-center gap-3 px-6 py-3 rounded-2xl font-medium transition-all duration-300 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#10a37f] text-white shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm"
                           title="Create a professional cover letter using your profile"
                         >
                           <FileText className="w-5 h-5 group-hover:animate-pulse" />

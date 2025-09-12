@@ -638,6 +638,8 @@ const ChatSection = memo<{
   handleMessageLimitModalConfirm?: () => void
   handleMessageLimitModalCancel?: () => void
   clearChat?: () => void
+  user?: UserType
+  isCurrentUser?: boolean
 }>(function ChatSection({
   chatHistory,
   setChatHistory,
@@ -653,7 +655,9 @@ const ChatSection = memo<{
   showMessageLimitModal,
   handleMessageLimitModalConfirm,
   handleMessageLimitModalCancel,
-  clearChat
+  clearChat,
+  user,
+  isCurrentUser
 }) {
   return (
     <SimpleChatPanel
@@ -673,6 +677,8 @@ const ChatSection = memo<{
       handleMessageLimitModalConfirm={handleMessageLimitModalConfirm}
       handleMessageLimitModalCancel={handleMessageLimitModalCancel}
       clearChat={clearChat}
+      user={user}
+      isCurrentUser={isCurrentUser}
     />
   )
 })
@@ -832,8 +838,10 @@ export default function DesktopProfileView({
     showMessageLimitModal,
     handleMessageLimitModalConfirm,
     handleMessageLimitModalCancel,
-    clearChat
-  }), [chatHistory, message, isLoading, currentStreamingMessage, isStreaming, messageCount, messageLimit, showMessageLimitModal])
+    clearChat,
+    user,
+    isCurrentUser
+  }), [chatHistory, message, isLoading, currentStreamingMessage, isStreaming, messageCount, messageLimit, showMessageLimitModal, user, isCurrentUser])
 
   return (
     <div className="h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] relative w-full">

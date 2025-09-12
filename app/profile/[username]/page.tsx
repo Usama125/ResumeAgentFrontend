@@ -15,6 +15,8 @@ import MobilePublicProfileView from "@/components/profile/MobilePublicProfileVie
 import { AuthService } from "@/services/auth"
 import Image from "next/image"
 import { useAIChat } from "@/hooks/useAIChat"
+import { validateProfileScore } from "@/utils/profileScoreValidation"
+import ProfileDeadState from "@/components/ProfileDeadState"
 
 // Generate suggested questions based on user data
 const generateSuggestedQuestions = (user: PublicUser): string[] => {
@@ -123,6 +125,10 @@ export default function UsernameProfilePage() {
     )
   }
 
+  // Check if profile score is sufficient for full access
+  const profileValidation = validateProfileScore(user)
+  const hasFullAccess = profileValidation.isValid
+
   const autoResizeTextarea = (textarea: HTMLTextAreaElement) => {
     textarea.style.height = 'auto'
     const newHeight = Math.min(textarea.scrollHeight, 120)
@@ -170,7 +176,15 @@ export default function UsernameProfilePage() {
       />
 
       {/* Main Content */}
-      {isMobile ? (
+      {!hasFullAccess ? (
+        // Show dead state for incomplete profiles
+        <ProfileDeadState
+          user={user}
+          isDark={isDark}
+          variant={isMobile ? 'mobile' : 'desktop'}
+        />
+      ) : isMobile ? (
+        // Show full mobile profile view
         <MobilePublicProfileView
           user={user}
           chatHistory={chatHistory}
@@ -190,6 +204,7 @@ export default function UsernameProfilePage() {
           clearChat={clearChat}
         />
       ) : (
+        // Show full desktop profile view
         <DesktopPublicProfileView
           user={user}
           chatHistory={chatHistory}

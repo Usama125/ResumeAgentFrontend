@@ -10,7 +10,11 @@ import { User as UserType } from "@/types"
 import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import { Building2, User, FileText, Briefcase, Sparkles, Settings, Palette, BarChart3, Mail, FileEdit, Users, Zap, MessageCircle, Plus, AlertCircle, CheckCircle, Copy, Send, Clock, Type, BookOpen, RotateCcw, Download, File, Clipboard, ArrowLeft, ChevronLeft } from "lucide-react"
+import ThemeToggle from "@/components/ThemeToggle"
+import UserDropdown from "@/components/UserDropdown"
 import { calculateProfileCompletion } from "@/utils/profileCompletion"
+import { canAccessAIWriter } from "@/utils/profileScoreValidation"
+import ProfileScoreRestrictionMessage from "@/components/ProfileScoreRestrictionMessage"
 
 // Content generation types
 type ContentType = 'cover_letter' | 'proposal'
@@ -339,6 +343,16 @@ Please generate the content now.`
   // IDENTICAL TO DESKTOP VERSION
   const handleGenerate = useCallback(async () => {
     if (!options.jobDescription.trim()) return
+    
+    // Check if user has sufficient profile score
+    if (!user || !canAccessAIWriter(user)) {
+      toast({
+        title: "Profile Completion Required",
+        description: "Complete your profile to at least 50% to access the AI Writer feature.",
+        variant: "destructive"
+      })
+      return
+    }
 
     setIsGenerating(true)
     setGeneratedContent('')
@@ -486,8 +500,8 @@ Please generate the content now.`
             </div>
           </div>
 
-          {/* Right side - Copy button */}
-          <div className="flex-shrink-0">
+          {/* Right side - Copy button, Theme toggle, and User dropdown */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             {!showForm && generatedContent && (
               <button
                 onClick={handleCopyToClipboard}
@@ -496,6 +510,12 @@ Please generate the content now.`
                 <Copy className="w-4 h-4" />
               </button>
             )}
+            
+            {/* Theme toggle */}
+            <ThemeToggle />
+            
+            {/* User dropdown */}
+            <UserDropdown />
           </div>
         </div>
       </div>
@@ -689,12 +709,23 @@ Please generate the content now.`
                 />
               </div>
 
+              {/* Profile Score Validation */}
+              {user && !canAccessAIWriter(user) && (
+                <ProfileScoreRestrictionMessage
+                  user={user}
+                  featureName="AI Writer"
+                  variant="compact"
+                  isDark={isDark}
+                  className="mb-6"
+                />
+              )}
+
               {/* Generate Button */}
               <button
                 onClick={handleGenerate}
-                disabled={isGenerating || !options.jobDescription.trim()}
+                disabled={isGenerating || !options.jobDescription.trim() || (user && !canAccessAIWriter(user))}
                 className={`w-full py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${
-                  isGenerating || !options.jobDescription.trim()
+                  isGenerating || !options.jobDescription.trim() || (user && !canAccessAIWriter(user))
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] hover:from-[#0d8f6f] hover:to-[#0a7a5f] text-white shadow-lg hover:shadow-xl'
                 }`}
