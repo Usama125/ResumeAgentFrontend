@@ -77,7 +77,7 @@ export default function ConfirmationModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
       <DialogContent 
-        className={`max-w-md relative overflow-hidden ${isDark ? 'text-white' : 'text-gray-900'} p-0 flex flex-col border-0 [&>button]:hidden`}
+        className={`max-w-md relative overflow-hidden ${isDark ? 'text-white' : 'text-gray-900'} p-0 flex flex-col border-0`}
         style={{
           position: 'fixed',
           top: '50%',
@@ -87,12 +87,12 @@ export default function ConfirmationModal({
         }}
       >
         {/* Background gradients */}
-        <div className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-[#1a1a1a] via-[#212121] to-[#1a1a1a]' : 'bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100'}`}></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/10 via-transparent to-[#10a37f]/5"></div>
+        <div className={`absolute inset-0 z-0 pointer-events-none ${isDark ? 'bg-gradient-to-br from-[#1a1a1a] via-[#212121] to-[#1a1a1a]' : 'bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100'}`}></div>
+        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-br from-[#10a37f]/10 via-transparent to-[#10a37f]/5"></div>
         
         {/* Decorative floating elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-[#10a37f]/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#10a37f]/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#10a37f]/20 rounded-full blur-3xl animate-pulse z-0 pointer-events-none"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#10a37f]/15 rounded-full blur-3xl animate-pulse delay-1000 z-0 pointer-events-none"></div>
         
         {/* Content wrapper */}
         <div className="relative z-10 w-full flex flex-col">
@@ -101,12 +101,14 @@ export default function ConfirmationModal({
             <DialogHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <AlertTriangle className={`w-6 h-6 ${styles.iconColor}`} />
+                  <AlertTriangle className={`${styles.iconColor} w-6 h-6`} />
                   <DialogTitle className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {title}
                   </DialogTitle>
                 </div>
                 <button
+                  type="button"
+                  aria-label="Close"
                   onClick={onClose}
                   className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'} transition-colors p-2 rounded-lg hover:bg-gray-100/10`}
                 >
