@@ -35,6 +35,7 @@ interface CompactProfileVariantProps {
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
@@ -84,6 +85,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
   onEditSingleExperience,
   onDeleteSingleExperience,
   onEditProject,
+  onAddProject,
   onEditSingleProject,
   onDeleteSingleProject,
   onDeleteAbout,
@@ -537,6 +539,7 @@ const CompactProfileVariant = memo(function CompactProfileVariant({
               onEditSingleExperience={onEditSingleExperience}
               onDeleteSingleExperience={onDeleteSingleExperience}
               onEditProject={onEditProject}
+              onAddProject={onAddProject}
               onEditSingleProject={onEditSingleProject}
               onDeleteSingleProject={onDeleteSingleProject}
               onDeleteAbout={onDeleteAbout}

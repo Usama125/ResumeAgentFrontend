@@ -30,6 +30,7 @@ interface DefaultProfileVariantProps {
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
@@ -79,6 +80,7 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
   onEditSingleExperience,
   onDeleteSingleExperience,
   onEditProject,
+  onAddProject,
   onEditSingleProject,
   onDeleteSingleProject,
   onDeleteAbout,
@@ -597,6 +599,7 @@ const DefaultProfileVariant = memo(function DefaultProfileVariant({
               onEditSingleExperience={onEditSingleExperience}
               onDeleteSingleExperience={onDeleteSingleExperience}
               onEditProject={onEditProject}
+              onAddProject={onAddProject}
               onEditSingleProject={onEditSingleProject}
               onDeleteSingleProject={onDeleteSingleProject}
               onDeleteAbout={onDeleteAbout}

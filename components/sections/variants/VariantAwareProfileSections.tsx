@@ -54,6 +54,7 @@ interface VariantAwareProfileSectionsProps {
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
@@ -93,7 +94,8 @@ interface VariantAwareProfileSectionsProps {
 // Sortable wrapper component for drag and drop
 interface SortableSectionWrapperProps {
   id: string
-  children: React.ReactNode
+  // Children must be a React element that can accept injected drag handle props
+  children: React.ReactElement<any>
   isEditMode: boolean
 }
 
@@ -123,14 +125,14 @@ function SortableSectionWrapper({ id, children, isEditMode }: SortableSectionWra
 
   return (
     <div ref={setNodeRef} style={style}>
-      {React.cloneElement(children as React.ReactElement, {
+      {React.cloneElement(children, {
         showDragHandle: isEditMode,
-        dragHandleProps: isEditMode ? { 
-          ...attributes, 
+        dragHandleProps: isEditMode ? {
+          ...attributes,
           ...listeners,
           // Only apply touch restrictions to the drag handle itself
-          style: { touchAction: 'none' }
-        } : {}
+          style: { touchAction: 'none' },
+        } : {},
       })}
     </div>
   )
@@ -272,6 +274,7 @@ export default function VariantAwareProfileSections({
             <ProjectsSection
               {...commonSectionProps}
               onEdit={sectionHandlers.onEditProject}
+              onAddProject={sectionHandlers.onAddProject}
               onEditProject={sectionHandlers.onEditSingleProject}
               onDeleteProject={sectionHandlers.onDeleteSingleProject}
               onDelete={sectionHandlers.onDeleteProjects}
@@ -293,10 +296,10 @@ export default function VariantAwareProfileSections({
           sectionElement = (
             <LanguagesSection
               {...commonSectionProps}
-              onEdit={sectionHandlers.onEditLanguage}
-              onDelete={sectionHandlers.onDeleteLanguage}
-              onAdd={sectionHandlers.onAddLanguage}
-              onDeleteAll={sectionHandlers.onDeleteLanguages}
+              onDelete={sectionHandlers.onDeleteLanguages}
+              onAddLanguage={sectionHandlers.onAddLanguage}
+              onEditLanguage={sectionHandlers.onEditLanguage}
+              onDeleteLanguage={sectionHandlers.onDeleteLanguage}
             />
           )
           break
@@ -304,7 +307,6 @@ export default function VariantAwareProfileSections({
           sectionElement = (
             <AwardsSection
               {...commonSectionProps}
-              onEdit={sectionHandlers.onEditAward}
               onDelete={sectionHandlers.onDeleteAwards}
               onEditAward={sectionHandlers.onEditAward}
               onDeleteAward={sectionHandlers.onDeleteAward}
@@ -316,7 +318,6 @@ export default function VariantAwareProfileSections({
           sectionElement = (
             <PublicationsSection
               {...commonSectionProps}
-              onEdit={sectionHandlers.onEditPublication}
               onDelete={sectionHandlers.onDeletePublications}
               onEditPublication={sectionHandlers.onEditPublication}
               onDeletePublication={sectionHandlers.onDeletePublication}
@@ -328,7 +329,7 @@ export default function VariantAwareProfileSections({
           sectionElement = (
             <VolunteerSection
               {...commonSectionProps}
-              onEdit={sectionHandlers.onEditVolunteerExperience}
+              onEdit={undefined}
               onDelete={sectionHandlers.onDeleteVolunteerExperiences}
               onEditVolunteerExperience={sectionHandlers.onEditVolunteerExperience}
               onDeleteVolunteerExperience={sectionHandlers.onDeleteVolunteerExperience}
@@ -418,8 +419,8 @@ export default function VariantAwareProfileSections({
           <ExperienceSection
             {...commonSectionProps}
             onEdit={sectionHandlers.onEditExperience}
-            onEditSingle={sectionHandlers.onEditSingleExperience}
-            onDeleteSingle={sectionHandlers.onDeleteSingleExperience}
+            onEditExperience={sectionHandlers.onEditSingleExperience}
+            onDeleteExperience={sectionHandlers.onDeleteSingleExperience}
             onDelete={sectionHandlers.onDeleteExperience}
           />
         )
@@ -429,8 +430,8 @@ export default function VariantAwareProfileSections({
           <ProjectsSection
             {...commonSectionProps}
             onEdit={sectionHandlers.onEditProject}
-            onEditSingle={sectionHandlers.onEditSingleProject}
-            onDeleteSingle={sectionHandlers.onDeleteSingleProject}
+            onEditProject={sectionHandlers.onEditSingleProject}
+            onDeleteProject={sectionHandlers.onDeleteSingleProject}
             onDelete={sectionHandlers.onDeleteProjects}
           />
         )
@@ -550,6 +551,7 @@ export default function VariantAwareProfileSections({
       {isEditMode && (
         <PreferencesSection 
           user={user} 
+          isEditMode={isEditMode}
           onEdit={sectionHandlers.onEditPreferences}
         />
       )}

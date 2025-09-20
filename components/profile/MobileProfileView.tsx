@@ -60,6 +60,7 @@ interface MobileProfileViewProps {
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
@@ -187,6 +188,7 @@ export default function MobileProfileView({
   onEditSingleExperience,
   onDeleteSingleExperience,
   onEditProject,
+  onAddProject,
   onEditSingleProject,
   onDeleteSingleProject,
   onDeleteAbout,
@@ -300,6 +302,7 @@ export default function MobileProfileView({
           onEditSingleExperience={onEditSingleExperience}
           onDeleteSingleExperience={onDeleteSingleExperience}
           onEditProject={onEditProject}
+          onAddProject={onAddProject}
           onEditSingleProject={onEditSingleProject}
           onDeleteSingleProject={onDeleteSingleProject}
           onDeleteAbout={onDeleteAbout}

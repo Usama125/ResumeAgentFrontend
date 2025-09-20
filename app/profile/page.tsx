@@ -1350,6 +1350,7 @@ export default function CurrentUserProfilePage() {
               onEditSingleExperience={handleEditExperience}
               onDeleteSingleExperience={handleDeleteSingleExperience}
               onEditProject={handleAddProject}
+              onAddProject={handleAddProject}
               onEditSingleProject={handleEditProject}
               onDeleteSingleProject={handleDeleteSingleProject}
               onDeleteAbout={handleAboutDelete}
@@ -1417,6 +1418,7 @@ export default function CurrentUserProfilePage() {
           onEditSingleExperience={handleEditExperience}
           onDeleteSingleExperience={handleDeleteSingleExperience}
           onEditProject={handleAddProject}
+          onAddProject={handleAddProject}
           onEditSingleProject={handleEditProject}
           onDeleteSingleProject={handleDeleteSingleProject}
           onDeleteAbout={handleAboutDelete}

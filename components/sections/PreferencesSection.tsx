@@ -12,11 +12,13 @@ import PreferencesEditModal from "../PreferencesEditModal"
 interface PreferencesSectionProps {
   user: UserType
   isEditMode?: boolean
+  onEdit?: () => void
 }
 
 export default function PreferencesSection({
   user,
-  isEditMode = false
+  isEditMode = false,
+  onEdit
 }: PreferencesSectionProps) {
   const { isDark } = useTheme()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -48,7 +50,11 @@ export default function PreferencesSection({
   }
 
   const handleEditPreferences = () => {
-    setIsEditModalOpen(true)
+    if (onEdit) {
+      onEdit()
+    } else {
+      setIsEditModalOpen(true)
+    }
   }
 
   return (
@@ -256,12 +262,14 @@ export default function PreferencesSection({
         </div>
       </div>
 
-      {/* Edit Modal */}
-      <PreferencesEditModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        user={user}
-      />
+      {/* Edit Modal (used when onEdit handler isn't provided) */}
+      {!onEdit && (
+        <PreferencesEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          user={user}
+        />
+      )}
     </>
   )
-} 
+}

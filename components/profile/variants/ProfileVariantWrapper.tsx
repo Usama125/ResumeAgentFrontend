@@ -22,6 +22,7 @@ interface ProfileVariantWrapperProps {
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void

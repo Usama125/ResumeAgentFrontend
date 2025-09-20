@@ -52,6 +52,7 @@ interface ProfileSectionsProps {
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
@@ -138,6 +139,7 @@ const ProfileSections = memo(function ProfileSections({
   onEditSingleExperience,
   onDeleteSingleExperience,
   onEditProject,
+  onAddProject,
   onEditSingleProject,
   onDeleteSingleProject,
   onDeleteAbout,
@@ -321,7 +323,7 @@ const ProfileSections = memo(function ProfileSections({
           <ProjectsSection
             {...commonProps}
             onDelete={onDeleteProjects}
-            onAddProject={onEditProject}
+            onAddProject={onAddProject}
             onEditProject={onEditSingleProject}
             onDeleteProject={onDeleteSingleProject}
           />

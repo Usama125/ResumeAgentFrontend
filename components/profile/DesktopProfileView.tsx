@@ -57,6 +57,7 @@ interface DesktopProfileViewProps {
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
@@ -120,6 +121,7 @@ const PortfolioSection = memo(function PortfolioSection({
   onEditSingleExperience,
   onDeleteSingleExperience,
   onEditProject,
+  onAddProject,
   onEditSingleProject,
   onDeleteSingleProject,
   onDeleteAbout,
@@ -170,6 +172,7 @@ const PortfolioSection = memo(function PortfolioSection({
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
   onEditProject?: () => void
+  onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
   onDeleteSingleProject?: (index: number) => void
   onDeleteAbout?: () => void
@@ -579,6 +582,7 @@ const PortfolioSection = memo(function PortfolioSection({
                 onEditSingleExperience={onEditSingleExperience}
                 onDeleteSingleExperience={onDeleteSingleExperience}
                 onEditProject={onEditProject}
+                onAddProject={onAddProject}
                 onEditSingleProject={onEditSingleProject}
                 onDeleteSingleProject={onDeleteSingleProject}
                 onDeleteAbout={onDeleteAbout}
@@ -701,10 +705,12 @@ export default function DesktopProfileView({
   isEditMode = false,
   onEditAbout,
   onEditSkills,
+  onEditPreferences,
   onEditExperience,
   onEditSingleExperience,
   onDeleteSingleExperience,
   onEditProject,
+  onAddProject,
   onEditSingleProject,
   onDeleteSingleProject,
   onDeleteAbout,
@@ -736,7 +742,6 @@ export default function DesktopProfileView({
   onEditInterests,
   onDeleteInterests,
   onAddInterests,
-  onEditPreferences,
   onEditModeToggle,
   onSectionOrderChange,
   onAddSection,
@@ -963,6 +968,7 @@ export default function DesktopProfileView({
             onEditSingleExperience={onEditSingleExperience}
             onDeleteSingleExperience={onDeleteSingleExperience}
             onEditProject={onEditProject}
+            onAddProject={onAddProject}
             onEditSingleProject={onEditSingleProject}
             onDeleteSingleProject={onDeleteSingleProject}
             onDeleteAbout={onDeleteAbout}
