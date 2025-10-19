@@ -26,19 +26,28 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
           icon: User,
           title: "Create Smart Profile",
           description: "Build your comprehensive professional profile with our AI-guided setup",
-          image: "/images/steps/job-seeker-1.png"
+          image: {
+            light: "/images/steps/profile-light.png",
+            dark: "/images/steps/profile-dark.png"
+          }
         },
         {
           icon: MessageCircle,
           title: "AI Conversations",
           description: "Your profile answers questions about your skills and experience 24/7",
-          image: "/images/steps/job-seeker-2.png"
+          image: {
+            light: "/images/steps/chat-light.png",
+            dark: "/images/steps/chat-dark.png"
+          }
         },
         {
           icon: Target,
           title: "Get Discovered",
           description: "Perfect matches find you faster with intelligent profile matching",
-          image: "/images/steps/job-seeker-3.png"
+          image: {
+            light: "/images/steps/discover-light.png",
+            dark: "/images/steps/discover-dark.png"
+          }
         }
       ]
     },
@@ -50,19 +59,28 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
           icon: Search,
           title: "Smart Discovery",
           description: "Find candidates using natural language search and AI matching",
-          image: "/images/steps/recruiter-1.png"
+          image: {
+            light: "/images/steps/discover-light.png",
+            dark: "/images/steps/discover-dark.png"
+          }
         },
         {
           icon: MessageCircle,
           title: "Chat with Profiles",
           description: "Ask detailed questions directly to candidate profiles instantly",
-          image: "/images/steps/recruiter-2.png"
+          image: {
+            light: "/images/steps/chat-only-light.png",
+            dark: "/images/steps/chat-only-dark.png"
+          }
         },
         {
           icon: Star,
           title: "Perfect Matches",
           description: "Get AI-powered compatibility scores and detailed insights",
-          image: "/images/steps/recruiter-3.png"
+          image: {
+            light: "/images/steps/ai-fit-light.png",
+            dark: "/images/steps/ai-fit-dark.png"
+          }
         }
       ]
     },
@@ -74,19 +92,28 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
           icon: Palette,
           title: "Multiple Themes",
           description: "Create different portfolio variants for different opportunities",
-          image: "/images/steps/ai-features-1.png"
+          image: {
+            light: "/images/steps/themes-light.png",
+            dark: "/images/steps/themes-dark.png"
+          }
         },
         {
           icon: FileText,
           title: "Content Generation",
           description: "Generate personalized cover letters and proposals using your profile",
-          image: "/images/steps/ai-features-2.png"
+          image: {
+            light: "/images/steps/ai-writer-light.png",
+            dark: "/images/steps/ai-writer-dark.png"
+          }
         },
         {
           icon: TrendingUp,
           title: "Smart Analytics",
           description: "Track profile performance and optimize for better visibility",
-          image: "/images/steps/ai-features-3.png"
+          image: {
+            light: "/images/steps/profile-analysis-light.png",
+            dark: "/images/steps/profile-analysis-dark.png"
+          }
         }
       ]
     }
@@ -193,12 +220,12 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
                               ? 'bg-gradient-to-br from-[#2f2f2f] to-[#1a1a1a] border border-gray-700/50' 
                               : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200/50'
                           }`}>
-                            {/* Screenshot Image */}
+                            {/* Theme-Aware Screenshot Image */}
                             <div className="aspect-video overflow-hidden">
                               <img 
-                                src={step.image} 
+                                src={typeof step.image === 'object' ? (isDark ? step.image.dark : step.image.light) : step.image} 
                                 alt={step.title}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                                 onError={(e) => {
                                   // Fallback to placeholder if image fails to load
                                   const target = e.target as HTMLImageElement;
@@ -227,8 +254,17 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
                             {/* Hover overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#10a37f]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             
-                            {/* Corner accent */}
-                            <div className="absolute top-4 right-4 w-3 h-3 bg-[#10a37f] rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                            {/* Theme indicator */}
+                            <div className="absolute top-4 right-4 flex items-center gap-2">
+                              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                isDark 
+                                  ? 'bg-gray-700 text-gray-300' 
+                                  : 'bg-gray-200 text-gray-700'
+                              }`}>
+                                {isDark ? 'Dark' : 'Light'}
+                              </div>
+                              <div className="w-3 h-3 bg-[#10a37f] rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                            </div>
                           </div>
                         </div>
                       </div>
