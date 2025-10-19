@@ -189,16 +189,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       console.log('✅ [AUTH CONTEXT] Login successful', {
         userId: authResponse.user.id,
-        onboarding_completed: authResponse.user.onboarding_completed
+        onboarding_completed: authResponse.user.onboarding_completed,
+        onboarding_skipped: authResponse.user.onboarding_skipped
       });
       
       // Smart navigation based on onboarding status
       if (typeof window !== 'undefined') {
-        if (!authResponse.user.onboarding_completed) {
+        const needsOnboarding = !authResponse.user.onboarding_completed && !authResponse.user.onboarding_skipped;
+        
+        if (needsOnboarding) {
           console.log('🔄 [AUTH CONTEXT] Redirecting to onboarding (incomplete)');
           window.location.href = '/onboarding';
         } else {
-          console.log('🔄 [AUTH CONTEXT] Redirecting to profile (onboarding complete)');
+          console.log('🔄 [AUTH CONTEXT] Redirecting to profile (onboarding complete or skipped)');
           window.location.href = '/profile';
         }
       }
@@ -245,16 +248,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       console.log('✅ [AUTH CONTEXT] Google login successful', {
         userId: authResponse.user.id,
-        onboarding_completed: authResponse.user.onboarding_completed
+        onboarding_completed: authResponse.user.onboarding_completed,
+        onboarding_skipped: authResponse.user.onboarding_skipped
       });
       
       // Smart navigation based on onboarding status
       if (typeof window !== 'undefined') {
-        if (!authResponse.user.onboarding_completed) {
+        const needsOnboarding = !authResponse.user.onboarding_completed && !authResponse.user.onboarding_skipped;
+        
+        if (needsOnboarding) {
           console.log('🔄 [AUTH CONTEXT] Redirecting to onboarding (incomplete)');
           window.location.href = '/onboarding';
         } else {
-          console.log('🔄 [AUTH CONTEXT] Redirecting to profile (onboarding complete)');
+          console.log('🔄 [AUTH CONTEXT] Redirecting to profile (onboarding complete or skipped)');
           window.location.href = '/profile';
         }
       }

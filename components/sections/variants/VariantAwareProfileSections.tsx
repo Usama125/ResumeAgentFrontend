@@ -53,6 +53,7 @@ interface VariantAwareProfileSectionsProps {
   onEditExperience?: () => void
   onEditSingleExperience?: (index: number) => void
   onDeleteSingleExperience?: (index: number) => void
+  onAddExperience?: () => void
   onEditProject?: () => void
   onAddProject?: () => void
   onEditSingleProject?: (index: number) => void
@@ -65,6 +66,7 @@ interface VariantAwareProfileSectionsProps {
   onEditSingleEducation?: (index: number) => void
   onDeleteSingleEducation?: (index: number) => void
   onDeleteEducation?: () => void
+  onAddEducation?: () => void
   onEditContact?: () => void
   onDeleteContact?: () => void
   onEditLanguage?: (index: number) => void
@@ -257,6 +259,7 @@ export default function VariantAwareProfileSections({
               onEditExperience={sectionHandlers.onEditSingleExperience}
               onDeleteExperience={sectionHandlers.onDeleteSingleExperience}
               onDelete={sectionHandlers.onDeleteExperience}
+              onAddExperience={sectionHandlers.onAddExperience}
             />
           )
           break
@@ -476,6 +479,18 @@ export default function VariantAwareProfileSections({
           />
         )
         break
+      case 'preferences':
+        sectionElement = (
+          <PreferencesSection
+            user={user}
+            isEditMode={isEditMode}
+            onEdit={sectionHandlers.onEditPreferences}
+            isCollapsible={isEditMode}
+            isExpanded={expandedSections.has('preferences')}
+            onToggleExpand={() => handleToggleExpand('preferences')}
+          />
+        )
+        break
       default:
         return null
     }
@@ -489,6 +504,11 @@ export default function VariantAwareProfileSections({
 
   const visibleSections = useMemo(() => {
     return localSectionOrder.filter(sectionId => {
+      // Always show preferences in edit mode
+      if (sectionId === 'preferences') {
+        return isEditMode
+      }
+      
       // Always show sections with variant support if they have data or in edit mode
       if (sectionId === 'about' || sectionId === 'experience') {
         const sectionConfig = SECTION_REGISTRY[sectionId as keyof typeof SECTION_REGISTRY]
@@ -504,7 +524,7 @@ export default function VariantAwareProfileSections({
       const sectionConfig = SECTION_REGISTRY[sectionId as keyof typeof SECTION_REGISTRY]
       if (!sectionConfig) return false
       
-      // In edit mode, show all sections
+      // In edit mode, show all sections except preferences (handled above)
       if (isEditMode) return true
       
       // In view mode, only show sections with data
@@ -547,14 +567,7 @@ export default function VariantAwareProfileSections({
         </SortableContext>
       </DndContext>
 
-      {/* Preferences Section (only in edit mode and for current user) */}
-      {isEditMode && (
-        <PreferencesSection 
-          user={user} 
-          isEditMode={isEditMode}
-          onEdit={sectionHandlers.onEditPreferences}
-        />
-      )}
+      {/* Preferences Section is now handled within the visibleSections */}
     </div>
   )
 }

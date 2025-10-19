@@ -32,12 +32,9 @@ import useRateLimit from '@/hooks/useRateLimit'
 import RateLimitModal from "@/components/RateLimitModal"
 import { useToast } from "@/hooks/use-toast"
 import PreferencesEditModal from "@/components/PreferencesEditModal"
-import ProfileSettingsModal from "@/components/ProfileSettingsModal"
-import MobileProfileSettingsModal from "@/components/MobileProfileSettingsModal"
 import ShareProfileModal from "@/components/ShareProfileModal"
-import { updateProfileVariant } from "@/services/user"
-import { ProfileVariant } from "@/types"
 import { useAIChat } from "@/hooks/useAIChat"
+import { useSettings } from "@/context/SettingsContext"
 
 
 // Generate suggested questions based on user data
@@ -179,7 +176,6 @@ export default function CurrentUserProfilePage() {
   // Interests modal state
   const [isInterestsEditModalOpen, setIsInterestsEditModalOpen] = useState(false)
   const [interestsEditMode, setInterestsEditMode] = useState<'add' | 'edit'>('add')
-  const [isProfileSettingsModalOpen, setIsProfileSettingsModalOpen] = useState(false)
   const [isShareProfileModalOpen, setIsShareProfileModalOpen] = useState(false)
 
   const [sectionOrder, setSectionOrder] = useState<string[]>([])
@@ -229,6 +225,7 @@ export default function CurrentUserProfilePage() {
   const { user: authUser, isAuthenticated, loading: authLoading, refreshUser, updateUser } = useAuth()
   const { isDark } = useTheme()
   const { toast } = useToast()
+  const { openProfileSettings } = useSettings()
 
   // Get search params to detect onboarding flow
   const searchParams = useSearchParams()
@@ -809,35 +806,6 @@ export default function CurrentUserProfilePage() {
     }
   }, [user, updateUser, toast])
 
-  // Handle profile variant change
-  const handleProfileVariantChange = useCallback(async (variant: ProfileVariant) => {
-    if (!user) return
-
-    try {
-      const updatedUser = await updateProfileVariant(variant)
-      
-      // Update local state
-      setUser(updatedUser)
-      
-      // Update global auth context
-      updateUser(updatedUser)
-      
-      toast({
-        title: "Success",
-        description: `Profile variant changed to ${variant}`,
-      })
-      
-      console.log('✅ Profile variant updated successfully')
-    } catch (error: any) {
-      console.error('❌ Error updating profile variant:', error)
-      
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update profile variant",
-        variant: "destructive"
-      })
-    }
-  }, [user, updateUser, toast])
 
   // Use ref to track updating state to prevent dependency issues
   const isUpdatingRef = useRef(false)
@@ -986,27 +954,22 @@ export default function CurrentUserProfilePage() {
     }
     
     if (isAuthenticated && authUser) {
-      // Check if user completed onboarding (either top-level field or progress.completed)
-      // Since resume upload is now optional, we also consider onboarding completed if user has basic profile info
-      const isOnboardingCompleted = authUser.onboarding_completed || 
-                                   authUser.onboarding_progress?.completed ||
-                                   (authUser.name && authUser.email); // Basic profile info exists
+      // Clean onboarding status check - only check the dedicated fields
+      const needsOnboarding = !authUser.onboarding_completed && !authUser.onboarding_skipped;
       
       console.log('🔍 PROFILE PAGE - Onboarding completion check:', { 
-        isOnboardingCompleted,
-        hasName: !!authUser.name,
-        hasEmail: !!authUser.email,
+        needsOnboarding,
         onboarding_completed: authUser.onboarding_completed,
-        progress_completed: authUser.onboarding_progress?.completed
+        onboarding_skipped: authUser.onboarding_skipped
       });
       
-      if (!isOnboardingCompleted) {
-        console.log('🚨 PROFILE PAGE - User onboarding not completed, redirecting to onboarding');
+      if (needsOnboarding) {
+        console.log('🚨 PROFILE PAGE - User needs onboarding, redirecting to onboarding');
         router.push("/onboarding")
         return
       }
       
-      console.log('🔍 PROFILE PAGE - User onboarding completed, staying on profile page');
+      console.log('🔍 PROFILE PAGE - User onboarding completed or skipped, staying on profile page');
     } else if (!authLoading) {
       console.log('🔍 PROFILE PAGE - Not authenticated or no user data (auth loading complete)');
     }
@@ -1383,8 +1346,8 @@ export default function CurrentUserProfilePage() {
               onDeleteInterests={handleInterestsDelete}
               onAddInterests={handleAddInterests}
               onEditModeToggle={handleEditModeToggle}
+              onOpenSettings={openProfileSettings}
               onOpenShare={() => setIsShareProfileModalOpen(true)}
-              onOpenSettings={() => setIsProfileSettingsModalOpen(true)}
               onSectionOrderChange={handleSectionOrderChange}
               onAddSection={handleAddSection}
             />
@@ -1451,9 +1414,9 @@ export default function CurrentUserProfilePage() {
           onDeleteInterests={handleInterestsDelete}
           onAddInterests={handleAddInterests}
           onEditModeToggle={handleEditModeToggle}
+          onOpenSettings={openProfileSettings}
           onSectionOrderChange={handleSectionOrderChange}
           onAddSection={handleAddSection}
-                        onOpenSettings={() => setIsProfileSettingsModalOpen(true)}
               onOpenShare={() => setIsShareProfileModalOpen(true)}
         />
         </>
@@ -1697,30 +1660,6 @@ export default function CurrentUserProfilePage() {
         type="danger"
       />
 
-      {/* Profile Settings Modal */}
-      {user && (
-        <>
-          {/* Desktop Profile Settings Modal */}
-          <div className="hidden md:block">
-            <ProfileSettingsModal
-              isOpen={isProfileSettingsModalOpen}
-              onClose={() => setIsProfileSettingsModalOpen(false)}
-              user={user}
-              onVariantChange={handleProfileVariantChange}
-            />
-          </div>
-          
-          {/* Mobile Profile Settings Modal */}
-          <div className="block md:hidden">
-            <MobileProfileSettingsModal
-              isOpen={isProfileSettingsModalOpen}
-              onClose={() => setIsProfileSettingsModalOpen(false)}
-              currentVariant={(user.profile_variant as ProfileVariant) || 'default'}
-              onVariantChange={handleProfileVariantChange}
-            />
-          </div>
-        </>
-      )}
 
       {/* Share Profile Modal */}
       {user && (

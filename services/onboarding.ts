@@ -82,7 +82,7 @@ export class OnboardingService {
     formData.append('additional_info', otherData.additional_info);
     formData.append('is_looking_for_job', otherData.is_looking_for_job.toString());
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/onboarding/step-2/profile-info`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/onboarding/step-2/profile-info`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -127,7 +127,7 @@ export class OnboardingService {
       };
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/onboarding/step-3/work-preferences`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/onboarding/step-3/work-preferences`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -169,7 +169,7 @@ export class OnboardingService {
       };
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/onboarding/step-4/salary-availability`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/onboarding/step-4/salary-availability`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`,
@@ -258,7 +258,7 @@ export class OnboardingService {
       };
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/onboarding/skip-to-profile`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/onboarding/skip-to-profile`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`,

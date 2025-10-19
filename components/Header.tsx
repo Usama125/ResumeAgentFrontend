@@ -7,6 +7,7 @@ import { ArrowLeft, Edit, Menu, X, Home, Search, Sparkles, Key, Rocket, Moon } f
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { useTheme } from "@/context/ThemeContext"
+import { useSettings } from "@/context/SettingsContext"
 import UserDropdown from "@/components/UserDropdown"
 import ThemeToggle from "@/components/ThemeToggle"
 
@@ -29,6 +30,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
   const router = useRouter()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const { isDark } = useTheme()
+  const { openProfileSettings } = useSettings()
   const [isMobile, setIsMobile] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -258,7 +260,10 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               {authLoading ? (
                 <div className={`w-8 h-8 rounded-full animate-pulse ${isDark ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
               ) : isAuthenticated ? (
-                <UserDropdown onEditProfile={isProfilePage ? onEditProfile : undefined} />
+                <UserDropdown 
+                  onEditProfile={isProfilePage ? onEditProfile : undefined} 
+                  onOpenSettings={openProfileSettings} 
+                />
               ) : (
                 !isAuthPage && (
                   <>

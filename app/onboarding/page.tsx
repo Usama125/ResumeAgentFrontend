@@ -183,11 +183,11 @@ export default function OnboardingPage() {
         return
       }
       
-      // Check if user completed onboarding (either top-level field or progress.completed)
-      const isOnboardingCompleted = user?.onboarding_completed || user?.onboarding_progress?.completed;
+      // Clean onboarding status check - only check the dedicated fields
+      const needsOnboarding = !user?.onboarding_completed && !user?.onboarding_skipped;
       
-      if (isOnboardingCompleted) {
-        console.log('🔍 ONBOARDING PAGE - User already completed onboarding, redirecting to profile');
+      if (!needsOnboarding) {
+        console.log('🔍 ONBOARDING PAGE - User already completed or skipped onboarding, redirecting to profile');
         // Use router.replace instead of window.location to avoid hard navigation
         router.replace("/profile?edit=true");
         return
@@ -197,7 +197,7 @@ export default function OnboardingPage() {
     } else {
       console.log('🔍 ONBOARDING PAGE - Still initializing or loading, waiting...');
     }
-  }, [authLoading, authTimeout, isAuthenticated, user?.onboarding_completed, user?.onboarding_progress?.completed, router, isInitializing, loading, isCompleting])
+  }, [authLoading, authTimeout, isAuthenticated, user?.onboarding_completed, user?.onboarding_skipped, router, isInitializing, loading, isCompleting])
 
   // Load onboarding progress and set current step
   useEffect(() => {
@@ -240,7 +240,7 @@ export default function OnboardingPage() {
     if (!user?.id || !isClient) return
 
     const connectWebSocket = () => {
-      const wsUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/ws/${user.id}`
+      const wsUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/ws/${user.id}`
       console.log('🔌 Connecting to WebSocket:', wsUrl)
       
       const ws = new WebSocket(wsUrl)

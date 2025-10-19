@@ -20,7 +20,8 @@ interface ExperienceSectionProps {
   dragHandleProps?: any
   onEditExperience?: (index: number) => void
   onDeleteExperience?: (index: number) => void
-  onAddExperience?: () => void
+  onAdd?: () => void
+  hideEditIconsOnMobile?: boolean
 }
 
 export default function ExperienceSection({
@@ -35,7 +36,8 @@ export default function ExperienceSection({
   dragHandleProps = {},
   onEditExperience,
   onDeleteExperience,
-  onAddExperience
+  onAdd = onEdit, // This will be used for the plus icon to add new experience
+  hideEditIconsOnMobile = false
 }: ExperienceSectionProps) {
   const { isDark } = useTheme()
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<number>>(new Set())
@@ -69,10 +71,12 @@ export default function ExperienceSection({
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
       onDelete={hasData ? onDelete : undefined}
-      onAdd={isEditMode ? onAddExperience : undefined}
+      onEdit={undefined} // Remove edit button at section level
       onToggleExpand={onToggleExpand}
+      onAdd={onAdd} // Only show plus icon for adding new experience
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
+      hideEditIconsOnMobile={true} // Always hide edit icons at section level
     >
       <div className="space-y-6">
         {hasData ? (

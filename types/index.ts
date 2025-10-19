@@ -113,6 +113,7 @@ export interface User {
   certifications: string[];
   work_preferences: WorkPreferences | null;
   onboarding_completed: boolean;
+  onboarding_skipped: boolean;
   onboarding_progress: OnboardingProgress;
   created_at: string;
   updated_at?: string;

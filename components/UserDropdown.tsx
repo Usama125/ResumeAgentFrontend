@@ -14,9 +14,10 @@ import { GradientAvatar } from '@/components/ui/avatar';
 
 interface UserDropdownProps {
   onEditProfile?: () => void;
+  onOpenSettings?: () => void;
 }
 
-export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
+export default function UserDropdown({ onEditProfile, onOpenSettings }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -76,8 +77,11 @@ export default function UserDropdown({ onEditProfile }: UserDropdownProps) {
 
   const handleSettings = () => {
     setIsOpen(false)
-    // TODO: Add settings page
-    console.log('Settings clicked - not implemented yet')
+    if (onOpenSettings) {
+      onOpenSettings()
+    } else {
+      console.log('Settings clicked - no handler provided')
+    }
   }
 
 

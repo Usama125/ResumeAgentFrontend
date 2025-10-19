@@ -10,7 +10,7 @@ export const getImageUrl = (profilePicture: string | null): string => {
   }
   
   // For legacy local URLs, construct full URL
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1';
   const serverUrl = baseUrl.replace('/api/v1', '');
   return `${serverUrl}${profilePicture}`;
 };

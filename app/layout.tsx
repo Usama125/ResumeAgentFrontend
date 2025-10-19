@@ -2,8 +2,10 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
+import { SettingsProvider } from '@/context/SettingsContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { Toaster } from "@/components/ui/toaster"
+import GlobalSettingsModal from '@/components/GlobalSettingsModal'
 
 export const metadata: Metadata = {
   title: 'AI Resume Builder',
@@ -47,8 +49,11 @@ export default function RootLayout({
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
           <ThemeProvider>
             <AuthProvider>
-              {children}
-              <Toaster />
+              <SettingsProvider>
+                {children}
+                <GlobalSettingsModal />
+                <Toaster />
+              </SettingsProvider>
             </AuthProvider>
           </ThemeProvider>
         </GoogleOAuthProvider>

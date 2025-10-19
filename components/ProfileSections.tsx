@@ -313,9 +313,11 @@ const ProfileSections = memo(function ProfileSections({
           <ExperienceSection
             {...commonProps}
             onDelete={onDeleteExperience}
-            onAddExperience={onEditExperience}
             onEditExperience={onEditSingleExperience}
             onDeleteExperience={onDeleteSingleExperience}
+            onEdit={undefined} // Explicitly set to undefined to hide the edit button
+            onAdd={onEditExperience} // This will show the plus icon for adding new experience
+            hideEditIconsOnMobile={true} // Always hide edit icons at section level
           />
         )
       case 'projects':
@@ -333,9 +335,11 @@ const ProfileSections = memo(function ProfileSections({
           <EducationSection
             {...commonProps}
             onDelete={onDeleteEducation}
-            onAddEducation={onEditEducation}
             onEditEducation={onEditSingleEducation}
             onDeleteEducation={onDeleteSingleEducation}
+            onEdit={undefined} // Explicitly set to undefined to hide the edit button
+            onAdd={onEditEducation} // This will show the plus icon for adding new education
+            hideEditIconsOnMobile={true} // Always hide edit icons at section level
           />
         )
 

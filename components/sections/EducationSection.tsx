@@ -20,7 +20,8 @@ interface EducationSectionProps {
   dragHandleProps?: any
   onEditEducation?: (index: number) => void
   onDeleteEducation?: (index: number) => void
-  onAddEducation?: () => void
+  onAdd?: () => void
+  hideEditIconsOnMobile?: boolean
 }
 
 const EducationSection = memo(function EducationSection({
@@ -35,7 +36,8 @@ const EducationSection = memo(function EducationSection({
   dragHandleProps = {},
   onEditEducation,
   onDeleteEducation,
-  onAddEducation
+  onAdd = onEdit, // This will be used for the plus icon to add new education
+  hideEditIconsOnMobile = false
 }: EducationSectionProps) {
   const { isDark } = useTheme()
 
@@ -61,11 +63,13 @@ const EducationSection = memo(function EducationSection({
       isEditMode={isEditMode}
       isCollapsible={isCollapsible}
       isExpanded={isExpanded}
+      onEdit={undefined} // Remove edit button at section level
       onDelete={hasData ? onDelete : undefined}
-      onAdd={isEditMode ? onAddEducation : undefined}
       onToggleExpand={onToggleExpand}
+      onAdd={onAdd} // Only show plus icon for adding new education
       showDragHandle={showDragHandle}
       dragHandleProps={dragHandleProps}
+      hideEditIconsOnMobile={true} // Always hide edit icons at section level
     >
       <div className="space-y-4">
         {hasData ? (
