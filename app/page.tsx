@@ -13,7 +13,7 @@ import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import DiscoverInteractiveTalent from "@/components/DiscoverInteractiveTalent"
 
-// Interactive How It Works Component with Tabbed Interface
+// Interactive How It Works Component with Vertical Alternating Layout
 const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
   const [activeTab, setActiveTab] = useState("job-seekers")
   
@@ -92,9 +92,11 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
     }
   }
 
+  const currentContent = tabContent[activeTab as keyof typeof tabContent]
+
   return (
     <div className={`py-24 ${isDark ? 'bg-gradient-to-b from-[#1a1a1a] to-[#212121]' : 'bg-gradient-to-b from-gray-50 to-white'}`}>
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className={`text-4xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -107,7 +109,7 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
 
         {/* Interactive Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full grid-cols-3 mb-12 ${isDark ? 'bg-[#2f2f2f]' : 'bg-gray-100'}`}>
+          <TabsList className={`grid w-full grid-cols-3 mb-16 ${isDark ? 'bg-[#2f2f2f]' : 'bg-gray-100'}`}>
             <TabsTrigger value="job-seekers" className="data-[state=active]:bg-[#10a37f] data-[state=active]:text-white">
               <span className="hidden sm:inline">For Job Seekers</span>
               <span className="sm:hidden">Job Seekers</span>
@@ -124,7 +126,8 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
 
           {Object.entries(tabContent).map(([key, content]) => (
             <TabsContent key={key} value={key} className="mt-0">
-              <div className="text-center mb-12">
+              {/* Tab Header */}
+              <div className="text-center mb-16">
                 <h3 className={`text-3xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {content.title}
                 </h3>
@@ -132,35 +135,103 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
                   {content.subtitle}
                 </p>
               </div>
-              
-              <div className="grid md:grid-cols-3 gap-8">
+
+              {/* Vertical Steps with Alternating Layout */}
+              <div className="relative">
+                {/* Connecting Lines Container */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full hidden lg:block">
+                  <div className={`w-full h-full bg-gradient-to-b from-[#10a37f] via-[#0d8f6f] to-[#10a37f] opacity-20 rounded-full`}></div>
+                </div>
+
                 {content.steps.map((step, index) => {
                   const IconComponent = step.icon
+                  const isEven = index % 2 === 0
+                  
                   return (
-                    <div key={index} className={`relative p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:shadow-[#10a37f]/10 ${isDark ? 'bg-[#2f2f2f]/50 border-[#565869]/50 hover:border-[#10a37f]/50' : 'bg-white border-gray-200 hover:border-[#10a37f]/50'} backdrop-blur-sm group`}>
-                      {/* Step Image Placeholder */}
-                      <div className={`aspect-[4/3] rounded-lg mb-6 overflow-hidden ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-100'} flex items-center justify-center border-2 border-dashed border-[#10a37f]/30`}>
-                        <div className="text-center">
-                          <IconComponent className="w-12 h-12 text-[#10a37f] mx-auto mb-2" />
-                          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Screenshot Coming Soon</p>
+                    <div key={index} className="relative mb-12 last:mb-0">
+                      {/* Step Number Circle */}
+                      <div className="absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full items-center justify-center text-white font-bold text-lg z-10 hidden lg:flex">
+                        {index + 1}
+                      </div>
+
+                      {/* Content Container */}
+                      <div className={`grid lg:grid-cols-2 gap-12 items-center ${isEven ? 'lg:grid-flow-col' : 'lg:grid-flow-col-dense'}`}>
+                        {/* Text Content */}
+                        <div className={`space-y-6 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
+                          <div className="flex items-center space-x-4 lg:hidden mb-4">
+                            <div className="w-10 h-10 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                              {index + 1}
+                            </div>
+                            <div className="w-12 h-12 bg-gradient-to-r from-[#10a37f]/10 to-[#0d8f6f]/10 rounded-xl flex items-center justify-center">
+                              <IconComponent className="w-6 h-6 text-[#10a37f]" />
+                            </div>
+                          </div>
+                          
+                          <h4 className={`text-2xl lg:text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            {step.title}
+                          </h4>
+                          
+                          <p className={`text-lg leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                            {step.description}
+                          </p>
+
+                          {/* Hidden icon for desktop */}
+                          <div className="hidden lg:flex items-center space-x-3">
+                            <div className="w-16 h-16 bg-gradient-to-r from-[#10a37f]/10 to-[#0d8f6f]/10 rounded-2xl flex items-center justify-center">
+                              <IconComponent className="w-8 h-8 text-[#10a37f]" />
+                            </div>
+                            <div className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              Step {index + 1}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Image Content */}
+                        <div className={`${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
+                          <div className={`relative group overflow-hidden rounded-2xl shadow-2xl transition-all duration-500 hover:scale-105 ${
+                            isDark 
+                              ? 'bg-gradient-to-br from-[#2f2f2f] to-[#1a1a1a] border border-gray-700/50' 
+                              : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200/50'
+                          }`}>
+                            {/* Screenshot Image */}
+                            <div className="aspect-video overflow-hidden">
+                              <img 
+                                src={step.image} 
+                                alt={step.title}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                onError={(e) => {
+                                  // Fallback to placeholder if image fails to load
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    parent.innerHTML = `
+                                      <div class="flex items-center justify-center h-full p-8">
+                                        <div class="text-center space-y-4">
+                                          <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center ${isDark ? 'bg-[#10a37f]/20' : 'bg-[#10a37f]/10'}">
+                                            <svg class="w-10 h-10 text-[#10a37f]" fill="currentColor" viewBox="0 0 20 20">
+                                              <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                            </svg>
+                                          </div>
+                                          <div class="text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}">
+                                            Screenshot Coming Soon
+                                          </div>
+                                        </div>
+                                      </div>
+                                    `;
+                                  }
+                                }}
+                              />
+                            </div>
+                            
+                            {/* Hover overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#10a37f]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            
+                            {/* Corner accent */}
+                            <div className="absolute top-4 right-4 w-3 h-3 bg-[#10a37f] rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className="w-8 h-8 bg-gradient-to-r from-[#10a37f] to-[#0d8f6f] rounded-full flex items-center justify-center text-white font-semibold text-sm group-hover:scale-110 transition-transform duration-300">
-                          {index + 1}
-                        </div>
-                        <h4 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          {step.title}
-                        </h4>
-                      </div>
-                      
-                      <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {step.description}
-                      </p>
-                      
-                      {/* Decorative elements */}
-                      <div className="absolute top-4 right-4 w-2 h-2 bg-[#10a37f] rounded-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                   )
                 })}
