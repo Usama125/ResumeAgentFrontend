@@ -223,6 +223,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Store authentication data
       AuthService.storeAuth(authResponse);
       setUser(authResponse.user);
+      // Fire-and-forget signup notification (non-blocking)
+      try {
+        fetch('/api/admin/send-signup-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: authResponse.user.username,
+            email: authResponse.user.email,
+            name: authResponse.user.name,
+          }),
+        }).catch(() => {});
+      } catch {}
       
       // Don't set loading to false - let the auth flow handle it
       
@@ -245,6 +257,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Store authentication data
       AuthService.storeAuth(authResponse);
       setUser(authResponse.user);
+      // Fire-and-forget signup notification when user is new
+      try {
+        fetch('/api/admin/send-signup-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: authResponse.user.username,
+            email: authResponse.user.email,
+            name: authResponse.user.name,
+          }),
+        }).catch(() => {});
+      } catch {}
       
       console.log('✅ [AUTH CONTEXT] Google login successful', {
         userId: authResponse.user.id,
