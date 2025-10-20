@@ -169,7 +169,7 @@ export default function ProgressModal({
               <div className="flex items-center justify-between">
                 <DialogTitle className={`${themeClasses.text.primary} text-xl font-semibold flex items-center space-x-2`}>
                   <span className="text-2xl">🤖</span>
-                  <span>AI Resume Extraction in Progress</span>
+                  <span>CVChatter Resume Extraction in Progress</span>
                 </DialogTitle>
                 {!isExtractionInProgress && (
                   <button

@@ -1,4 +1,4 @@
-// Backend-compatible type definitions for AI Resume Builder
+// Backend-compatible type definitions for CVChatter
 // These interfaces match the FastAPI backend schemas exactly
 
 // =============================================================================

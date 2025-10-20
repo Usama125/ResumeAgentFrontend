@@ -1,1 +1,1 @@
-# ResumeAgentFrontend
+# CVChatterFrontend

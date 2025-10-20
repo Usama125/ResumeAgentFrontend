@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster"
 import GlobalSettingsModal from '@/components/GlobalSettingsModal'
 
 export const metadata: Metadata = {
-  title: 'AI Resume Builder',
+  title: 'CVChatter',
   description: 'AI-powered professional profiles and talent discovery platform',
   generator: 'Next.js',
   icons: {

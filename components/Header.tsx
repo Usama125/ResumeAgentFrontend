@@ -214,7 +214,7 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
               {!isHomePage && !isProfilePage && !isDefaultPage && !isAIWriterPage && (
                 <div>
                   <h1 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    {variant === 'auth' ? 'Welcome Back' : variant === 'onboarding' ? 'Profile Setup' : 'AI Resume Builder'}
+                    {variant === 'auth' ? 'Welcome Back' : variant === 'onboarding' ? 'Profile Setup' : 'CVChatter'}
                   </h1>
                 </div>
               )}

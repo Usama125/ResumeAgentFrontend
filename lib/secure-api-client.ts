@@ -1,7 +1,7 @@
 import { APIError } from '@/types';
 import { DeviceFingerprintCollector } from '@/utils/deviceFingerprint';
 
-// Secure API Client for AI Resume Builder
+// Secure API Client for CVChatter
 // Handles HMAC signature generation and secure requests
 
 class SecureAPIClient {
