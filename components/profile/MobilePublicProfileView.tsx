@@ -95,7 +95,7 @@ export default function MobilePublicProfileView({
       {/* Profile View */}
       <div className={`${
         mobileView === 'profile' ? 'w-full' : 'hidden'
-      } ${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto scrollbar-hide`}>
+      } ${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto scrollbar-hide mobile-profile-scroll`}>
         
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/10"></div>
@@ -103,7 +103,7 @@ export default function MobilePublicProfileView({
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0d8f6f]/5 rounded-full blur-2xl"></div>
 
         {/* Content Container */}
-        <div className="h-full overflow-y-auto scrollbar-hide">
+        <div className="relative z-10">
           <div className="p-4 space-y-6">
             {/* Hero Section */}
             <div className="text-center space-y-6">
@@ -338,11 +338,25 @@ export default function MobilePublicProfileView({
                 user={{
                   ...user,
                   email: user.email || 'public@example.com',
+                  designation: user.designation || null,
+                  experience: user.experience || null,
+                  summary: user.summary || null,
+                  skills: user.skills || [],
+                  experience_details: user.experience_details || [],
+                  projects: user.projects || [],
+                  certifications: user.certifications || [],
+                  education: user.education || [],
+                  languages: user.languages || [],
+                  awards: user.awards || [],
+                  publications: user.publications || [],
+                  volunteer_experience: user.volunteer_experience || [],
+                  interests: user.interests || [],
                   expected_salary: user.expected_salary || null,
                   current_salary: null,
                   additional_info: null,
                   work_preferences: null,
                   onboarding_completed: false,
+                  onboarding_skipped: false,
                   onboarding_progress: {
                     step_1_pdf_upload: 'completed',
                     step_2_profile_info: 'completed',

@@ -287,7 +287,7 @@ export default function MobileProfileView({
 
       {/* Profile View */}
       <div className={`${
-        mobileView === 'profile' ? 'w-full h-full overflow-y-auto' : 'hidden'
+        mobileView === 'profile' ? 'w-full h-full overflow-y-auto mobile-profile-scroll' : 'hidden'
       }`}>
         <ProfileVariantWrapper
           variant={(user.profile_variant as any) || "default"}

@@ -457,3 +457,16 @@
 .hide-dialog-close [data-radix-collection-item] {
   display: none !important;
 }
+
+/* Mobile touch scrolling fixes */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Ensure proper touch scrolling on mobile profile containers */
+.mobile-profile-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
