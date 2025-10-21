@@ -32,6 +32,7 @@ import EditModeToggle from "@/components/EditModeToggle"
 import ProfileSections from "@/components/ProfileSections"
 import AIAnalysisModal from '@/components/AIAnalysisModal'
 import ProfileVariantWrapper from "./variants/ProfileVariantWrapper"
+import { useMobileScroll } from '@/hooks/use-mobile-scroll'
 
 interface MobileProfileViewProps {
   user: UserType
@@ -233,6 +234,7 @@ export default function MobileProfileView({
   const [mobileView, setMobileView] = useState<'profile' | 'chat'>('profile')
   const [isAIAnalysisModalOpen, setIsAIAnalysisModalOpen] = useState(false)
   const { isDark } = useTheme()
+  const scrollRef = useMobileScroll()
 
   // Memoized handlers to prevent unnecessary re-renders
   const handleViewToggle = useCallback((view: 'profile' | 'chat') => {
@@ -286,9 +288,17 @@ export default function MobileProfileView({
       </div>
 
       {/* Profile View */}
-      <div className={`${
-        mobileView === 'profile' ? 'w-full h-full overflow-y-auto mobile-profile-scroll' : 'hidden'
-      }`}>
+      <div 
+        ref={scrollRef}
+        className={`${
+          mobileView === 'profile' ? 'w-full h-full overflow-y-auto mobile-profile-scroll' : 'hidden'
+        }`}
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+          touchAction: 'pan-y'
+        }}
+      >
         <ProfileVariantWrapper
           variant={(user.profile_variant as any) || "default"}
           user={user}

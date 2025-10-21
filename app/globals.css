@@ -469,4 +469,37 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   touch-action: pan-y;
+  /* Force hardware acceleration for smooth scrolling */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Ensure proper scrolling on real devices */
+  position: relative;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Prevent scroll blocking */
+  pointer-events: auto;
+}
+
+/* Additional mobile scroll fixes for real devices */
+@media (max-width: 768px) {
+  .mobile-profile-scroll {
+    /* Force momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent scroll chaining */
+    overscroll-behavior-y: contain;
+    /* Ensure touch events work */
+    touch-action: pan-y;
+    /* Force repaint for smooth scrolling */
+    will-change: scroll-position;
+  }
+  
+  /* Fix for Android devices */
+  .mobile-profile-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Ensure content is scrollable */
+  .mobile-profile-scroll > * {
+    pointer-events: auto;
+  }
 }

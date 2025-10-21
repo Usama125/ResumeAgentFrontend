@@ -44,6 +44,7 @@ import { formatLinkedInUrl, isLocalProfileUrl } from '@/utils/contactUtils';
 import ProfileSections from '@/components/ProfileSections';
 import ProfessionalAnalysisModal from '@/components/ProfessionalAnalysisModal';
 import { GradientAvatar } from '@/components/ui/avatar';
+import { useMobileScroll } from '@/hooks/use-mobile-scroll';
 
 export default function MobilePublicProfileView({
   user,
@@ -67,6 +68,7 @@ export default function MobilePublicProfileView({
   const [isProfessionalAnalysisModalOpen, setIsProfessionalAnalysisModalOpen] = useState(false)
   const [imageError, setImageError] = useState(false)
   const { isDark } = useTheme()
+  const scrollRef = useMobileScroll()
 
   return (
     <div className="flex h-[calc(100vh-56px)] relative w-full">
@@ -93,9 +95,17 @@ export default function MobilePublicProfileView({
       </div>
 
       {/* Profile View */}
-      <div className={`${
-        mobileView === 'profile' ? 'w-full' : 'hidden'
-      } ${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto scrollbar-hide mobile-profile-scroll`}>
+      <div 
+        ref={scrollRef}
+        className={`${
+          mobileView === 'profile' ? 'w-full' : 'hidden'
+        } ${isDark ? 'bg-[#212121]' : 'bg-gray-50'} h-full overflow-y-auto scrollbar-hide mobile-profile-scroll`}
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+          touchAction: 'pan-y'
+        }}
+      >
         
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#10a37f]/5 via-transparent to-[#10a37f]/10"></div>
