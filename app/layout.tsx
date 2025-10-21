@@ -6,7 +6,7 @@ import { SettingsProvider } from '@/context/SettingsContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { Toaster } from "@/components/ui/toaster"
 import GlobalSettingsModal from '@/components/GlobalSettingsModal'
-import { baseSEO } from '@/lib/seo'
+import { baseSEO, generateOrganizationStructuredData, generateWebsiteStructuredData } from '@/lib/seo'
 
 export const metadata: Metadata = {
   ...baseSEO,
@@ -31,9 +31,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const organizationData = generateOrganizationStructuredData()
+  const websiteData = generateWebsiteStructuredData()
+
   return (
     <html lang="en" className="dark">
-      <head>
+      <body>
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -52,8 +55,18 @@ export default function RootLayout({
             `,
           }}
         />
-      </head>
-      <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationData),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteData),
+          }}
+        />
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
           <ThemeProvider>
             <AuthProvider>
