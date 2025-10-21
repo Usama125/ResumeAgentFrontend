@@ -325,7 +325,6 @@ export default function MobilePublicProfileView({
                     </div>
                     <span className="font-semibold text-sm">AI Analysis</span>
                     
-                    {/* Hover effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-[#10a37f]/5 via-transparent to-[#10a37f]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
                 </div>
