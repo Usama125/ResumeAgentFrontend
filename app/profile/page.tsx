@@ -999,6 +999,29 @@ export default function CurrentUserProfilePage() {
     }
   }, [isAuthenticated, authUser, authLoading, authTimeout, isFromOnboarding])
 
+  // Preload AI analysis in background (non-blocking)
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      // Preload AI analysis in background without blocking UI
+      const preloadAIAnalysis = async () => {
+        try {
+          const token = AuthService.getToken()
+          if (token) {
+            // This runs in background, doesn't block UI
+            UserService.getAIAnalysis('/users/me/ai-analysis', token).catch(() => {
+              // Silently fail - this is just preloading
+            })
+          }
+        } catch (error) {
+          // Silently fail - this is just preloading
+        }
+      }
+      
+      // Delay preloading to not interfere with initial load
+      setTimeout(preloadAIAnalysis, 2000)
+    }
+  }, [user, isAuthenticated])
+
   // Optimized loading check - minimize loading states and flicker
   // Since resume upload is now optional, we also consider onboarding completed if user has basic profile info
   const isOnboardingCompleted = authUser?.onboarding_completed || 
