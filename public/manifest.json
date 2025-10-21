@@ -1,0 +1,69 @@
+{
+  "name": "CVChatter - AI-Powered Professional Profiles",
+  "short_name": "CVChatter",
+  "description": "Discover top talent with AI-powered professional profiles. Connect with skilled professionals, explore interactive profiles, and find the perfect match for your team.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10a37f",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["business", "productivity", "social"],
+  "icons": [
+    {
+      "src": "/logo_updated.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo_updated.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "CVChatter Desktop View"
+    },
+    {
+      "src": "/images/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "CVChatter Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore Talent",
+      "short_name": "Explore",
+      "description": "Browse and discover talented professionals",
+      "url": "/explore",
+      "icons": [
+        {
+          "src": "/logo_updated.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "AI Writer",
+      "short_name": "AI Writer",
+      "description": "Generate professional content with AI",
+      "url": "/ai-writer",
+      "icons": [
+        {
+          "src": "/logo_updated.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

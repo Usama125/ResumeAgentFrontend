@@ -6,22 +6,24 @@ import { SettingsProvider } from '@/context/SettingsContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { Toaster } from "@/components/ui/toaster"
 import GlobalSettingsModal from '@/components/GlobalSettingsModal'
+import { baseSEO } from '@/lib/seo'
 
 export const metadata: Metadata = {
-  title: 'CVChatter',
-  description: 'AI-powered professional profiles and talent discovery platform',
+  ...baseSEO,
   generator: 'Next.js',
   icons: {
     icon: '/logo_updated.png',
     shortcut: '/logo_updated.png',
     apple: '/logo_updated.png',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+  manifest: '/manifest.json',
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
