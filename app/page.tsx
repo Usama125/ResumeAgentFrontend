@@ -12,6 +12,7 @@ import Header from "@/components/Header"
 import { useRateLimit } from "@/hooks/useRateLimit"
 import { RateLimitModal } from "@/components/RateLimitModal"
 import DiscoverInteractiveTalent from "@/components/DiscoverInteractiveTalent"
+import Footer from "@/components/Footer"
 
 // Interactive How It Works Component with Vertical Alternating Layout
 const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
@@ -683,6 +684,8 @@ export default function HomePage() {
         {/* Final CTA Section - Only show for non-authenticated users */}
         {!isAuthenticated && <FinalCTASection isDark={isDark} router={router} />}
       </main>
+      {/* Footer */}
+      <Footer />
     </div>
   )
 } 

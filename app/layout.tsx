@@ -6,6 +6,7 @@ import { SettingsProvider } from '@/context/SettingsContext'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { Toaster } from "@/components/ui/toaster"
 import GlobalSettingsModal from '@/components/GlobalSettingsModal'
+import CookiesAlert from '@/components/CookiesAlert'
 import { baseSEO, generateOrganizationStructuredData, generateWebsiteStructuredData } from '@/lib/seo'
 
 export const metadata: Metadata = {
@@ -74,6 +75,7 @@ export default function RootLayout({
                 {children}
                 <GlobalSettingsModal />
                 <Toaster />
+                <CookiesAlert />
               </SettingsProvider>
             </AuthProvider>
           </ThemeProvider>

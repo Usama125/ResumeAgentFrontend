@@ -18,6 +18,7 @@ import { getImageUrl } from '@/utils/imageUtils'
 import ProfessionalAnalysisModal from "@/components/ProfessionalAnalysisModal"
 import { GradientAvatar } from '@/components/ui/avatar'
 import ExploreFilters, { FilterState } from "@/components/ExploreFilters"
+import Footer from "@/components/Footer"
 
 // Calculate skill matching percentage
 const calculateSkillMatch = (userSkills: { name: string; level: string }[] | string[] | undefined, searchQuery: string): number => {
@@ -743,6 +744,9 @@ export default function ExplorePage() {
           </div>
         </div>
       </main>
+      
+      {/* Footer */}
+      <Footer />
       
       {/* Professional Analysis Modal */}
       {selectedUserForAnalysis && (
