@@ -114,8 +114,8 @@ export default function PublicationsSectionEditModal({
 
       await updateProfileSection("publications", { publications: updatedPublications })
       
-      onUpdate(updatedPublications)
-      updateUser({ publications: updatedPublications })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

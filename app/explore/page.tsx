@@ -71,7 +71,11 @@ export default function ExplorePage() {
     professions: [],
     skills: []
   })
-  const [availableFilterOptions, setAvailableFilterOptions] = useState({
+  const [availableFilterOptions, setAvailableFilterOptions] = useState<{
+    locations: Array<{value: string, label: string, count: number}>;
+    professions: Array<{value: string, label: string, count: number}>;
+    skills: Array<{value: string, label: string, count: number}>;
+  }>({
     locations: [],
     professions: [],
     skills: []
@@ -108,12 +112,22 @@ export default function ExplorePage() {
 
   // Fetch initial users on page load and handle URL params
   useEffect(() => {
+    let isMounted = true
+    
     const fetchInitialUsers = async () => {
       try {
+        if (!isMounted) return
         setLoading(true)
         
         // Test Algolia connection first (for debugging)
-        await algoliaSearchService.testConnection()
+        try {
+          if (isMounted) {
+            await algoliaSearchService.testConnection()
+          }
+        } catch (error) {
+          console.warn('⚠️ [EXPLORE] Algolia connection test failed:', error)
+          // Continue with normal operation even if test fails
+        }
         
         // Check if we have a search query from URL
         const queryFromUrl = searchParams.get('q')
@@ -121,14 +135,18 @@ export default function ExplorePage() {
         const initialQuery = queryFromUrl || filterFromUrl
         
         if (initialQuery) {
+          if (!isMounted) return
           // Set search state first
           setSearchQuery(initialQuery)
           setCurrentSearchQuery(initialQuery)
           setIsSearchMode(true)
           
           // Perform search with the query from URL
-          await performSearch(initialQuery, false)
+          if (isMounted) {
+            await performSearch(initialQuery, false)
+          }
         } else {
+          if (!isMounted) return
           // Reset search state for non-search pages
           setSearchQuery("")
           setCurrentSearchQuery("")
@@ -159,11 +177,13 @@ export default function ExplorePage() {
             .map(user => ({ ...user, matchPercentage: undefined }))
             .sort((a, b) => (b.profile_score || 0) - (a.profile_score || 0))
           
-          setDisplayedUsers(sortedUsers)
-          setTotalFetched(sortedUsers.length)
-          
-          // Check if there are more users available (if we got 24 users and there are more pages)
-          setHasMoreUsers(searchResponse.total > 24 && searchResponse.pages > 1)
+          if (isMounted) {
+            setDisplayedUsers(sortedUsers)
+            setTotalFetched(sortedUsers.length)
+            
+            // Check if there are more users available (if we got 24 users and there are more pages)
+            setHasMoreUsers(searchResponse.total > 24 && searchResponse.pages > 1)
+          }
           
           console.log('🔍 [EXPLORE] Final state:', {
             displayedUsersLength: searchResponse.hits.length,
@@ -177,13 +197,22 @@ export default function ExplorePage() {
         if (error && typeof error === 'object' && 'type' in error && error.type === 'RATE_LIMIT') {
           showRateLimitModal(error as APIError)
         }
-        setDisplayedUsers([])
+        if (isMounted) {
+          setDisplayedUsers([])
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchInitialUsers()
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      isMounted = false
+    }
   }, [searchParams])
 
   // Re-fetch when filters change
@@ -205,7 +234,7 @@ export default function ExplorePage() {
     })
 
     // Determine if we're in search/filter mode
-    const isSearchOrFilterMode = query.trim() || hasActiveFilters
+    const isSearchOrFilterMode = Boolean(query.trim() || hasActiveFilters)
     
     if (!isSearchOrFilterMode) {
       // Reset to initial state - fetch first 24 users sorted by profile_score (no filters, no search)

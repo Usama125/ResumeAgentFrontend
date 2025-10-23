@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { getThemeClasses } from '@/utils/theme'
 import { useToast } from '@/hooks/use-toast'
+import { profileUpdateManager } from '@/lib/profile-update-manager'
 
 import { getImageUrl } from '@/utils/imageUtils';
 import { GradientAvatar } from '@/components/ui/avatar';
@@ -36,6 +37,18 @@ export default function UserDropdown({ onEditProfile, onOpenSettings }: UserDrop
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Listen for profile updates to ensure dropdown shows fresh user data
+  useEffect(() => {
+    const unsubscribe = profileUpdateManager.registerUpdateCallback((updatedUser) => {
+      if (updatedUser && updatedUser.id === user?.id) {
+        // Force re-render to show updated user data
+        setImageError(false); // Reset image error state
+      }
+    });
+
+    return unsubscribe;
+  }, [user?.id]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

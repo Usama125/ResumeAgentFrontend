@@ -10,6 +10,7 @@ import { useTheme } from "@/context/ThemeContext"
 import { useSettings } from "@/context/SettingsContext"
 import UserDropdown from "@/components/UserDropdown"
 import ThemeToggle from "@/components/ThemeToggle"
+import { profileUpdateManager } from "@/lib/profile-update-manager"
 
 interface HeaderProps {
   variant?: 'home' | 'profile' | 'auth' | 'onboarding' | 'default' | 'ai-writer'
@@ -46,6 +47,18 @@ export default function Header({ variant = 'home', showBackButton = false, onEdi
     
     return () => window.removeEventListener('resize', checkIsMobile)
   }, [])
+
+  // Listen for profile updates to ensure header shows fresh user data
+  useEffect(() => {
+    const unsubscribe = profileUpdateManager.registerUpdateCallback((updatedUser) => {
+      if (updatedUser && updatedUser.id === user?.id) {
+        // Force re-render to show updated user data
+        setImageError(false); // Reset image error state
+      }
+    });
+
+    return unsubscribe;
+  }, [user?.id]);
 
   const isProfilePage = variant === 'profile'
   const isHomePage = variant === 'home'

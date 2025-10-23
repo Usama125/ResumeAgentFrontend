@@ -108,9 +108,8 @@ export default function AwardsSectionEditModal({
       // Call API to update awards
       await updateProfileSection("awards", { awards: updatedAwards })
       
-      // Update frontend state
-      onUpdate(updatedAwards)
-      updateUser({ awards: updatedAwards })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

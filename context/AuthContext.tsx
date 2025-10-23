@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { User, LoginRequest, RegisterRequest, APIError } from '@/types';
 import AuthService from '@/services/auth';
 import UserService from '@/services/user';
+import ProfileOptimizer from '@/lib/profile-optimization';
+import { profileUpdateManager } from '@/lib/profile-update-manager';
 
 interface AuthContextType {
   user: User | null;
@@ -15,6 +17,7 @@ interface AuthContextType {
   googleLogin: (idToken: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
+  setUserData: (userData: User) => void;
   clearError: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -313,15 +316,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const updatedUser = { ...user, ...userData };
       setUser(updatedUser);
       
-      // Update stored user data
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user_data', JSON.stringify(updatedUser));
-      }
+      // Use profile update manager to handle the update
+      profileUpdateManager.handleProfileUpdate(updatedUser, {
+        clearCache: true,
+        refreshAuthContext: false, // We're already updating the context
+        updateLocalStorage: true
+      });
       
       // Ensure loading is set to false after user update
       // This is especially important after onboarding completion
       setLoading(false);
     }
+  };
+
+  // Update user data without triggering profile update manager (to avoid circular updates)
+  const setUserData = (userData: User) => {
+    setUser(userData);
+    setLoading(false);
   };
 
   const refreshUser = async () => {
@@ -340,10 +351,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const mergedUser = { ...currentUser, ...preservedUpdates };
       setUser(mergedUser);
       
-      // Update stored user data
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user_data', JSON.stringify(mergedUser));
-      }
+      // Use profile update manager to handle the refresh
+      await profileUpdateManager.handleProfileUpdate(mergedUser, {
+        clearCache: true,
+        refreshAuthContext: false, // We're already updating the context
+        updateLocalStorage: true
+      });
       
       // Ensure loading is false after successful refresh
       setLoading(false);
@@ -369,6 +382,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     googleLogin,
     logout,
     updateUser,
+    setUserData,
     clearError,
     refreshUser,
   };

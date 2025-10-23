@@ -1,5 +1,7 @@
 import { authAPI, apiClient, publicAPI } from '@/lib/secure-api-client';
 import { User, PublicUser, ProfileUpdateData, ProfileVariant } from '@/types';
+import ProfileOptimizer from '@/lib/profile-optimization';
+import { profileUpdateManager } from '@/lib/profile-update-manager';
 
 // User management service
 export class UserService {
@@ -32,6 +34,8 @@ export class UserService {
 
   // Update current user profile
   static async updateProfile(updateData: ProfileUpdateData, token?: string): Promise<User> {
+    let result: User;
+    
     // Handle file upload separately if profile picture is included
     if (updateData.profile_picture) {
       const { profile_picture, ...otherData } = updateData;
@@ -47,15 +51,24 @@ export class UserService {
       
       // Update other data
       if (Object.keys(otherData).length > 0) {
-        return authAPI.put<User>('/users/me', otherData, token);
+        result = await authAPI.put<User>('/users/me', otherData, token);
       } else {
         // If only uploading picture, fetch updated user
-        return this.getCurrentUser(token);
+        result = await this.getCurrentUser(token);
       }
     } else {
       // Update without file upload
-      return authAPI.put<User>('/users/me', updateData, token);
+      result = await authAPI.put<User>('/users/me', updateData, token);
     }
+    
+    // Use profile update manager to handle the update
+    await profileUpdateManager.handleProfileUpdate(result, {
+      clearCache: true,
+      refreshAuthContext: true,
+      updateLocalStorage: true
+    });
+    
+    return result;
   }
 
   // Update user's work preferences
@@ -99,12 +112,30 @@ export class UserService {
 
   // Update specific profile section
   static async updateProfileSection(sectionName: string, updateData: any, token?: string): Promise<User> {
-    return authAPI.put<User>(`/users/me/sections/${sectionName}`, updateData, token);
+    const result = await authAPI.put<User>(`/users/me/sections/${sectionName}`, updateData, token);
+    
+    // Use profile update manager to handle the update
+    await profileUpdateManager.handleProfileUpdate(result, {
+      clearCache: true,
+      refreshAuthContext: true,
+      updateLocalStorage: true
+    });
+    
+    return result;
   }
 
   // Reorder skills
   static async reorderSkills(skillIds: string[], token?: string): Promise<User> {
-    return authAPI.put<User>(`/users/me/skills/reorder`, { skill_ids: skillIds }, token);
+    const result = await authAPI.put<User>(`/users/me/skills/reorder`, { skill_ids: skillIds }, token);
+    
+    // Use profile update manager to handle the update
+    await profileUpdateManager.handleProfileUpdate(result, {
+      clearCache: true,
+      refreshAuthContext: true,
+      updateLocalStorage: true
+    });
+    
+    return result;
   }
 
   // Reorder sections
@@ -113,17 +144,44 @@ export class UserService {
     console.log('🔧 UserService - sending:', { section_order: sectionOrder });
     
     // Send request body with section_order field as expected by backend
-    return authAPI.put<User>(`/users/me/sections/reorder`, { section_order: sectionOrder }, token);
+    const result = await authAPI.put<User>(`/users/me/sections/reorder`, { section_order: sectionOrder }, token);
+    
+    // Use profile update manager to handle the update
+    await profileUpdateManager.handleProfileUpdate(result, {
+      clearCache: true,
+      refreshAuthContext: true,
+      updateLocalStorage: true
+    });
+    
+    return result;
   }
 
   // Delete specific profile section
   static async deleteProfileSection(sectionName: string, token?: string): Promise<User> {
-    return authAPI.delete<User>(`/users/me/sections/${sectionName}`, token);
+    const result = await authAPI.delete<User>(`/users/me/sections/${sectionName}`, token);
+    
+    // Use profile update manager to handle the update
+    await profileUpdateManager.handleProfileUpdate(result, {
+      clearCache: true,
+      refreshAuthContext: true,
+      updateLocalStorage: true
+    });
+    
+    return result;
   }
 
   // Update profile variant
   static async updateProfileVariant(variant: ProfileVariant, token?: string): Promise<User> {
-    return authAPI.put<User>('/users/me/profile-variant', { profile_variant: variant }, token);
+    const result = await authAPI.put<User>('/users/me/profile-variant', { profile_variant: variant }, token);
+    
+    // Use profile update manager to handle the update
+    await profileUpdateManager.handleProfileUpdate(result, {
+      clearCache: true,
+      refreshAuthContext: true,
+      updateLocalStorage: true
+    });
+    
+    return result;
   }
 }
 

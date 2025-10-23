@@ -104,9 +104,8 @@ export default function LanguagesSectionEditModal({
       // Call API to update languages
       await updateProfileSection("languages", { languages: updatedLanguages })
       
-      // Update frontend state
-      onUpdate(updatedLanguages)
-      updateUser({ languages: updatedLanguages })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

@@ -116,9 +116,8 @@ const ExperienceSectionEditModal = memo(function ExperienceSectionEditModal({
       // Call API to update experiences
       await updateProfileSection("experience", { experience_details: updatedExperiences })
       
-      // Update frontend state
-      onUpdate(updatedExperiences)
-      updateUser({ experience_details: updatedExperiences })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

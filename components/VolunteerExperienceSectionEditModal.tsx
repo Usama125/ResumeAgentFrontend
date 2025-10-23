@@ -114,8 +114,8 @@ export default function VolunteerExperienceSectionEditModal({
 
       await updateProfileSection("volunteer", { volunteer_experience: updatedVolunteerExperience })
       
-      onUpdate(updatedVolunteerExperience)
-      updateUser({ volunteer_experience: updatedVolunteerExperience })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

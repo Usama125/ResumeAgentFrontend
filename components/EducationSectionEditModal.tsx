@@ -126,9 +126,8 @@ const EducationSectionEditModal = memo(function EducationSectionEditModal({
       // Call API to update education
       await updateProfileSection("education", { education: updatedEducation })
       
-      // Update frontend state
-      onUpdate(updatedEducation)
-      updateUser({ education: updatedEducation })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

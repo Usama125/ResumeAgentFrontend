@@ -139,15 +139,8 @@ const ContactSectionEditModal = memo(function ContactSectionEditModal({
       // Call API to update contact info
       await updateProfileSection("contact", { contact_info: contactInfo })
       
-      // Update frontend state
-      onUpdate(contactInfo)
-      updateUser({ 
-        contact_info: contactInfo,
-        name: basicInfo.name,
-        designation: basicInfo.designation,
-        location: basicInfo.location,
-        experience: basicInfo.experience
-      })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

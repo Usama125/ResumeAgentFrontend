@@ -6,6 +6,7 @@ import { useTheme } from '@/context/ThemeContext'
 import { getThemeClasses } from '@/utils/theme'
 import UserService from '@/services/user'
 import { useErrorHandler } from '@/utils/errorHandler'
+import ProfileOptimizer from '@/lib/profile-optimization'
 import {
   Dialog,
   DialogContent,

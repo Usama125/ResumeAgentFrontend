@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { useAuth } from "@/context/AuthContext"
 import { useTheme } from "@/context/ThemeContext"
 import { useRouter } from "next/navigation"
@@ -15,6 +15,7 @@ import UserDropdown from "@/components/UserDropdown"
 import { calculateProfileCompletion } from "@/utils/profileCompletion"
 import { canAccessAIWriter } from "@/utils/profileScoreValidation"
 import ProfileScoreRestrictionMessage from "@/components/ProfileScoreRestrictionMessage"
+import { profileUpdateManager } from '@/lib/profile-update-manager'
 
 // Content generation types
 type ContentType = 'cover_letter' | 'proposal'
@@ -183,6 +184,18 @@ export default function AIWriterMobile() {
   const router = useRouter()
   const { toast } = useToast()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
+
+  // Listen for profile updates to ensure AI Writer always has fresh data
+  useEffect(() => {
+    const unsubscribe = profileUpdateManager.registerUpdateCallback((updatedUser) => {
+      if (updatedUser && updatedUser.id === user?.id) {
+        // Force refresh user data in AuthContext to ensure AI Writer gets updated profile
+        refreshUser();
+      }
+    });
+
+    return unsubscribe;
+  }, [user?.id, refreshUser]);
 
   // State for content generation options - IDENTICAL TO DESKTOP
   const [options, setOptions] = useState<ContentGenerationOptions>({

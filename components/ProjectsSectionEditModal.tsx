@@ -122,9 +122,8 @@ const ProjectsSectionEditModal = memo(function ProjectsSectionEditModal({
       // Call API to update projects
       await updateProfileSection("projects", { projects: updatedProjects })
       
-      // Update frontend state
-      onUpdate(updatedProjects)
-      updateUser({ projects: updatedProjects })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",

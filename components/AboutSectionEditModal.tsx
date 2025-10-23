@@ -59,8 +59,8 @@ export default function AboutSectionEditModal({
       const response = await updateProfileSection("about", { summary })
       
       if (response) {
-        onUpdate(summary)
-        updateUser({ summary })
+        // Profile update manager will handle the update automatically
+        // No need to call onUpdate or updateUser manually
         toast({
           title: "Success",
           description: "About section updated successfully",

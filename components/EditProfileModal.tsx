@@ -7,6 +7,7 @@ import { getThemeClasses } from '@/utils/theme'
 import { calculateTotalExperience } from '@/utils/experienceCalculator'
 import UserService from '@/services/user'
 import { useErrorHandler } from '@/utils/errorHandler'
+import ProfileOptimizer from '@/lib/profile-optimization'
 import {
   Dialog,
   DialogContent,

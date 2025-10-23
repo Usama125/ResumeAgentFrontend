@@ -6,6 +6,7 @@ import { UserService, deleteProfileSection, updateProfileSection } from "@/servi
 import { User as UserType } from "@/types"
 import { useAuth } from "@/context/AuthContext"
 import AuthService from "@/services/auth"
+import { profileUpdateManager } from "@/lib/profile-update-manager"
 import EditProfileModal from "@/components/EditProfileModal"
 import EditProfileModalMobile from "@/components/EditProfileModalMobile"
 import EditPhotoModal from "@/components/EditPhotoModal"
@@ -184,33 +185,12 @@ export default function CurrentUserProfilePage() {
   const [authTimeout, setAuthTimeout] = useState(false)
 
   // Modal update handlers
-  const handleAboutUpdate = async (newSummary: string) => {
-    if (user) {
-      updateUser({ ...user, summary: newSummary });
-      await refreshUser();
-    }
-  };
+  // Note: handleAboutUpdate is no longer needed as profile update manager handles updates automatically
 
-  const handleSkillsUpdate = async (newSkills: any[]) => {
-    if (user) {
-      updateUser({ ...user, skills: newSkills });
-      await refreshUser();
-    }
-  };
-
-  const handleExperienceUpdate = async (newExperiences: any[]) => {
-    if (user) {
-      updateUser({ ...user, experience_details: newExperiences });
-      await refreshUser();
-    }
-  };
-
-  const handlePhotoUpdate = async (newPhotoUrl: string | null) => {
-    if (user) {
-      updateUser({ ...user, profile_picture: newPhotoUrl });
-      await refreshUser();
-    }
-  };
+  // Note: These handlers are no longer needed as profile update manager handles updates automatically
+  // const handleSkillsUpdate = async (newSkills: any[]) => { ... }
+  // const handleExperienceUpdate = async (newExperiences: any[]) => { ... }
+  // const handlePhotoUpdate = async (newPhotoUrl: string | null) => { ... }
 
   // Wrapper for setMessage to match React.Dispatch<React.SetStateAction<string>> signature
   const handleSetMessage = useCallback((value: React.SetStateAction<string>) => {
@@ -222,7 +202,7 @@ export default function CurrentUserProfilePage() {
   const [pendingSectionOrder, setPendingSectionOrder] = useState<string[] | null>(null)
   const [isUpdatingSectionOrder, setIsUpdatingSectionOrder] = useState(false)
   const router = useRouter()
-  const { user: authUser, isAuthenticated, loading: authLoading, refreshUser, updateUser } = useAuth()
+  const { user: authUser, isAuthenticated, loading: authLoading, refreshUser, updateUser, setUserData } = useAuth()
   const { isDark } = useTheme()
   const { toast } = useToast()
   const { openProfileSettings } = useSettings()
@@ -267,14 +247,8 @@ export default function CurrentUserProfilePage() {
       // Call API to delete projects section
       await deleteProfileSection("projects")
       
-      // Update local state
-      setUser({
-        ...user,
-        projects: []
-      })
-      
-      // Update global auth context
-      updateUser({ projects: [] })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       // Show success toast
       toast({
@@ -331,9 +305,8 @@ export default function CurrentUserProfilePage() {
       
       await updateProfileSection("education", { education: updatedEducation })
       
-      // Update frontend state
-      setUser({ ...user, education: updatedEducation })
-      updateUser({ education: updatedEducation })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -368,9 +341,8 @@ export default function CurrentUserProfilePage() {
     try {
       await deleteProfileSection("education")
       
-      // Update frontend state
-      setUser({ ...user, education: [] })
-      updateUser({ education: [] })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -406,9 +378,8 @@ export default function CurrentUserProfilePage() {
     try {
       await deleteProfileSection("contact")
       
-      // Update frontend state
-      setUser({ ...user, contact_info: {} })
-      updateUser({ contact_info: {} })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -456,8 +427,8 @@ export default function CurrentUserProfilePage() {
       const updatedLanguages = user.languages.filter((_, index) => index !== editingLanguageIndex)
       await updateProfileSection("languages", { languages: updatedLanguages })
       
-      setUser({ ...user, languages: updatedLanguages })
-      updateUser({ languages: updatedLanguages })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -487,8 +458,9 @@ export default function CurrentUserProfilePage() {
     
     try {
       await deleteProfileSection("languages")
-      setUser({ ...user, languages: [] })
-      updateUser({ languages: [] })
+      
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       toast({
         title: "Success",
         description: "Languages section deleted successfully",
@@ -535,8 +507,8 @@ export default function CurrentUserProfilePage() {
       const updatedAwards = user.awards.filter((_, index) => index !== editingAwardIndex)
       await updateProfileSection("awards", { awards: updatedAwards })
       
-      setUser({ ...user, awards: updatedAwards })
-      updateUser({ awards: updatedAwards })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -566,8 +538,9 @@ export default function CurrentUserProfilePage() {
     
     try {
       await deleteProfileSection("awards")
-      setUser({ ...user, awards: [] })
-      updateUser({ awards: [] })
+      
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       toast({
         title: "Success",
         description: "Awards section deleted successfully",
@@ -618,9 +591,8 @@ export default function CurrentUserProfilePage() {
       
       await updateProfileSection("publications", { publications: updatedPublications })
       
-      // Update frontend state
-      setUser({ ...user, publications: updatedPublications })
-      updateUser({ publications: updatedPublications })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -655,9 +627,8 @@ export default function CurrentUserProfilePage() {
     try {
       await deleteProfileSection("publications")
       
-      // Update frontend state
-      setUser({ ...user, publications: [] })
-      updateUser({ publications: [] })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -709,9 +680,8 @@ export default function CurrentUserProfilePage() {
       
       await updateProfileSection("volunteer", { volunteer_experience: updatedVolunteerExperience })
       
-      // Update frontend state
-      setUser({ ...user, volunteer_experience: updatedVolunteerExperience })
-      updateUser({ volunteer_experience: updatedVolunteerExperience })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -746,9 +716,8 @@ export default function CurrentUserProfilePage() {
     try {
       await deleteProfileSection("volunteer")
       
-      // Update frontend state
-      setUser({ ...user, volunteer_experience: [] })
-      updateUser({ volunteer_experience: [] })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -788,9 +757,8 @@ export default function CurrentUserProfilePage() {
     try {
       await deleteProfileSection("interests")
       
-      // Update frontend state
-      setUser({ ...user, interests: [] })
-      updateUser({ interests: [] })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       toast({
         title: "Success",
@@ -999,6 +967,22 @@ export default function CurrentUserProfilePage() {
     }
   }, [isAuthenticated, authUser, authLoading, authTimeout, isFromOnboarding])
 
+  // Listen for profile updates from the profile update manager
+  useEffect(() => {
+    const unsubscribe = profileUpdateManager.registerUpdateCallback((updatedUser) => {
+      if (updatedUser && updatedUser.id === authUser?.id) {
+        // Update local state
+        setUser(updatedUser);
+        setSuggestedQuestions(generateSuggestedQuestions(updatedUser));
+        
+        // Also update AuthContext to ensure consistency (without triggering profile update manager)
+        setUserData(updatedUser);
+      }
+    });
+
+    return unsubscribe;
+  }, [authUser?.id, setUserData]);
+
   // Preload AI analysis in background (non-blocking)
   useEffect(() => {
     if (user && isAuthenticated) {
@@ -1073,14 +1057,8 @@ export default function CurrentUserProfilePage() {
     try {
       const updatedUser = await deleteProfileSection('about')
       
-      // Update local state
-      setUser({
-        ...user,
-        summary: ''
-      })
-      
-      // Update global auth context
-      updateUser({ summary: '' })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       console.log('✅ About section deleted successfully')
     } catch (error) {
@@ -1094,14 +1072,8 @@ export default function CurrentUserProfilePage() {
     try {
       const updatedUser = await deleteProfileSection('skills')
       
-      // Update local state
-      setUser({
-        ...user,
-        skills: []
-      })
-      
-      // Update global auth context
-      updateUser({ skills: [] })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       console.log('✅ Skills section deleted successfully')
     } catch (error) {
@@ -1115,14 +1087,8 @@ export default function CurrentUserProfilePage() {
     try {
       const updatedUser = await deleteProfileSection('experience')
       
-      // Update local state
-      setUser({
-        ...user,
-        experience_details: []
-      })
-      
-      // Update global auth context
-      updateUser({ experience_details: [] })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       // Show success toast
       toast({
@@ -1179,14 +1145,8 @@ export default function CurrentUserProfilePage() {
       // Call API to update experiences
       await updateProfileSection("experience", { experience_details: updatedExperiences })
       
-      // Update local state
-      setUser({
-        ...user,
-        experience_details: updatedExperiences
-      })
-      
-      // Update global auth context
-      updateUser({ experience_details: updatedExperiences })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       // Show success toast
       toast({
@@ -1224,14 +1184,8 @@ export default function CurrentUserProfilePage() {
       // Call API to update projects
       await updateProfileSection("projects", { projects: updatedProjects })
       
-      // Update local state
-      setUser({
-        ...user,
-        projects: updatedProjects
-      })
-      
-      // Update global auth context
-      updateUser({ projects: updatedProjects })
+      // Profile update manager will handle the update automatically
+      // No need to manually update local state or auth context
       
       // Show success toast
       toast({
@@ -1464,14 +1418,14 @@ export default function CurrentUserProfilePage() {
           isOpen={isEditPhotoModalOpen}
           onClose={() => setIsEditPhotoModalOpen(false)}
           currentPhotoUrl={user?.profile_picture}
-          onPhotoUpdate={handlePhotoUpdate}
+          onPhotoUpdate={() => {}} // No longer needed as profile update manager handles updates
         />
       ) : (
         <EditPhotoModal
           isOpen={isEditPhotoModalOpen}
           onClose={() => setIsEditPhotoModalOpen(false)}
           currentPhotoUrl={user?.profile_picture}
-          onPhotoUpdate={handlePhotoUpdate}
+          onPhotoUpdate={() => {}} // No longer needed as profile update manager handles updates
         />
       )}
 
@@ -1480,7 +1434,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isAboutEditModalOpen}
         onClose={() => setIsAboutEditModalOpen(false)}
         currentSummary={user?.summary || ''}
-        onUpdate={handleAboutUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
       />
 
       {/* Preferences Edit Modal */}
@@ -1495,7 +1449,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isSkillsEditModalOpen}
         onClose={() => setIsSkillsEditModalOpen(false)}
         currentSkills={user?.skills || []}
-        onUpdate={handleSkillsUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
       />
 
       {/* Experience Section Edit Modal */}
@@ -1503,7 +1457,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isExperienceEditModalOpen}
         onClose={() => setIsExperienceEditModalOpen(false)}
         currentExperiences={user?.experience_details || []}
-        onUpdate={handleExperienceUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         editingExperience={editingExperience}
         editingIndex={editingExperienceIndex}
         mode={experienceEditMode}
@@ -1514,7 +1468,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isProjectsEditModalOpen}
         onClose={() => setIsProjectsEditModalOpen(false)}
         currentProjects={user?.projects || []}
-        onUpdate={handleProjectsUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         editingProject={editingProject}
         editingIndex={editingProjectIndex}
         mode={projectsEditMode}
@@ -1525,7 +1479,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isEducationEditModalOpen}
         onClose={() => setIsEducationEditModalOpen(false)}
         currentEducation={user?.education || []}
-        onUpdate={handleEducationUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         editingEducation={editingEducation}
         editingIndex={editingEducationIndex}
         mode={educationEditMode}
@@ -1536,7 +1490,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isContactEditModalOpen}
         onClose={() => setIsContactEditModalOpen(false)}
         currentContactInfo={user?.contact_info}
-        onUpdate={handleContactUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         currentUser={user}
       />
 
@@ -1545,7 +1499,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isLanguagesEditModalOpen}
         onClose={() => setIsLanguagesEditModalOpen(false)}
         currentLanguages={user?.languages || []}
-        onUpdate={handleLanguagesUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         editingLanguage={editingLanguage}
         editingIndex={editingLanguageIndex}
         mode={languagesEditMode}
@@ -1556,7 +1510,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isAwardsEditModalOpen}
         onClose={() => setIsAwardsEditModalOpen(false)}
         currentAwards={user?.awards || []}
-        onUpdate={handleAwardsUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         editingAward={editingAward}
         editingIndex={editingAwardIndex}
         mode={awardsEditMode}
@@ -1567,7 +1521,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isPublicationsEditModalOpen}
         onClose={() => setIsPublicationsEditModalOpen(false)}
         currentPublications={user?.publications || []}
-        onUpdate={handlePublicationsUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         editingPublication={editingPublication}
         editingIndex={editingPublicationIndex}
         mode={publicationsEditMode}
@@ -1578,7 +1532,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isVolunteerExperienceEditModalOpen}
         onClose={() => setIsVolunteerExperienceEditModalOpen(false)}
         currentVolunteerExperience={user?.volunteer_experience || []}
-        onUpdate={handleVolunteerExperienceUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         editingVolunteerExperience={editingVolunteerExperience}
         editingIndex={editingVolunteerExperienceIndex}
         mode={volunteerExperienceEditMode}
@@ -1589,7 +1543,7 @@ export default function CurrentUserProfilePage() {
         isOpen={isInterestsEditModalOpen}
         onClose={() => setIsInterestsEditModalOpen(false)}
         currentInterests={user?.interests || []}
-        onUpdate={handleInterestsUpdate}
+        onUpdate={() => {}} // No longer needed as profile update manager handles updates
         mode={interestsEditMode}
       />
 

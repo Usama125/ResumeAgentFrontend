@@ -33,6 +33,7 @@ import { useTheme } from "@/context/ThemeContext"
 import { useToast } from "@/hooks/use-toast"
 import ProgressModal from "@/components/ProgressModal"
 import MissingSectionsModal from "@/components/MissingSectionsModal"
+import { profileUpdateManager } from "@/lib/profile-update-manager"
 import ThemeToggle from "@/components/ThemeToggle"
 import { getThemeClasses } from "@/utils/theme"
 import OnboardingDesktop from "@/components/OnboardingDesktop"
@@ -117,6 +118,18 @@ export default function OnboardingPage() {
   const { isDark } = useTheme()
   const theme = getThemeClasses(isDark)
   const { toast } = useToast()
+
+  // Listen for profile updates to ensure onboarding shows fresh user data
+  useEffect(() => {
+    const unsubscribe = profileUpdateManager.registerUpdateCallback((updatedUser) => {
+      if (updatedUser && updatedUser.id === user?.id) {
+        // Force refresh user data in onboarding
+        refreshUser();
+      }
+    });
+
+    return unsubscribe;
+  }, [user?.id, refreshUser]);
 
   // Check if we're on the client side
   useEffect(() => {

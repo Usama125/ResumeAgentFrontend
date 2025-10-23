@@ -273,7 +273,7 @@ export class AlgoliaSearchService {
         total: 0,
         page: 0,
         pages: 0,
-        hitsPerPage: limit || 11,
+        hitsPerPage: 11,
         processingTimeMS: 0,
         error: error instanceof Error ? error.message : 'Search failed',
       };
@@ -346,14 +346,9 @@ export class AlgoliaSearchService {
       console.log('🔍 [ALGOLIA_SEARCH] App ID:', 'NIQXR0065F');
       console.log('🔍 [ALGOLIA_SEARCH] Index name:', 'users');
       
-      // Check searchable attributes configuration
-      const settings = await this.index.getSettings();
-      console.log('🔍 [ALGOLIA_SEARCH] Index settings:', {
-        searchableAttributes: settings.searchableAttributes,
-        attributesForFaceting: settings.attributesForFaceting,
-        ranking: settings.ranking,
-        customRanking: settings.customRanking
-      });
+      // Note: getSettings() is not available in Algolia Lite client
+      // We'll test the connection by performing a simple search instead
+      console.log('🔍 [ALGOLIA_SEARCH] Testing connection with simple search...');
       
       // Try a simple search to see all data
       const allResults = await this.index.search('', {
@@ -489,7 +484,7 @@ export class AlgoliaSearchService {
         page: 0
       });
       console.log(`Result: ${test1.nbHits} total hits, ${test1.hits.length} returned`);
-      console.log('Sample names:', test1.hits.slice(0, 5).map(hit => hit.name));
+      console.log('Sample names:', test1.hits.slice(0, 5).map((hit: any) => hit.name));
 
       // Test 2: Just "React" search to compare
       console.log('\n📋 TEST 2: Just "React" search (for comparison)');
@@ -498,7 +493,7 @@ export class AlgoliaSearchService {
         page: 0
       });
       console.log(`Result: ${test2.nbHits} total hits, ${test2.hits.length} returned`);
-      console.log('Sample names:', test2.hits.slice(0, 5).map(hit => hit.name));
+      console.log('Sample names:', test2.hits.slice(0, 5).map((hit: any) => hit.name));
 
       // Test 3: Location filter only (San Francisco)
       console.log('\n📋 TEST 3: San Francisco location filter only');
@@ -508,7 +503,7 @@ export class AlgoliaSearchService {
         filters: 'location:"San Francisco, CA, US"'
       });
       console.log(`Result: ${test3.nbHits} total hits, ${test3.hits.length} returned`);
-      console.log('Sample names & locations:', test3.hits.slice(0, 5).map(hit => ({ name: hit.name, location: hit.location })));
+      console.log('Sample names & locations:', test3.hits.slice(0, 5).map((hit: any) => ({ name: hit.name, location: hit.location })));
 
       // Test 4: Combined React + San Francisco (user reported wrong results)
       console.log('\n📋 TEST 4: "React developers" + San Francisco filter (user issue)');
@@ -518,7 +513,7 @@ export class AlgoliaSearchService {
         filters: 'location:"San Francisco, CA, US"'
       });
       console.log(`Result: ${test4.nbHits} total hits, ${test4.hits.length} returned`);
-      console.log('Sample results:', test4.hits.slice(0, 3).map(hit => ({
+      console.log('Sample results:', test4.hits.slice(0, 3).map((hit: any) => ({
         name: hit.name,
         skills: hit.skills,
         location: hit.location

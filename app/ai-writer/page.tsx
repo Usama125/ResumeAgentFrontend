@@ -18,6 +18,7 @@ import ProfileScoreRestrictionMessage from "@/components/ProfileScoreRestriction
 import { useChat } from 'ai/react'
 import ResizableSplitPane from "@/components/ResizableSplitPane"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { profileUpdateManager } from '@/lib/profile-update-manager'
 import AIWriterMobile from "@/components/AIWriterMobile"
 
 // Content generation types
@@ -64,6 +65,18 @@ export default function ContentGeneratorPage() {
   const { toast } = useToast()
   const { showRateLimitModal, hideRateLimitModal, rateLimitState } = useRateLimit()
   const isMobile = useIsMobile()
+
+  // Listen for profile updates to ensure AI Writer always has fresh data
+  useEffect(() => {
+    const unsubscribe = profileUpdateManager.registerUpdateCallback((updatedUser) => {
+      if (updatedUser && updatedUser.id === user?.id) {
+        // Force refresh user data in AuthContext to ensure AI Writer gets updated profile
+        refreshUser();
+      }
+    });
+
+    return unsubscribe;
+  }, [user?.id, refreshUser]);
 
   // State for content generation options
   const [options, setOptions] = useState<ContentGenerationOptions>({

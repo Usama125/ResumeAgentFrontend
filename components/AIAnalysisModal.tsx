@@ -13,6 +13,7 @@ import { AuthService } from '@/services/auth'
 import { useRateLimit } from '@/hooks/useRateLimit'
 import { RateLimitModal } from '@/components/RateLimitModal'
 import { APIError } from '@/types'
+import { profileUpdateManager } from '@/lib/profile-update-manager'
 
 interface AIAnalysisData {
   score: number
@@ -110,6 +111,19 @@ export default function AIAnalysisModal({
   const [analysisData, setAnalysisData] = useState<AIAnalysisData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Listen for profile updates to ensure AI analysis shows fresh data
+  useEffect(() => {
+    const unsubscribe = profileUpdateManager.registerUpdateCallback((updatedUser) => {
+      if (updatedUser && updatedUser.id === currentUser?.id && isOwnProfile) {
+        // Clear analysis data to force refresh with new profile data
+        setAnalysisData(null);
+        setError(null);
+      }
+    });
+
+    return unsubscribe;
+  }, [currentUser?.id, isOwnProfile]);
   
   const themeClasses = getThemeClasses(isDark)
 

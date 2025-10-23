@@ -104,8 +104,8 @@ export default function InterestsSectionEditModal({
     try {
       await updateProfileSection("interests", { interests })
       
-      onUpdate(interests)
-      updateUser({ interests })
+      // Profile update manager will handle the update automatically
+      // No need to call onUpdate or updateUser manually
       
       toast({
         title: "Success",
