@@ -503,3 +503,95 @@
     pointer-events: auto;
   }
 }
+
+/* Auto-scroll animation for screenshots */
+@keyframes autoScroll {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(-5%);
+  }
+  20% {
+    transform: translateY(-10%);
+  }
+  30% {
+    transform: translateY(-15%);
+  }
+  40% {
+    transform: translateY(-20%);
+  }
+  50% {
+    transform: translateY(-25%);
+  }
+  60% {
+    transform: translateY(-30%);
+  }
+  70% {
+    transform: translateY(-35%);
+  }
+  80% {
+    transform: translateY(-40%);
+  }
+  90% {
+    transform: translateY(-45%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+/* Reduced auto-scroll animation for images with less content (like ai-fit images) */
+@keyframes autoScrollReduced {
+  0% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(-2%);
+  }
+  20% {
+    transform: translateY(-4%);
+  }
+  30% {
+    transform: translateY(-6%);
+  }
+  40% {
+    transform: translateY(-8%);
+  }
+  50% {
+    transform: translateY(-10%);
+  }
+  60% {
+    transform: translateY(-12%);
+  }
+  70% {
+    transform: translateY(-14%);
+  }
+  80% {
+    transform: translateY(-16%);
+  }
+  90% {
+    transform: translateY(-18%);
+  }
+  100% {
+    transform: translateY(-20%);
+  }
+}
+
+/* Smooth auto-scroll with pause on hover */
+.auto-scroll-container {
+  animation: autoScroll 20s ease-in-out infinite;
+  animation-fill-mode: both;
+  will-change: transform;
+}
+
+.auto-scroll-container:hover {
+  animation-play-state: paused;
+}
+
+/* Alternative faster scroll for mobile */
+@media (max-width: 768px) {
+  .auto-scroll-container {
+    animation-duration: 15s;
+  }
+}

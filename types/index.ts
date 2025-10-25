@@ -155,8 +155,11 @@ export interface PublicUser {
   interests?: string[];
   profession?: string;
   certifications?: string[];
+  // Work preferences for AI chat access
+  work_preferences?: WorkPreferences;
   // Additional fields that might be needed
   expected_salary?: string | null;
+  current_salary?: string | null;
   email?: string;
   // Section ordering for consistent display
   section_order?: string[];

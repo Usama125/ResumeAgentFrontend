@@ -18,6 +18,7 @@ import Footer from "@/components/Footer"
 const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
   const [activeTab, setActiveTab] = useState("job-seekers")
   
+  
   const tabContent = {
     "job-seekers": {
       title: "For Job Seekers",
@@ -37,8 +38,8 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
           title: "AI Conversations",
           description: "Your profile answers questions about your skills and experience 24/7",
           image: {
-            light: "/images/steps/chat-light.png",
-            dark: "/images/steps/chat-dark.png"
+            light: "/images/steps/job-seeker-2-light.png",
+            dark: "/images/steps/job-seeker-2-dark.png"
           }
         },
         {
@@ -61,8 +62,8 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
           title: "Smart Discovery",
           description: "Find candidates using natural language search and AI matching",
           image: {
-            light: "/images/steps/discover-light.png",
-            dark: "/images/steps/discover-dark.png"
+            light: "/images/steps/job-seeker-3-light.png",
+            dark: "/images/steps/job-seeker-3-dark.png"
           }
         },
         {
@@ -70,8 +71,8 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
           title: "Chat with Profiles",
           description: "Ask detailed questions directly to candidate profiles instantly",
           image: {
-            light: "/images/steps/chat-only-light.png",
-            dark: "/images/steps/chat-only-dark.png"
+            light: "/images/steps/job-seeker-2-light.png",
+            dark: "/images/steps/job-seeker-2-dark.png"
           }
         },
         {
@@ -90,15 +91,6 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
       subtitle: "Powerful AI Tools for Professional Growth",
       steps: [
         {
-          icon: Palette,
-          title: "Multiple Themes",
-          description: "Create different portfolio variants for different opportunities",
-          image: {
-            light: "/images/steps/themes-light.png",
-            dark: "/images/steps/themes-dark.png"
-          }
-        },
-        {
           icon: FileText,
           title: "Content Generation",
           description: "Generate personalized cover letters and proposals using your profile",
@@ -108,12 +100,21 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
           }
         },
         {
+          icon: Palette,
+          title: "Multiple Themes",
+          description: "Create different portfolio variants for different opportunities",
+          image: {
+            light: "/images/steps/themes-light.png",
+            dark: "/images/steps/themes-dark.png"
+          }
+        },
+        {
           icon: TrendingUp,
           title: "Smart Analytics",
           description: "Track profile performance and optimize for better visibility",
           image: {
-            light: "/images/steps/profile-analysis-light.png",
-            dark: "/images/steps/profile-analysis-dark.png"
+            light: "/images/steps/ai-fit-light.png",
+            dark: "/images/steps/ai-fit-dark.png"
           }
         }
       ]
@@ -222,11 +223,258 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
                               : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200/50'
                           }`}>
                             {/* Theme-Aware Screenshot Image */}
-                            <div className="aspect-video overflow-hidden">
+                            {step.title === "Create Smart Profile" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScroll 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? "/images/steps/job-seeker-1-dark.png" : "/images/steps/job-seeker-1-light.png"}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : step.title === "AI Conversations" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScroll 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? "/images/steps/job-seeker-2-dark.png" : "/images/steps/job-seeker-2-light.png"}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : step.title === "Get Discovered" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScroll 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? "/images/steps/job-seeker-3-dark.png" : "/images/steps/job-seeker-3-light.png"}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : step.title === "Smart Discovery" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScroll 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? "/images/steps/job-seeker-3-dark.png" : "/images/steps/job-seeker-3-light.png"}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : step.title === "Chat with Profiles" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScroll 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? "/images/steps/job-seeker-2-dark.png" : "/images/steps/job-seeker-2-light.png"}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : step.title === "Perfect Matches" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScrollReduced 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? step.image.dark : step.image.light}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : step.title === "Multiple Themes" ? (
+                              <div className="aspect-video overflow-hidden">
+                                <img 
+                                  src={isDark ? step.image.dark : step.image.light}
+                                  alt={step.title}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                  onError={(e) => {
+                                    // Fallback to placeholder if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = `
+                                        <div class="flex items-center justify-center h-full p-8">
+                                          <div class="text-center space-y-4">
+                                            <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center ${isDark ? 'bg-[#10a37f]/20' : 'bg-[#10a37f]/10'}">
+                                              <svg class="w-10 h-10 text-[#10a37f]" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                              </svg>
+                                            </div>
+                                            <div class="text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}">
+                                              Screenshot Coming Soon
+                                            </div>
+                                          </div>
+                                        </div>
+                                      `;
+                                    }
+                                  }}
+                                />
+                              </div>
+                            ) : step.title === "Content Generation" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScroll 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? step.image.dark : step.image.light}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : step.title === "Smart Analytics" ? (
+                              <div className="relative h-[350px] md:h-[400px] overflow-hidden">
+                                <div 
+                                  className="auto-scroll-container"
+                                  style={{
+                                    animation: 'autoScroll 20s ease-in-out infinite',
+                                    transform: 'translateY(0)'
+                                  }}
+                                >
+                                  <img 
+                                    src={isDark ? step.image.dark : step.image.light}
+                                    alt={step.title}
+                                    className="w-full h-auto object-cover"
+                                  />
+                                </div>
+                                {/* Pause on hover */}
+                                <div className="absolute inset-0 bg-transparent hover:bg-black/5 transition-colors duration-300" 
+                                     onMouseEnter={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'paused';
+                                     }}
+                                     onMouseLeave={(e) => {
+                                       const container = e.currentTarget.previousElementSibling as HTMLElement;
+                                       if (container) container.style.animationPlayState = 'running';
+                                     }}>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="aspect-video overflow-hidden">
                               <img 
                                 src={typeof step.image === 'object' ? (isDark ? step.image.dark : step.image.light) : step.image} 
                                 alt={step.title}
-                                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                                 onError={(e) => {
                                   // Fallback to placeholder if image fails to load
                                   const target = e.target as HTMLImageElement;
@@ -234,7 +482,7 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
                                   const parent = target.parentElement;
                                   if (parent) {
                                     parent.innerHTML = `
-                                      <div class="flex items-center justify-center h-full p-8">
+                                        <div class="flex items-center justify-center h-full p-8">
                                         <div class="text-center space-y-4">
                                           <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center ${isDark ? 'bg-[#10a37f]/20' : 'bg-[#10a37f]/10'}">
                                             <svg class="w-10 h-10 text-[#10a37f]" fill="currentColor" viewBox="0 0 20 20">
@@ -251,6 +499,7 @@ const HowItWorksSection = ({ isDark }: { isDark: boolean }) => {
                                 }}
                               />
                             </div>
+                            )}
                             
                             {/* Hover overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#10a37f]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
