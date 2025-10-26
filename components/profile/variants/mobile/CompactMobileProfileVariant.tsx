@@ -210,7 +210,12 @@ const CompactMobileProfileVariant = memo(function CompactMobileProfileVariant({
           <div className="flex justify-center gap-6 text-center pt-3 border-t border-gray-200 dark:border-gray-700">
             <div>
               <div className={`text-base font-bold ${theme.text.primary}`}>
-                {totalExperience || 'N/A'}
+                {(() => {
+                  if (user.experience && user.experience.trim() !== '') {
+                    return user.experience;
+                  }
+                  return totalExperience || 'N/A';
+                })()}
               </div>
               <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Experience</div>
             </div>
