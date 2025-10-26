@@ -245,7 +245,14 @@ const AdvancedProfileVariant = memo(function AdvancedProfileVariant({
                       </div>
                       <div>
                         <p className={`text-sm font-medium ${theme.text.secondary}`}>Experience</p>
-                        <p className={`font-semibold ${theme.text.primary}`}>{totalExperience || 'N/A'}</p>
+                        <p className={`font-semibold ${theme.text.primary}`}>
+                          {(() => {
+                            if (user.experience && user.experience.trim() !== '') {
+                              return user.experience;
+                            }
+                            return totalExperience || 'N/A';
+                          })()}
+                        </p>
                       </div>
                     </div>
 
